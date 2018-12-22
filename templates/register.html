@@ -1,0 +1,46 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="row align-items-center justify-content-center" style="height: 100vh">
+            <div class="col-lg-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+
+                        <form method="POST">
+                            <h4>Register</h4>
+                            <p>Register to create an account.</p>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="first_name" placeholder="First name" />
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control" name="last_name" placeholder="Last name" />
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control" name="email" placeholder="Email" />
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="phone" placeholder="Phone" />
+                            </div>
+                            <div class="form-group">
+                                <select name="specialize" class="form-control">
+                                    <option selected value="">--Specialized--</option>
+                                    <option value="family">Family</option>
+                                    <option value="Business">Business</option>
+                                    <option value="Employment">Employment</option>
+                                    <option value="realstate">Real State</option>
+                                    <option value="criminalcase">Criminal Case</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="bar_number" placeholder="Bar Number" />
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Register</button>
+                        </form>
+                        <small>Already have an account? Click <a href="{{ url_for('login') }}">Here</a></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

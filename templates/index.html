@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="row align-items-center justify-content-center" style="height: 100vh">
+            <div class="col-lg-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+
+                        <form method="POST">
+                            <h4>Login</h4>
+                            <p>Login with your account to use the system.</p>
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="username" placeholder="Email" />
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control" name="password" placeholder="Password" />
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Login</button>
+                        </form>
+                        <small>Dont have an Account? Click <a href="{{ url_for('register') }}">Here</a></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
