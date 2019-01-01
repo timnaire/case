@@ -8,8 +8,8 @@
                     <div class="col-lg-10">
 
                         <form method="POST">
-                            <h4>Register</h4>
-                            <p>Register to create an account.</p>
+                            <h4>A Lawyer?</h4>
+                            <p>Getting to know you.</p>
                             <div class="form-group">
                                 <input type="text" class="form-control" name="first_name" placeholder="First name" />
                             </div>
@@ -23,13 +23,22 @@
                                 <input type="text" class="form-control" name="phone" placeholder="Phone" />
                             </div>
                             <div class="form-group">
+                                <input type="text" class="form-control" name="office" placeholder="Office Address" />
+                            </div>
+                            <div class="form-group">
                                 <select name="specialize" class="form-control">
                                     <option selected value="">--Specialized--</option>
                                     <option value="family">Family</option>
-                                    <option value="Business">Business</option>
-                                    <option value="Employment">Employment</option>
-                                    <option value="realstate">Real State</option>
-                                    <option value="criminalcase">Criminal Case</option>
+                                    <option value="employment">Employment</option>
+                                    <option value="criminal_defense">Criminal Defense</option>
+                                    <option value="real_estate">Real Estate</option>
+                                    <option value="business">Business</option>
+                                    <option value="immigration">Immigration</option>
+                                    <option value="personal_injury">Personal Injury</option>
+                                    <option value="wills_trusts_estates">Wills & Estates</option>
+                                    <option value="bankruptcy_finance">Bankruptcy</option>
+                                    <option value="intellectual_property">Intellectual Property</option>
+                                    <option value="others">Others</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -37,7 +46,6 @@
                             </div>
                             <button type="submit" class="btn btn-primary btn-block">Register</button>
                         </form>
-                        <small>Already have an account? Click <a href="{{ url_for('login') }}">Here</a></small>
                     </div>
                 </div>
             </div>

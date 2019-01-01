@@ -1,0 +1,61 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="row align-items-center justify-content-center" style="height: 100vh">
+            <div class="col-lg-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+
+                        <form action="{{ url_for('lawyer') }}" method="POST">
+                            <h4>Find the Right Lawyer now</h4>
+                            <div class="form-group">
+                                <select name="main_category" class="form-control">
+                                    <option selected value="">Select a Legal Issue</option>
+                                    <option value="family">Family</option>
+                                    <option value="employment">Employment</option>
+                                    <option value="criminal_defense">Criminal Defense</option>
+                                    <option value="real_estate">Real Estate</option>
+                                    <option value="business">Business</option>
+                                    <option value="immigration">Immigration</option>
+                                    <option value="personal_injury">Personal Injury</option>
+                                    <option value="wills_trusts_estates">Wills, Trust and Estates</option>
+                                    <option value="bankruptcy_finance">Bankruptcy & Finance</option>
+                                    <option value="government">Government</option>
+                                    <option value="products_services">Products & Services</option>
+                                    <option value="intellectual_property">Intellectual Property</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                    <select name="location" class="form-control">
+                                        <option selected value="">Please select a province</option>
+                                        <option value="abra">Abra</option>
+                                        <option value="agusan_del_norte">Agusan del Norte</option>
+                                        <option value="agusan_del_sur">Agusan del Sur</option>
+                                        <option value="aklan">Aklan</option>
+                                        <option value="albay">Albay</option>
+                                        <option value="antique">Antique</option>
+                                        <option value="apayao">Apayao</option>
+                                        <option value="aurora">Aurora</option>
+                                        <option value="basilan">Basilan</option>
+                                        <option value="bataan">Bataan</option>
+                                        <option value="batanes">Batanes</option>
+                                        <option value="batangas">Batangas</option>
+                                        <option value="benguet">Benguet</option>
+                                        <option value="biliran">Biliran</option>
+                                        <option value="bohol">Bohol</option>
+                                    </select>
+                                </div>
+                            <button type='submit' class='btn btn-primary btn-block'>Find a Lawyer</button>
+                        </form>
+
+                        <h4>A Lawyer?</h4>
+                        <p>Getting to know you.</p>
+                        <small><a href="{{ url_for('attorneys') }}">Become a lawyer with us.</a></small>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

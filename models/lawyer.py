@@ -6,6 +6,7 @@ class Lawyer(ndb.Model):
     last_name = ndb.StringProperty()
     email = ndb.TextProperty()
     phone = ndb.StringProperty()
+    office = ndb.TextProperty()
     specialize = ndb.StringProperty()
     bar_number = ndb.StringProperty()
     password = ndb.StringProperty()
@@ -16,7 +17,7 @@ class Lawyer(ndb.Model):
     def save(cls, *args, **kwargs):
         uid = kwargs.get('id')
         lawyer = cls.get_by_id(int(uid)) if uid else cls()
-
+        
         if kwargs.get('first_name'):
             lawyer.first_name = kwargs.get('first_name')
         if kwargs.get('last_name'):
@@ -25,6 +26,8 @@ class Lawyer(ndb.Model):
             lawyer.email = kwargs.get('email')
         if kwargs.get('phone'):
             lawyer.phone = kwargs.get('phone')
+        if kwargs.get('office'):
+            lawyer.phone = kwargs.get('office')
         if kwargs.get('specialize'):
             lawyer.specialize = kwargs.get('specialize')
         if kwargs.get('bar_number'):
