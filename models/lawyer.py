@@ -5,7 +5,7 @@ class Lawyer(ndb.Model):
     first_name = ndb.StringProperty()
     last_name = ndb.StringProperty()
     email = ndb.TextProperty()
-    phone = ndb.StringProperty()
+    phone = ndb.StringProperty()    
     office = ndb.TextProperty()
     specialize = ndb.StringProperty()
     bar_number = ndb.StringProperty()
@@ -27,7 +27,7 @@ class Lawyer(ndb.Model):
         if kwargs.get('phone'):
             lawyer.phone = kwargs.get('phone')
         if kwargs.get('office'):
-            lawyer.phone = kwargs.get('office')
+            lawyer.office = kwargs.get('office')
         if kwargs.get('specialize'):
             lawyer.specialize = kwargs.get('specialize')
         if kwargs.get('bar_number'):
@@ -37,3 +37,18 @@ class Lawyer(ndb.Model):
 
         lawyer.put()
         return lawyer
+
+    def to_dict(self):
+        data = {}
+
+        data['first_name'] = self.first_name
+        data['last_name'] = self.last_name
+        data['email'] = self.email
+        data['phone'] = self.phone
+        data['office'] = self.office
+        data['specialize'] = self.specialize
+        data['bar_number'] = self.bar_number
+        data['created'] = self.created.isoformat() + 'Z'
+        data['updated'] = self.updated.isoformat() + 'Z'
+
+        return data
