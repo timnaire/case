@@ -4,10 +4,10 @@ from passlib.hash import pbkdf2_sha256
 class Lawyer(ndb.Model):
     first_name = ndb.StringProperty()
     last_name = ndb.StringProperty()
-    email = ndb.TextProperty()
+    email = ndb.StringProperty()
     phone = ndb.StringProperty()    
-    office = ndb.TextProperty()
-    specialize = ndb.StringProperty()
+    office = ndb.StringProperty()
+    law_practice = ndb.StringProperty()
     bar_number = ndb.StringProperty()
     password = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
@@ -28,8 +28,8 @@ class Lawyer(ndb.Model):
             lawyer.phone = kwargs.get('phone')
         if kwargs.get('office'):
             lawyer.office = kwargs.get('office')
-        if kwargs.get('specialize'):
-            lawyer.specialize = kwargs.get('specialize')
+        if kwargs.get('law_practice'):
+            lawyer.law_practice = kwargs.get('law_practice')
         if kwargs.get('bar_number'):
             lawyer.bar_number = kwargs.get('bar_number')
         if kwargs.get('password'):
@@ -37,18 +37,39 @@ class Lawyer(ndb.Model):
 
         lawyer.put()
         return lawyer
+    
+    @classmethod
+    def login(cls, email, password):
+        lawyer = None
+        if email and password:
+            lawyer = cls.query(cls.email == email).get()
 
-    def to_dict(self):
-        data = {}
+        if lawyer and not pbkdf2_sha256.verify(password, lawyer.password):
+            lawyer = None
 
-        data['first_name'] = self.first_name
-        data['last_name'] = self.last_name
-        data['email'] = self.email
-        data['phone'] = self.phone
-        data['office'] = self.office
-        data['specialize'] = self.specialize
-        data['bar_number'] = self.bar_number
-        data['created'] = self.created.isoformat() + 'Z'
-        data['updated'] = self.updated.isoformat() + 'Z'
+        return lawyer
 
-        return data
+    @classmethod
+    def f_reset_password(cls,email,password):
+        lawyer = None
+        if email and password:
+            lawyer = cls.query(cls.email == email, cls.password == None).get()
+            lawyer.password = pbkdf2_sha256.hash(password)
+            lawyer.put()
+        
+        return lawyer
+
+    # def to_dict(self):
+    #     data = {}
+
+    #     data['first_name'] = self.first_name
+    #     data['last_name'] = self.last_name
+    #     data['email'] = self.email
+    #     data['phone'] = self.phone
+    #     data['office'] = self.office
+    #     data['law_practice'] = self.law_practice
+    #     data['bar_number'] = self.bar_number
+    #     data['created'] = self.created.isoformat() + 'Z'
+    #     data['updated'] = self.updated.isoformat() + 'Z'
+
+    #     return data
