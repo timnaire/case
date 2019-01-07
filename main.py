@@ -1,9 +1,10 @@
 import logging
-from flask import Flask, render_template, url_for, request, session, redirect, jsonify
+from flask import Flask, render_template, url_for, request, session, redirect
 from config import SECRET_KEY
 
 from models.lawyer import Lawyer
 from decorators import login_required
+from functions import json_response
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
@@ -26,7 +27,7 @@ def home():
 def dashboard():
     return render_template('mypage/dashboard.html',title="Welcome to Dashboard",lawyer=session['lawyer'])
 
-#sing in route
+#sign in route
 @app.route('/signin/lawyer',methods=['GET','POST'])
 def lawyer_login():
     if request.method == 'POST':
@@ -58,11 +59,13 @@ def lawyer_registration():
         
         lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,office=office,law_practice=law_practice,bar_number=bar_number,password='')
         if lawyer:
-            return redirect(url_for('lawyer_registration',succ=1,m='Thank you, We will contact you soon.'))
+            return json_response({
+                'code': 200,
+                'message': 'Thank you, We will contact you soon.'})
         else:
-            return redirect(
-                url_for('lawyer_registration',
-                    err=1, m="Something went wrong please try again."))
+            return json_response({
+                'code': 400,
+                'message': 'Something went wrong, Please try again.'})
 
     return render_template('lawyer_registration.html',title='Lawyer Registration')
 

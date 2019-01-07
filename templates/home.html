@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'client_layout.html' %}
 
 {% block content %}
     <div class="container">
@@ -7,7 +7,7 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-10">
 
-                        <form action="{{ url_for('lawyer') }}" method="POST">
+                        <form method="POST">
                             <h4>Find the Right Lawyer now</h4>
                             <div class="form-group">
                                 <select name="main_category" class="form-control">
@@ -51,7 +51,7 @@
 
                         <h4>A Lawyer?</h4>
                         <p>Getting to know you.</p>
-                        <small><a href="{{ url_for('attorneys') }}">Become a lawyer with us.</a></small>
+                        <small><a href="{{ url_for('lawyer_registration') }}">Become a lawyer with us.</a></small>
 
                     </div>
                 </div>
