@@ -4,7 +4,7 @@ from config import SECRET_KEY
 
 from models.lawyer import Lawyer
 from decorators import login_required
-from functions import json_response
+from functions import json_response, is_email
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
@@ -31,17 +31,23 @@ def dashboard():
 @app.route('/signin/lawyer',methods=['GET','POST'])
 def lawyer_login():
     if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
+        req_data = request.get_json(force=True)
+
+        if 'email' in req_data:
+            email = req_data['email']
+        if 'password' in req_data:
+            password = req_data['password']
 
         lawyer = Lawyer.login(email=email,password=password)
         if lawyer:
             session['lawyer'] = lawyer.key.id()
-            return redirect(url_for('dashboard'))
+            return json_response({
+                'code': 200,
+                'message': 'Successfully Logged in.'})
         else:
-            return redirect(
-                url_for('lawyer_login',
-                    err=1, m="These credentials do not match our records."))
+            return json_response({
+                'code': 400,
+                'message': 'Credintials do not much, Please try again.'})
 
     return render_template('lawyer_login.html',title='Lawyer Login')
 
@@ -49,25 +55,57 @@ def lawyer_login():
 @app.route('/signup/lawyer', methods=['GET','POST'])
 def lawyer_registration():
     if request.method == 'POST':
-        first_name = request.form.get('first_name')
-        last_name = request.form.get('last_name')
-        email = request.form.get('email')
-        phone = request.form.get('phone')
-        office = request.form.get('office')
-        law_practice = request.form.get('law_practice')
-        bar_number = request.form.get('bar_number')
-        
-        lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,office=office,law_practice=law_practice,bar_number=bar_number,password='')
-        if lawyer:
-            return json_response({
-                'code': 200,
-                'message': 'Thank you, We will contact you soon.'})
+        req_data = request.get_json(force=True)
+
+        if 'first_name' in req_data:
+            first_name = req_data['first_name']
+        if 'last_name' in req_data:
+            last_name = req_data['last_name']
+        if 'email' in req_data:
+            email = req_data['email']
+        if 'phone' in req_data:
+            phone = req_data['phone']
+        if 'office' in req_data:
+            office = req_data['office']
+        if 'law_practice' in req_data:
+            law_practice = req_data['law_practice']
+        if 'bar_number' in req_data:
+            bar_number = req_data['bar_number']
+
+        #all fields required
+        if first_name and last_name and email and phone and office and law_practice and bar_number:
+            #valid email address
+            if is_email(email):
+                lawyer = Lawyer.check_email(email)
+                if not lawyer:
+                    lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,office=office,law_practice=law_practice,bar_number=bar_number,password='')
+                    if lawyer:
+                        return json_response({
+                            'code': 200,
+                            'message': 'Thank you for registering, We will contact you soon.'})
+                    else:
+                        return json_response({
+                            'code': 400,
+                            'message': 'Unable to process your request.'})
+                else:
+                    return json_response({
+                            'code': 400,
+                            'message': 'Email already taken, Please try again.'})
+            else:
+                return json_response({
+                        'code': 400,
+                        'message': 'You have entered an invalid email address, Please try again.'})
         else:
+
             return json_response({
-                'code': 400,
-                'message': 'Something went wrong, Please try again.'})
+                        'code': 400,
+                        'message': 'Please provide all the information below.'})
 
     return render_template('lawyer_registration.html',title='Lawyer Registration')
+
+@app.route('/mypage/myaccount')
+def myaccount():
+    return render_template('mypage/myaccount.html',title="My Account")
 
 #reset password for the first time
 @app.route('/password/reset',methods=['GET','POST'])

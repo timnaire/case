@@ -48,6 +48,17 @@ class Lawyer(ndb.Model):
             lawyer = None
 
         return lawyer
+    
+    @classmethod
+    def check_email(cls,email):
+        lawyer = None
+        if email:
+            lawyer = cls.query(cls.email == email).get()
+        
+        if not lawyer:
+            lawyer = None
+        
+        return lawyer
 
     @classmethod
     def f_reset_password(cls,email,password):
