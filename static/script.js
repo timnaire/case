@@ -23,6 +23,7 @@ $('#btnRegister').click(function(e) {
     var last_name = $('#last_name').val();
     var email = $('#email').val();
     var phone = $('#phone').val();
+    var city = $('#city').val();
     var office = $('#office').val();
     var law_practice = $('#law_practice').val();
     var bar_number = $('#bar_number').val();
@@ -32,6 +33,7 @@ $('#btnRegister').click(function(e) {
         last_name : last_name,
         email : email,
         phone : phone,
+        province : province,
         office : office,
         law_practice : law_practice,
         bar_number : bar_number

@@ -3,7 +3,7 @@ from flask import Flask, render_template, url_for, request, session, redirect
 from config import SECRET_KEY
 
 from models.lawyer import Lawyer
-from decorators import login_required
+from decorators import login_required_lawyer, login_required_client
 from functions import json_response, is_email
 
 app = Flask(__name__)
@@ -16,16 +16,26 @@ def home():
     if request.method == 'POST':
         main_category = request.form.get('main_category')
         location = request.form.get('location')
-    
+        
         return redirect(url_for('sub_category',main_category=main_category,location=location))
 
     return render_template('home.html',title='Home')
 
 #home page for lawyers
 @app.route('/mypage/dashboard')
-@login_required
+@login_required_lawyer
 def dashboard():
     return render_template('mypage/dashboard.html',title="Welcome to Dashboard",lawyer=session['lawyer'])
+
+#sign in for client
+@app.route('/signin/client',methods=['GET','POST'])
+def client_login():
+    return render_template('clientpages/client_login.html',title='Client Login')
+
+@app.route('/signup/client',methods=['GET','POST'])
+def client_registration():
+    return render_template('clientpages/client_registration.html',title='Client Login')
+
 
 #sign in route
 @app.route('/signin/lawyer',methods=['GET','POST'])
@@ -65,6 +75,8 @@ def lawyer_registration():
             email = req_data['email']
         if 'phone' in req_data:
             phone = req_data['phone']
+        if 'province' in req_data:
+            province = req_data['province']    
         if 'office' in req_data:
             office = req_data['office']
         if 'law_practice' in req_data:
@@ -78,7 +90,7 @@ def lawyer_registration():
             if is_email(email):
                 lawyer = Lawyer.check_email(email)
                 if not lawyer:
-                    lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,office=office,law_practice=law_practice,bar_number=bar_number,password='')
+                    lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,province=province,office=office,law_practice=law_practice,bar_number=bar_number,password='')
                     if lawyer:
                         return json_response({
                             'code': 200,

@@ -6,6 +6,7 @@ class Lawyer(ndb.Model):
     last_name = ndb.StringProperty()
     email = ndb.StringProperty()
     phone = ndb.StringProperty()    
+    city = ndb.StringProperty()
     office = ndb.StringProperty()
     law_practice = ndb.StringProperty()
     bar_number = ndb.StringProperty()
@@ -26,6 +27,8 @@ class Lawyer(ndb.Model):
             lawyer.email = kwargs.get('email')
         if kwargs.get('phone'):
             lawyer.phone = kwargs.get('phone')
+        if kwargs.get('province'):
+            lawyer.province = kwargs.get('province')
         if kwargs.get('office'):
             lawyer.office = kwargs.get('office')
         if kwargs.get('law_practice'):
