@@ -36,6 +36,60 @@ def client_login():
 def client_registration():
     return render_template('clientpages/client_registration.html',title='Client Login')
 
+#updating the lawyer
+@app.route('/update/lawyer',methods=['GET','POST'])
+def lawyer_update():
+    if request.method == 'POST':
+        req_data = request.get_json(force=True)
+
+        if session['lawyer']:
+
+            if 'first_name' in req_data:
+                first_name = req_data['first_name']
+            if 'last_name' in req_data:
+                last_name = req_data['last_name']
+            if 'email' in req_data:
+                email = req_data['email']
+            if 'phone' in req_data:
+                phone = req_data['phone']
+            if 'province' in req_data:
+                province = req_data['province']    
+            if 'office' in req_data:
+                office = req_data['office']
+            if 'law_practice' in req_data:
+                law_practice = req_data['law_practice']
+
+        #all fields required
+        if first_name and last_name and email and phone and office and law_practice:
+            #valid email address
+            if is_email(email):
+                lawyer = Lawyer.check_email(email)
+                if not lawyer:
+                    lawyer = Lawyer.update(first_name=first_name,last_name=last_name,email=email,phone=phone,province=province,office=office,law_practice=law_practice)
+                    if lawyer:
+                        return json_response({
+                            'code': 200,
+                            'message': 'Your account has been updated.'})
+                    else:
+                        return json_response({
+                            'code': 400,
+                            'message': 'Unable to process your request.'})
+                else:
+                    return json_response({
+                            'code': 400,
+                            'message': 'Email already taken, Please try again.'})
+            else:
+                return json_response({
+                        'code': 400,
+                        'message': 'You have entered an invalid email address, Please try again.'})
+        else:
+
+            return json_response({
+                        'code': 400,
+                        'message': 'Please provide all the information below.'})
+
+    return render_template('lawyer_update.html',title='Lawyer Profile')
+            
 
 #sign in route
 @app.route('/signin/lawyer',methods=['GET','POST'])
@@ -90,7 +144,7 @@ def lawyer_registration():
             if is_email(email):
                 lawyer = Lawyer.check_email(email)
                 if not lawyer:
-                    lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,province=province,office=office,law_practice=law_practice,bar_number=bar_number,password='')
+                    lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,province=province,office=office,law_practice=law_practice,bar_number=bar_number,password='admin')
                     if lawyer:
                         return json_response({
                             'code': 200,

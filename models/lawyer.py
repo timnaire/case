@@ -41,6 +41,33 @@ class Lawyer(ndb.Model):
         lawyer.put()
         return lawyer
     
+    # @classmethod
+    # def update(cls, *args, **kwargs):
+    #     uid = kwargs.get('id')
+    #     lawyer = cls.get_by_id(int(uid)) if uid else cls()
+        
+    #     if kwargs.get('first_name'):
+    #         lawyer.first_name = kwargs.get('first_name')
+    #     if kwargs.get('last_name'):
+    #         lawyer.last_name = kwargs.get('last_name')
+    #     if kwargs.get('email'):
+    #         lawyer.email = kwargs.get('email')
+    #     if kwargs.get('phone'):
+    #         lawyer.phone = kwargs.get('phone')
+    #     if kwargs.get('province'):
+    #         lawyer.province = kwargs.get('province')
+    #     if kwargs.get('office'):
+    #         lawyer.office = kwargs.get('office')
+    #     if kwargs.get('law_practice'):
+    #         lawyer.law_practice = kwargs.get('law_practice')
+    #     if kwargs.get('bar_number'):
+    #         lawyer.bar_number = kwargs.get('bar_number')
+    #     if kwargs.get('password'):
+    #         lawyer.password = pbkdf2_sha256.hash(kwargs.get('password'))
+
+    #     lawyer.put()
+    #     return lawyer
+    
     @classmethod
     def login(cls, email, password):
         lawyer = None
@@ -73,17 +100,17 @@ class Lawyer(ndb.Model):
         
         return lawyer
 
-    # def to_dict(self):
-    #     data = {}
+    def to_dict(self):
+        data = {}
 
-    #     data['first_name'] = self.first_name
-    #     data['last_name'] = self.last_name
-    #     data['email'] = self.email
-    #     data['phone'] = self.phone
-    #     data['office'] = self.office
-    #     data['law_practice'] = self.law_practice
-    #     data['bar_number'] = self.bar_number
-    #     data['created'] = self.created.isoformat() + 'Z'
-    #     data['updated'] = self.updated.isoformat() + 'Z'
+        data['first_name'] = self.first_name
+        data['last_name'] = self.last_name
+        data['email'] = self.email
+        data['phone'] = self.phone
+        data['office'] = self.office
+        data['law_practice'] = self.law_practice
+        data['bar_number'] = self.bar_number
+        data['created'] = self.created.isoformat() + 'Z'
+        data['updated'] = self.updated.isoformat() + 'Z'
 
-    #     return data
+        return data

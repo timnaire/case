@@ -10,23 +10,21 @@
                         <div class="alert alert-danger">
                             {{ request.args.get('m') }}
                         </div>
-                        {% elif request.args.get('succ') %}
-                        <div class="alert alert-success">
-                            {{ request.args.get('m') }}
-                        </div>
                         {% endif %}
 
                         <form method="POST">
-                            <h4>Client Registration?</h4>
-                            <p>Getting to know you.</p>
+                            <h4>Edit Profile</h4>
                             <div class="form-group">
                                 <input type="text" id='first_name' class="form-control" name="first_name" placeholder="First name" />
                                 <input type="text" id='last_name' class="form-control" name="last_name" placeholder="Last name" />
                                 <input type="text" id='email' class="form-control" name="email" placeholder="Email" />
                                 <input type="text" id='phone' class="form-control" name="phone" placeholder="Phone" />
                                 <input type="text" id='province' class="form-control" name="province" placeholder="Province" />
-                               
                                 <input type="text" id='office' class="form-control" name="office" placeholder="Office Address" />
+                                <br>
+                                <input type="text" id='password' class="form-control" name="pasword" placeholder="Enter Password">
+                            </div>
+                            <div class="form-group">
                                 <select name="law_practice" id='law_practice' class="form-control">
                                     <option selected value="">--Law Practice--</option>
                                     <option value="family">Family</option>
@@ -42,10 +40,7 @@
                                     <option value="others">Others</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <input type="text" id='bar_number' class="form-control" name="bar_number" placeholder="Bar Number" />
-                            </div>
-                            <button type="submit" id='btnRegister' class="btn btn-primary btn-block">Register</button>
+                            <button type="submit" id='btnLawyerUpdate' class="btn btn-primary btn-block">Update</button>
                         </form>
                     </div>
                 </div>
