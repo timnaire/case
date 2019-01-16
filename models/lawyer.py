@@ -49,7 +49,7 @@ class Lawyer(ndb.Model):
     def login(cls, email, password):
         lawyer = None
         if email and password:
-            lawyer = cls.query(cls.email == email).get()
+            lawyer = cls.query(cls.email == email, cls.password != None).get()
 
         if lawyer and not pbkdf2_sha256.verify(password, lawyer.password):
             lawyer = None
@@ -60,7 +60,7 @@ class Lawyer(ndb.Model):
     def check_email(cls,email):
         lawyer = None
         if email:
-            lawyer = cls.query(cls.email == email).get()
+            lawyer = cls.query(cls.email == email, cls.password==None).get()
         
         if not lawyer:
             lawyer = None

@@ -1,5 +1,6 @@
 import logging
-from flask import Flask, render_template, url_for, request, session, redirect, abort
+import base64
+from flask import Flask, render_template, url_for, request, session, redirect, abort, json
 from config import SECRET_KEY
 
 from models.lawyer import Lawyer
@@ -13,11 +14,6 @@ app.secret_key = SECRET_KEY
 @app.route('/', methods=['GET','POST'])
 @app.route('/home', methods=['GET','POST'])
 def home():
-    if request.method == 'POST':
-        main_category = request.form.get('main_category')
-        location = request.form.get('location')
-        
-        return redirect(url_for('sub_category',main_category=main_category,location=location))
 
     return render_template('home.html',title='Home')
 
@@ -28,21 +24,23 @@ def dashboard():
     return render_template('mypage/dashboard.html',title="Welcome to Dashboard",lawyer=session['lawyer'])
 
 #myaccount for lawyers / editing profile
-# @app.route('/mypage/myaccount/')
-@app.route('/mypage/myaccount/<int:lawyer_id>')
+@app.route('/mypage/myaccount/<int:lawyer_id>',methods=['GET','POST'])
 @login_required_lawyer
 def myaccount(lawyer_id=None):
     response = {}
+    if request.method == "POST":
+        # req_data = request.get_json(force=True)
+        # if 'profile_pic' in req_data:
+        #     profile_pic = req_data['profile_pic']
+        f = request.files.get('image')
+        if f and f.filename != '':
+            response["serving_url"] = save_to_gcs(f).get("serving_url")
+        return json_response(response)
+
     law_practice = {'family':"Family", 'employment': 'Employment', 'criminal_defense': 'Criminal Defense',
         'real_estate': 'Real Estate', 'business' : 'Business', 'personal_injury': 'Personal Injury',
         'wills_trusts_estates':'Wills & Estates', 'bankruptcy_finance':'Bankruptcy','intellectual_property':'Intellectual Property',
         'others':'Others'}
-    if request.method == "POST":
-        f = request.files.get("file")
-        if f and f.filename != '':
-            response["serving_url"] = save_to_gcs(f).get("serving_url")
-
-        return json_response(response)
     if lawyer_id:
         lawyer_dict = Lawyer.get_by_id(int(lawyer_id))
         if lawyer_dict:
@@ -52,45 +50,45 @@ def myaccount(lawyer_id=None):
 
     return render_template("mypage/myaccount.html",title="My Profile",lawyer=session.get('lawyer'),lawyer_dict=lawyer_dict,law_practice=law_practice)
 
-#sign in for client
-@app.route('/signin/client',methods=['GET','POST'])
-def client_login():
-    return render_template('clientpages/client_login.html',title='Client Login')
-
-@app.route('/signup/client',methods=['GET','POST'])
-def client_registration():
-    return render_template('clientpages/client_registration.html',title='Client Login')
-
-
 #sign in route
 @app.route('/signin/lawyer',methods=['GET','POST'])
 def lawyer_login():
     if request.method == 'POST':
         req_data = request.get_json(force=True)
-
+        
         if 'email' in req_data:
             email = req_data['email']
         if 'password' in req_data:
             password = req_data['password']
 
-        lawyer = Lawyer.login(email=email,password=password)
-        if lawyer:
-            session['lawyer'] = lawyer.key.id()
-            return json_response({
-                'code': 200,
-                'message': 'Successfully Logged in.',
-                'first_name':lawyer.first_name,
-                'last_name':lawyer.last_name,
-                'email':lawyer.email,
-                'phone':lawyer.phone,
-                'city':lawyer.city,
-                'office':lawyer.office,
-                'law_practice':lawyer.law_practice
-                })
+        if is_email(email):
+            lawyer = Lawyer.login(email=email,password=password)
+            if lawyer:
+                session['lawyer'] = lawyer.key.id()
+                return json_response({
+                    'code' : 200,
+                    'message' : 'Successfully Logged in.',
+                    'first_name' : lawyer.first_name,
+                    'last_name': lawyer.last_name,
+                    'email': lawyer.email,
+                    'phone': lawyer.phone,
+                    'city': lawyer.city,
+                    'office': lawyer.office,
+                    'law_practice': lawyer.law_practice,
+                    'profile_pic': lawyer.profile_pic
+                    })
+            else:
+                return json_response({
+                    'code': 401,
+                    'message': 'Credintials do not much, Please try again.',
+                    'email' : email
+                    })
         else:
             return json_response({
-                'code': 400,
-                'message': 'Credintials do not much, Please try again.'})
+                    'code': 406,
+                    'message': 'Please check your email and password to login.',
+                    'email' : email
+                    })
 
     return render_template('lawyer_login.html',title='Lawyer Login')
 
@@ -148,7 +146,6 @@ def lawyer_registration():
 
 #reset password for the first time
 @app.route('/password/reset',methods=['GET','POST'])
-@app.route('/password/reset/<int:lawyer_id>',methods=['GET','POST'])
 def reset_password():
     if request.method == "POST":
         email = request.form.get('email')
@@ -173,15 +170,15 @@ def logout():
     del session['lawyer']
     return redirect(url_for('lawyer_login'))
 
-@app.errorhandler(500)
-def error_500(e):
-    logging.exception(e)
-    return 'Something went wrong'
+# @app.errorhandler(500)
+# def error_500(e):
+#     logging.exception(e)
+#     return 'Something went wrong'
 
-@app.errorhandler(404)
-def error_404(e):
-    logging.exception(e)
-    return 'Page not found'
+# @app.errorhandler(404)
+# def error_404(e):
+#     logging.exception(e)
+#     return 'Page not found'
 
 if __name__ == '__main__':
     app.run(debug=True)

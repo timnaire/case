@@ -16,10 +16,14 @@
                             <h4>Login</h4>
                             <p>Login with your account to use the system.</p>
                             <div class="form-group">
-                                <input type="text" id="login_email" class="form-control" name="email" placeholder="Email" />
-                            </div>
+                                {% if request.args.get('email') %}
+                                <input type="text" id="lawyer_email" value="{{ request.args.get('email') }}"  class="form-control" name="email" placeholder="Email" />
+                                {% else %}
+                                <input type="text" id="lawyer_email" class="form-control" name="email" placeholder="Email" />
+                                {% endif %}
+                            </div>  
                             <div class="form-group">
-                                <input type="password" id="login_password" class="form-control" name="password" placeholder="Password" />
+                                <input type="password" id="lawyer_password" class="form-control" name="password" placeholder="Password" />
                             </div>
                             <button type="submit" id="btnLoginLawyer" class="btn btn-primary btn-block">Login</button>
                         </form>
