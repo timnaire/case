@@ -52,15 +52,31 @@ $(document).ready(function(){
     $('#btnLawyerSaveEmail').click(function(e){
         e.preventDefault();
         var id = $(".lawyer_id").val();
-        var current = $('current-email');
-        var new_email = $('new-email');
-        var password = $('e-current-password');
+        var current = $('#current_email').val();
+        var new_email = $('#new_email').val();
+        var password = $('#e_current_password').val();
         sendInfo = {
             current : current,
             new_email : new_email,
             password : password
         }
         $.post("/lawyer/account-setting/"+id+"/change-email", JSON.stringify(sendInfo) ,function(response){
+            console.log(response)
+        })
+    });
+
+    $('#btnLawyerSavePassword').click(function(e){
+        e.preventDefault();
+        var id = $(".lawyer_id").val();
+        var current_pass = $('#current_password').val();
+        var new_pass = $('#new_password').val();
+        var confirm_pass = $('#confirm_password').val();
+        sendInfo = {
+            current : current_pass,
+            newpass : new_pass,
+            confirm : confirm_pass
+        }
+        $.post("/lawyer/account-setting/"+id+"/change-password", JSON.stringify(sendInfo) ,function(response){
             console.log(response)
         })
     });

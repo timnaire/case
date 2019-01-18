@@ -18,7 +18,7 @@
     {% if lawyer %}
     <a href="{{ url_for('dashboard') }}" class='btn btn-primary'>Dashboard</a>
     <a href="{{ url_for('lawyer_account_setting',lawyer_id=lawyer) }}" class='btn btn-primary'>Account Setting</a>
-    <a href="{{ url_for('signout') }}" class='btn btn-primary'>logout</a>
+    <a href="{{ url_for('signout') }}" class='btn btn-primary'>Sign Out</a>
     {% endif %}
     
     {% block content %} {% endblock %}

@@ -73,24 +73,51 @@ class Lawyer(ndb.Model):
 
         if lawyer_id and lawyer_id.isdigit():
             lawyer = cls.get_by_id(int(lawyer_id))
+            if lawyer and pbkdf2_sha256.verify(kwargs.get('password'), lawyer.password):
+                lawyer.email = kwargs.get('newemail')
+                lawyer.put()
         else:
-            lawyer = cls()
+            lawyer = None
+            
+        return lawyer
 
-        if kwargs.get('current'):
-            current = kwargs.get('current')
-        if kwargs.get('newemail'):
-            newemail = kwargs.get('newemail')
-        if kwargs.get('password'):
-            passowrd = kwargs.get('password')
+    @classmethod
+    def email_exist(cls,newemail):
+        lawyer = None
+        if newemail:
+            lawyer = cls.query(cls.email == newemail).get()
+        
+        if not lawyer:
+            lawyer = None
+
+        return lawyer
+    
+    @classmethod
+    def change_pass(cls, *args, **kwargs):
+        lawyer_id = str(kwargs.get('id'))
+
+        if lawyer_id and lawyer_id.isdigit():
+            lawyer = cls.get_by_id(int(lawyer_id))
+            if lawyer and pbkdf2_sha256.verify(kwargs.get('password'), lawyer.password):
+                lawyer.password = pbkdf2_sha256.hash(kwargs.get('newpass'))
+                lawyer.put()
+                return lawyer
+            else:
+                return None
 
         return lawyer
 
     @classmethod
-    def email_exist(cls,email):
-        lawyer = None
-        if email:
-            lawyer = cls.query(cls.email == email).get()
-        
+    def check_pass(cls, *args, **kwargs):
+        lawyer_id = str(kwargs.get('id'))
+
+        if lawyer_id and lawyer_id.isdigit():
+            lawyer = cls.get_by_id(int(lawyer_id))
+            if lawyer and pbkdf2_sha256.verify(kwargs.get('password'), lawyer.password):
+                return lawyer
+            else:
+                return None
+
         return lawyer
 
     @classmethod

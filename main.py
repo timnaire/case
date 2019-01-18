@@ -34,13 +34,11 @@ def lawyer_update_picture(lawyer_id=None):
             if lawyer:
                 return json_response({
                     'error' : False,
-                    'message' : "Profile picture has been saved!"
-                })
+                    'message' : "Profile picture has been saved!"})
             else:
                 return json_response({
                     'error' : True,
-                    'message' : "Profile picture was not saved!"
-                })
+                    'message' : "Profile picture was not saved!"})
 
 # profile information route
 @app.route('/lawyer/account-setting/<int:lawyer_id>/profile-information',methods=['POST'])
@@ -61,18 +59,22 @@ def lawyer_update_information(lawyer_id=None):
         if 'law_practice' in req_data:
             law_practice = req_data['law_practice']
 
-        lawyer = Lawyer.save(id=lawyer_id,first_name=first_name,last_name=last_name,phone=phone,province=province,office=office,law_practice=law_practice)
-        if lawyer:
-            return json_response({
-                'error' : False,
-                'message' : "Profile information has been saved!"
-            })
+        if first_name and last_name and phone and province and office and law_practice:
+            lawyer = Lawyer.save(id=lawyer_id,first_name=first_name,last_name=last_name,phone=phone,province=province,office=office,law_practice=law_practice)
+            if lawyer:
+                return json_response({
+                    'error' : False,
+                    'message' : "Profile information has been saved!"})
+            else:
+                return json_response({
+                    'error' : True,
+                    'message' : "Profile information was not saved!"})
         else:
             return json_response({
                 'error' : True,
-                'message' : "Profile information was not saved!"
-            })
+                'message' : "Please dont leave the fields empty."})
 
+# changing email
 @app.route('/lawyer/account-setting/<int:lawyer_id>/change-email',methods=['POST'])
 @login_required_lawyer
 def lawyer_update_email(lawyer_id=None):
@@ -83,18 +85,85 @@ def lawyer_update_email(lawyer_id=None):
         if 'new_email' in req_data:
             newemail = req_data['new_email'] 
         if 'password' in req_data:
-            password = req_data['password'] 
-        # lawyer = Lawyer.change_email(id=lawyer_id,current=current,newemail=newemail,password=password)  
-        # if lawyer:
-        #     return json_response({
-        #         'error' : False,
-        #         'message' : "Email has been changed!"
-        #     })
-        # else:
-        #     return json_response({
-        #         'error' : True,
-        #         'message' : "Email was not changed!"
-        #     })
+            password = req_data['password']
+        
+        if current and newemail and password:
+            # check if the current email is email
+            if is_email(current):
+                # check if the new email is email
+                if is_email(newemail):
+                    # check if the new email already exist or not
+                    lawyer = Lawyer.email_exist(newemail=newemail)
+                    if not lawyer:
+                        # check if the password is correct
+                        lawyer = Lawyer.check_pass(id=lawyer_id,password=password)
+                        if lawyer:
+                            # changing email
+                            lawyer = Lawyer.change_email(id=lawyer_id,current=current,newemail=newemail,password=password)
+                            if lawyer:
+                                return json_response({"error" : False,
+                                "message" : "Email has been changed!"})
+                            else:
+                                return json_response({"error" : True,
+                                "message" : "Email was not changed, please try again."})
+                        else:
+                            return json_response({"error" : True,
+                            "message" : "Incorrect password, please try again."})
+                    else:
+                        return json_response({"error" : True,
+                        "message" : "Email already taken, please another email"})
+                else:
+                    return json_response({
+                        "error" : True,
+                        "message" : "Please enter a valid new email."})
+            else:
+                return json_response({
+                    "error" : True,
+                    "message" : "Please enter your correct email"}) 
+        else:
+            return json_response({
+                "error" : True,
+                "message" : "Please dont leave the fileds empty."})
+
+# change password
+@app.route('/lawyer/account-setting/<int:lawyer_id>/change-password',methods=['POST'])
+@login_required_lawyer
+def lawyer_update_password(lawyer_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'current' in req_data:
+            password = req_data['current']
+        if 'newpass' in req_data:
+            newpass = req_data['newpass']
+        if 'confirm' in req_data:
+            confirm = req_data['confirm']
+        
+        if password and newpass and confirm:
+            lawyer = Lawyer.check_pass(id=lawyer_id, password=password)
+            if lawyer:
+                if newpass == confirm:
+                    if newpass != password:
+                        lawyer = Lawyer.change_pass(id=lawyer_id, password=password,newpass=newpass)
+                        if lawyer:
+                            return json_response({"error" : False,
+                            "message" : "Password has been changed!"})
+                        else:
+                            return json_response({"error" : True,
+                            "message" : "Password was not changed, please try again."})
+                    else:
+                        return json_response({'error' : True,
+                        "message" : "New password must not be the same to your current password."})
+                else:
+                    return json_response({"error" : True,
+                    "message" : "Confirm password does not match, please try again. "})
+            else:
+                return json_response({
+                    "error" : True,
+                    "message" : "Please enter your current password."})
+        else:
+            return json_response({
+                "error" : True,
+                "message" : "Please dont leave the fields empty"})
 
 #main render template for account setting for lawyers / editing profile
 @app.route('/lawyer/account-setting/<int:lawyer_id>',methods=['GET','POST'])
@@ -105,6 +174,7 @@ def lawyer_account_setting(lawyer_id=None):
         'Wills & Estates':'Wills & Estates', 'Bankruptcy':'Bankruptcy','Intellectual Property':'Intellectual Property',
         'Others':'Others'}
 
+    # get the lawyer details in a dictionary format 
     if lawyer_id:
         lawyer_dict = Lawyer.get_by_id(int(lawyer_id))
         if lawyer_dict:
@@ -139,20 +209,17 @@ def lawyer_signin():
                     'province': lawyer.province,
                     'office': lawyer.office,
                     'law_practice': lawyer.law_practice,
-                    'profile_pic': lawyer.profile_pic
-                    })
+                    'profile_pic': lawyer.profile_pic})
             else:
                 return json_response({
                     'error': True,
                     'message': 'Credintials do not much, Please try again.',
-                    'email' : email
-                    })
+                    'email' : email})
         else:
             return json_response({
                     'error': True,
                     'message': 'Please check your email and password to login.',
-                    'email' : email
-                    })
+                    'email' : email})
 
     return render_template('lawyer/lawyer-signin.html',title='Sign In Lawyer')
 
@@ -181,7 +248,7 @@ def lawyer_signup():
         if first_name and last_name and email and phone and province and office and law_practice:
             #valid email address
             if is_email(email):
-                lawyer = Lawyer.check_email(email)
+                lawyer = Lawyer.check_email(email=email)
                 if not lawyer:
                     lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,province=province,office=office,law_practice=law_practice,password='')
                     if lawyer:
@@ -195,7 +262,7 @@ def lawyer_signup():
                 else:
                     return json_response({
                             'error': True,
-                            'message': 'Email already taken, Please try again.'})
+                            'message': 'Email already taken, please try another email.'})
             else:
                 return json_response({
                         'error': True,
@@ -225,7 +292,7 @@ def lawyer_reset_pass():
         else:
             return redirect(
                 url_for('lawyer_reset_pass',
-                    err=1, m="Confirm password does not match.",email=email))
+                    err=1, m="Confirm password does not match, please try again.",email=email))
     return render_template('lawyer/lawyer-reset-pass.html',title='Reset Password')
 
 #######################################################
