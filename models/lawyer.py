@@ -6,7 +6,7 @@ class Lawyer(ndb.Model):
     last_name = ndb.StringProperty()
     email = ndb.StringProperty()
     phone = ndb.StringProperty()    
-    city = ndb.StringProperty()
+    province = ndb.StringProperty()
     office = ndb.StringProperty()
     law_practice = ndb.StringProperty()
     profile_pic = ndb.StringProperty()
@@ -31,8 +31,8 @@ class Lawyer(ndb.Model):
             lawyer.email = kwargs.get('email')
         if kwargs.get('phone'):
             lawyer.phone = kwargs.get('phone')
-        if kwargs.get('city'):
-            lawyer.city = kwargs.get('city')
+        if kwargs.get('province'):
+            lawyer.province = kwargs.get('province')
         if kwargs.get('office'):
             lawyer.office = kwargs.get('office')
         if kwargs.get('law_practice'):
@@ -66,6 +66,32 @@ class Lawyer(ndb.Model):
             lawyer = None
         
         return lawyer
+    
+    @classmethod
+    def change_email(cls, *args, **kwargs):
+        lawyer_id = str(kwargs.get('id'))
+
+        if lawyer_id and lawyer_id.isdigit():
+            lawyer = cls.get_by_id(int(lawyer_id))
+        else:
+            lawyer = cls()
+
+        if kwargs.get('current'):
+            current = kwargs.get('current')
+        if kwargs.get('newemail'):
+            newemail = kwargs.get('newemail')
+        if kwargs.get('password'):
+            passowrd = kwargs.get('password')
+
+        return lawyer
+
+    @classmethod
+    def email_exist(cls,email):
+        lawyer = None
+        if email:
+            lawyer = cls.query(cls.email == email).get()
+        
+        return lawyer
 
     @classmethod
     def f_reset_password(cls,email,password):
@@ -84,7 +110,7 @@ class Lawyer(ndb.Model):
         data['last_name'] = self.last_name
         data['email'] = self.email
         data['phone'] = self.phone
-        data['city'] = self.city
+        data['province'] = self.province
         data['office'] = self.office
         data['law_practice'] = self.law_practice
         data['profile_pic'] = self.profile_pic

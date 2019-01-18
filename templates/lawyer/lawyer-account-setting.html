@@ -1,0 +1,142 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<br />
+
+<!-- u in every id stands for Update -->
+<!-- hidden input value lawyer which is id for route purpose  -->
+
+<!-- Update Profile Picture -->
+<div>
+    <h3>Profile Picture</h3>
+    <form method="post">
+         <input type="hidden" class='lawyer_id' value='{{ lawyer }}'>
+        {% if lawyer_dict.profile_pic %}
+        <img src="{{ lawyer_dict.profile_pic }}" width='100px' height='100px' class="img-thumbnail" id='lawyerpic' />
+        {% else %}
+        <img src="/static/images/default_lawyer_pic.png" width='100px' height='100px' class="img-thumbnail" id='lawyerpic' />
+        {% endif %}
+        <div class="form-group">
+            <label for="profilepic">Profile Picture</label>
+            <input type="file" class="form-control-file" id="image" name="image" accept=".jpg, .jpeg, .png" multiple>
+        </div>
+        <button id='btnLawyerSavePicture' class="btn btn-primary">Save</button>
+    </form>
+</div>
+
+<!-- Update Personal -->
+<div>
+    <h3>Profile Information</h3>
+    <form method="post">
+        <input type="hidden" class='lawyer_id' value='{{ lawyer }}'>
+        <div class="form-group">
+            <input type="text" id="ufirst_name" value="{{ lawyer_dict.first_name }}" class="form-control" placeholder="First name">
+        </div>
+        <div class="form-group">
+            <input type="text" id="ulast_name" value="{{ lawyer_dict.last_name }}" class="form-control" placeholder="Last name">
+        </div>
+        <div class="form-group">
+            <input type="text" id="uphone" value="{{ lawyer_dict.phone }}" class="form-control" placeholder="Phone">
+        </div>
+        <div class="form-group">
+            <input type="text" id="uprovince" value="{{ lawyer_dict.province }}" class="form-control" placeholder="Province">
+        </div>
+        <div class="form-group">
+            <input type="text" id="uoffice" value="{{ lawyer_dict.office }}" class="form-control" placeholder="Office address">
+        </div>
+        <div class="form-group">
+            <select id="ulaw_practice" class="form-control">
+                {% for key, value in law_practice.items() %}
+                    <option value="{{key}}" 
+                    {% if key in lawyer_dict.law_practice %} selected {% endif %}
+                    >
+                    {{value}}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <button id='btnLawyerSaveInfo' class="btn btn-primary">Save</button>
+    </form>
+</div>
+
+<!-- Update Email -->
+<div>
+    <h3>Change Email</h3>
+    <form method="post">
+        <input type="hidden" class='lawyer_id' value='{{ lawyer }}'>
+        <div class="form-group">
+            <input type="text" id='current-email' value="{{ lawyer_dict.email }}" class="form-control" placeholder="Email">
+        </div>
+        <div class="form-group">
+            <input type="text" id='new-email' class="form-control" placeholder="New email">
+        </div>
+        <div class="form-group">
+            <!-- e id is for email -->
+            <input type="password" id='e-current-password' class="form-control" placeholder="Current password">
+        </div>
+        <button id="btnLawyerSaveEmail" class="btn btn-primary" >Save</button>
+    </form>
+</div>
+
+<!-- Update Password -->
+<div>
+    <h3>Change Password</h3>
+    <form method="post">
+        <input type="hidden" class='lawyer_id' value='{{ lawyer }}'>
+        <div class="form-group">
+            <input type="password" id='current-password' class="form-control" placeholder="Current password">
+        </div>
+        <div class="form-group">
+            <input type="password" id='new-password' class="form-control" placeholder="New password">
+        </div>
+        <div class="form-group">
+            <input type="password" id='confirm-password' class="form-control" placeholder="Confirm password">
+        </div>
+        <button id='btnLawyerSavePassword' class='btn btn-primary'>Save</button>
+    </form>
+</div>
+
+<!-- <form id="update" method="POST" enctype="multipart/form-data">
+    <h4>Profile Settings</h4>
+    <input type="hidden" id='lawyer_id' value='{{ lawyer }}'>
+    {% if lawyer_dict.profile_pic %}
+    <img src="{{ lawyer_dict.profile_pic }}" width='100px' height='100px' class="img-thumbnail" id='lawyerpic' />
+    {% else %}
+    <img src="/static/images/default_lawyer_pic.png" width='100px' height='100px' class="img-thumbnail" id='lawyerpic' />
+    {% endif %}
+    <div class="form-group">
+        <label for="profilepic">Profile Picture</label>
+        <input type="file" class="form-control-file" id="image" name="image" accept=".jpg, .jpeg, .png" multiple>
+    </div>
+    <div class="form-group">
+        <input type="text" id='ufirst_name' class="form-control" value="{{ lawyer_dict.first_name }}" name="first_name" placeholder="First name" />
+    </div>
+    <div class="form-group">
+        <input type="text" id='ulast_name' class="form-control" value="{{ lawyer_dict.last_name }}" name="last_name" placeholder="Last name" />
+    </div>
+    <div class="form-group">
+        <input type="text" id='uemail' class="form-control" value="{{ lawyer_dict.email }}" name="email" placeholder="Email" />
+    </div>
+    <div class="form-group">
+        <input type="text" id='uphone' class="form-control" value="{{ lawyer_dict.phone }}" name="phone" placeholder="Phone" />
+    </div>
+    <div class="form-group">
+        <input type="text" id="uprovince" class="form-control" value="{{ lawyer_dict.province }}" name="province" placeholder="Province">
+    </div>
+    <div class="form-group">
+        <input type="text" id='uoffice' value="{{ lawyer_dict.office }}" class="form-control" name="office" placeholder="Office Address" />
+    </div>
+    <div class="form-group">
+        <select name="law_practice" id='ulaw_practice' class="form-control">
+            {% for key, value in law_practice.items() %}
+                <option value="{{key}}" 
+                {% if key in lawyer_dict.law_practice %} selected {% endif %}
+                >
+                {{value}}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" id="btnUpdateLawyer" class="btn btn-primary btn-block">Save</button>
+</form> -->
+{% endblock %}

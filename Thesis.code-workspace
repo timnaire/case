@@ -5,6 +5,7 @@
 		}
 	],
 	"settings": {
-		"python.pythonPath": "case_env\\Scripts\\python.exe"
+		"python.pythonPath": "case_env\\Scripts\\python.exe",
+		"editor.fontSize": 12
 	}
 }
