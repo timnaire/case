@@ -9,7 +9,7 @@ $(document).ready(function(){
         var form_data = new FormData();
         form_data.append('image', file_data);
         $.ajax({
-            url: "/lawyer/account-setting/"+id+"/profile-picture/", // point to server-side controller method
+            url: "/lawyer/"+id+"/account-setting/profile-picture", // point to server-side controller method
             dataType: 'json', // what to expect back from the server
             cache: false,
             contentType: false,
@@ -44,7 +44,7 @@ $(document).ready(function(){
             office : office,
             law_practice : law_practice
         }
-        $.post("/lawyer/account-setting"+id+"/profile-information/", JSON.stringify(sendInfo), function(response){
+        $.post("/lawyer/"+id+"/account-setting/profile-information", JSON.stringify(sendInfo), function(response){
             console.log(response)
         } ,"json" );
     });
@@ -60,7 +60,7 @@ $(document).ready(function(){
             new_email : new_email,
             password : password
         }
-        $.post("/lawyer/account-setting/"+id+"/change-email", JSON.stringify(sendInfo) ,function(response){
+        $.post("/lawyer/"+id+"/account-setting/change-email", JSON.stringify(sendInfo) ,function(response){
             console.log(response)
         })
     });
@@ -76,7 +76,7 @@ $(document).ready(function(){
             newpass : new_pass,
             confirm : confirm_pass
         }
-        $.post("/lawyer/account-setting/"+id+"/change-password", JSON.stringify(sendInfo) ,function(response){
+        $.post("/lawyer/"+id+"/account-setting/change-password", JSON.stringify(sendInfo) ,function(response){
             console.log(response)
         })
     });
@@ -108,14 +108,19 @@ $(document).ready(function(){
 
     // lawyer sign up
     $('#btnLawyerSignup').click(function(e) {
+        e.preventDefault();
         var first_name = $('#first_name').val();
         var last_name = $('#last_name').val();
         var email = $('#email').val();
         var phone = $('#phone').val();
         var province = $('#province').val();
         var office = $('#office').val();
-        var law_practice = $('#law_practice').val();
-
+        // var law_practice = $('#law_practice').val();
+        var practice = [];
+        $.each($("input[class='practice']:checked"), function(){            
+            practice.push($(this).val());
+        });
+        
         sendInfo = {
             first_name : first_name,
             last_name : last_name,
@@ -123,10 +128,11 @@ $(document).ready(function(){
             phone : phone,
             province : province,
             office : office,
-            law_practice : law_practice
+            law_practice : practice
         }
 
         $.post("/lawyer/signup",JSON.stringify(sendInfo),function(result){
+            console.log(result)
             var succ = 1;
             var err = 1;
             var m = result['message']

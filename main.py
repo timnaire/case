@@ -4,6 +4,7 @@ from flask import Flask, render_template, url_for, request, session, redirect, a
 from config import SECRET_KEY
 
 from models.lawyer import Lawyer
+from models.practice import Practice
 from decorators import login_required_lawyer, login_required_client
 from functions import json_response, is_email, save_to_gcs
 
@@ -23,7 +24,7 @@ def dashboard():
     return render_template('lawyer/lawyer-dashboard.html',title="Welcome to Dashboard",lawyer=session['lawyer'])
 
 # profile picture route
-@app.route('/lawyer/account-setting/<int:lawyer_id>/profile-picture', methods=['POST'])
+@app.route('/lawyer/<int:lawyer_id>/account-setting/profile-picture', methods=['POST'])
 @login_required_lawyer
 def lawyer_update_picture(lawyer_id=None):
     if request.method == "POST":
@@ -41,7 +42,7 @@ def lawyer_update_picture(lawyer_id=None):
                     'message' : "Profile picture was not saved!"})
 
 # profile information route
-@app.route('/lawyer/account-setting/<int:lawyer_id>/profile-information',methods=['POST'])
+@app.route('/lawyer/<int:lawyer_id>/account-setting/profile-information',methods=['POST'])
 @login_required_lawyer
 def lawyer_update_information(lawyer_id=None):
     if request.method == "POST":
@@ -59,6 +60,7 @@ def lawyer_update_information(lawyer_id=None):
         if 'law_practice' in req_data:
             law_practice = req_data['law_practice']
 
+
         if first_name and last_name and phone and province and office and law_practice:
             lawyer = Lawyer.save(id=lawyer_id,first_name=first_name,last_name=last_name,phone=phone,province=province,office=office,law_practice=law_practice)
             if lawyer:
@@ -75,7 +77,7 @@ def lawyer_update_information(lawyer_id=None):
                 'message' : "Please dont leave the fields empty."})
 
 # changing email
-@app.route('/lawyer/account-setting/<int:lawyer_id>/change-email',methods=['POST'])
+@app.route('/lawyer/<int:lawyer_id>/account-setting/change-email',methods=['POST'])
 @login_required_lawyer
 def lawyer_update_email(lawyer_id=None):
     if request.method == "POST":
@@ -126,7 +128,7 @@ def lawyer_update_email(lawyer_id=None):
                 "message" : "Please dont leave the fileds empty."})
 
 # change password
-@app.route('/lawyer/account-setting/<int:lawyer_id>/change-password',methods=['POST'])
+@app.route('/lawyer/<int:lawyer_id>/account-setting/change-password',methods=['POST'])
 @login_required_lawyer
 def lawyer_update_password(lawyer_id=None):
     if request.method == "POST":
@@ -169,10 +171,8 @@ def lawyer_update_password(lawyer_id=None):
 @app.route('/lawyer/account-setting/<int:lawyer_id>',methods=['GET','POST'])
 @login_required_lawyer
 def lawyer_account_setting(lawyer_id=None):
-    law_practice = {'Family':"Family", 'Employment': 'Employment', 'Criminal Defense': 'Criminal Defense',
-        'Real Estate': 'Real Estate', 'Business' : 'Business', 'Immigration': 'Immigration' , 'Personal Injury': 'Personal Injury',
-        'Wills & Estates':'Wills & Estates', 'Bankruptcy':'Bankruptcy','Intellectual Property':'Intellectual Property',
-        'Others':'Others'}
+    law_practice = {'Constitutional Law':"Constitutional Law", 'Criminal Law': 'Criminal Law', 'Business Law': 'Business Law',
+        'Labor Law': 'Labor Law', 'Civil Law' : 'Civil Law', 'Tax Law': 'Tax Law' , 'Family Law': 'Family Law','Others':'Others'}
 
     # get the lawyer details in a dictionary format 
     if lawyer_id:
@@ -221,6 +221,9 @@ def lawyer_signin():
                     'message': 'Please check your email and password to login.',
                     'email' : email})
 
+    if session.get('lawyer') is not None:
+        return redirect(url_for('dashboard'))
+
     return render_template('lawyer/lawyer-signin.html',title='Sign In Lawyer')
 
 #sign up attorney route
@@ -250,8 +253,12 @@ def lawyer_signup():
             if is_email(email):
                 lawyer = Lawyer.check_email(email=email)
                 if not lawyer:
-                    lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,province=province,office=office,law_practice=law_practice,password='')
+                    lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,province=province,office=office,password='')
                     if lawyer:
+                        # pract as in practice
+                        for pract in law_practice:
+                            Practice.save(lawyer=lawyer.key.id(),pract=pract)
+
                         return json_response({
                             'error': False,
                             'message': 'Thank you for registering, We will contact you soon.'})
@@ -271,6 +278,9 @@ def lawyer_signup():
             return json_response({
                         'error': True,
                         'message': 'Please provide all the information below.'})
+
+    if session.get('lawyer') is not None:
+        return redirect(url_for('dashboard'))
 
     return render_template('lawyer/lawyer-signup.html',title='Try it for Free')
 
