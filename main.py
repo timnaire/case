@@ -11,11 +11,18 @@ from functions import json_response, is_email, save_to_gcs
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
 
+law_practice = {'Family':"Family", 'Employment': 'Employment', 'Criminal Defense': 'Criminal Defense',
+        'Business': 'Business', 'Personal Injury' : 'Personal Injury', 'Immigration': 'Immigration' ,
+         'Bankruptcy': 'Bankruptcy','Wills, Trust, and Estates':'Wills, Trust, and Estates', 'Real Estate':'Real Estate',
+         'Commercial Law':'Commercial Law' }
+
 #home page for client
 @app.route('/', methods=['GET','POST'])
 @app.route('/home', methods=['GET','POST'])
 def home():
-    return render_template('home.html',title='Home')
+    global law_practice
+
+    return render_template('home.html',title='Home',law_practice=law_practice)
 
 #dashboard for lawyers
 @app.route('/lawyer/dashboard')
@@ -35,7 +42,8 @@ def lawyer_update_picture(lawyer_id=None):
             if lawyer:
                 return json_response({
                     'error' : False,
-                    'message' : "Profile picture has been saved!"})
+                    'message' : "Profile picture has been saved!",
+                    'profile_pic' : save_to_gcs(f).get("serving_url")})
             else:
                 return json_response({
                     'error' : True,
@@ -53,17 +61,23 @@ def lawyer_update_information(lawyer_id=None):
             last_name = req_data['last_name']
         if 'phone' in req_data:
             phone = req_data['phone']
-        if 'province' in req_data:
-            province = req_data['province']
+        if 'cityOrMunicipality' in req_data:
+            cityOrMunicipality = req_data['cityOrMunicipality']
         if 'office' in req_data:
             office = req_data['office']
         if 'law_practice' in req_data:
             law_practice = req_data['law_practice']
 
-
-        if first_name and last_name and phone and province and office and law_practice:
-            lawyer = Lawyer.save(id=lawyer_id,first_name=first_name,last_name=last_name,phone=phone,province=province,office=office,law_practice=law_practice)
+        if first_name and last_name and phone and cityOrMunicipality and office and law_practice:
+            lawyer = Lawyer.save(id=lawyer_id,first_name=first_name,last_name=last_name,phone=phone,cityOrMunicipality=cityOrMunicipality,office=office)
             if lawyer:
+                lawyer = Lawyer.get_by_id(int(lawyer_id))
+                practices = Practice.query(Practice.lawyer == lawyer.key).fetch()
+                for practice in practices:
+                    practice.key.delete()
+                # saving new pick practice
+                for pract in law_practice:
+                    Practice.save(lawyer=lawyer_id,pract=pract)
                 return json_response({
                     'error' : False,
                     'message' : "Profile information has been saved!"})
@@ -168,21 +182,24 @@ def lawyer_update_password(lawyer_id=None):
                 "message" : "Please dont leave the fields empty"})
 
 #main render template for account setting for lawyers / editing profile
-@app.route('/lawyer/account-setting/<int:lawyer_id>',methods=['GET','POST'])
+@app.route('/lawyer/<int:lawyer_id>/account-setting',methods=['GET','POST'])
 @login_required_lawyer
 def lawyer_account_setting(lawyer_id=None):
-    law_practice = {'Constitutional Law':"Constitutional Law", 'Criminal Law': 'Criminal Law', 'Business Law': 'Business Law',
-        'Labor Law': 'Labor Law', 'Civil Law' : 'Civil Law', 'Tax Law': 'Tax Law' , 'Family Law': 'Family Law','Others':'Others'}
-
-    # get the lawyer details in a dictionary format 
+    # get the lawyer details in a dictionary format
+    global law_practice
     if lawyer_id:
         lawyer_dict = Lawyer.get_by_id(int(lawyer_id))
         if lawyer_dict:
             lawyer_dict = lawyer_dict.to_dict()
         else:
             abort(404)
+    lawyer = Lawyer.get_by_id(int(lawyer_id))
+    practices = Practice.query(Practice.lawyer == lawyer.key).fetch()
+    practice_dict = []
+    for practice in practices:
+        practice_dict.append(practice.to_dict())
 
-    return render_template("lawyer/lawyer-account-setting.html",title="Account Setting",lawyer=session.get('lawyer'),lawyer_dict=lawyer_dict,law_practice=law_practice)
+    return render_template("lawyer/lawyer-account-setting.html",title="Account Setting",lawyer=session.get('lawyer'),lawyer_dict=lawyer_dict,law_practice=law_practice,practices=practice_dict)
 
 #sign in route
 @app.route('/lawyer/signin',methods=['GET','POST'])
@@ -206,9 +223,8 @@ def lawyer_signin():
                     'last_name': lawyer.last_name,
                     'email': lawyer.email,
                     'phone': lawyer.phone,
-                    'province': lawyer.province,
+                    'cityOrMunicipality': lawyer.cityOrMunicipality,
                     'office': lawyer.office,
-                    'law_practice': lawyer.law_practice,
                     'profile_pic': lawyer.profile_pic})
             else:
                 return json_response({
@@ -229,6 +245,7 @@ def lawyer_signin():
 #sign up attorney route
 @app.route('/lawyer/signup', methods=['GET','POST'])
 def lawyer_signup():
+    global law_practice
     if request.method == 'POST':
         req_data = request.get_json(force=True)
 
@@ -240,20 +257,20 @@ def lawyer_signup():
             email = req_data['email']
         if 'phone' in req_data:
             phone = req_data['phone']
-        if 'province' in req_data:
-            province = req_data['province']    
+        if 'cityOrMunicipality' in req_data:
+            cityOrMunicipality = req_data['cityOrMunicipality']    
         if 'office' in req_data:
             office = req_data['office']
         if 'law_practice' in req_data:
             law_practice = req_data['law_practice']
 
         #all fields required
-        if first_name and last_name and email and phone and province and office and law_practice:
+        if first_name and last_name and email and phone and cityOrMunicipality and office and law_practice:
             #valid email address
             if is_email(email):
                 lawyer = Lawyer.check_email(email=email)
                 if not lawyer:
-                    lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,province=province,office=office,password='')
+                    lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,cityOrMunicipality=cityOrMunicipality,office=office,password='')
                     if lawyer:
                         # pract as in practice
                         for pract in law_practice:
@@ -281,8 +298,8 @@ def lawyer_signup():
 
     if session.get('lawyer') is not None:
         return redirect(url_for('dashboard'))
-
-    return render_template('lawyer/lawyer-signup.html',title='Try it for Free')
+    
+    return render_template('lawyer/lawyer-signup.html',title='Try it for Free',law_practice=law_practice)
 
 #reset password for the first time
 @app.route('/lawyer/reset-password',methods=['GET','POST'])
@@ -291,18 +308,24 @@ def lawyer_reset_pass():
         email = request.form.get('email')
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
-        if password == confirm_password:
-            lawyer = Lawyer.f_reset_password(email=email,password=password)
-            if lawyer:
-                return redirect(url_for('lawyer_reset_pass',succ=1,m='Password has been reset'))
+
+        if is_email(email):
+            if password == confirm_password:
+                lawyer = Lawyer.f_reset_password(email=email,password=password)
+                if lawyer:
+                    return redirect(url_for('lawyer_reset_pass',succ=1,m='Password has been reset'))
+                else:
+                    return redirect(
+                    url_for('lawyer_reset_pass',
+                        err=1, m="These credentials do not match our records.", email=email))
             else:
                 return redirect(
-                url_for('lawyer_reset_pass',
-                    err=1, m="These credentials do not match our records.", email=email))
+                    url_for('lawyer_reset_pass',
+                        err=1, m="Confirm password does not match, please try again.",email=email))
         else:
             return redirect(
                 url_for('lawyer_reset_pass',
-                    err=1, m="Confirm password does not match, please try again.",email=email))
+                err=1, m="You have entered an invalid email address, Please try again.",email=email))
     return render_template('lawyer/lawyer-reset-pass.html',title='Reset Password')
 
 #######################################################

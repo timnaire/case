@@ -6,9 +6,8 @@ class Lawyer(ndb.Model):
     last_name = ndb.StringProperty()
     email = ndb.StringProperty()
     phone = ndb.StringProperty()    
-    province = ndb.StringProperty()
+    cityOrMunicipality = ndb.StringProperty()
     office = ndb.StringProperty()
-    # law_practice = ndb.StringProperty()
     profile_pic = ndb.StringProperty()
     password = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
@@ -31,12 +30,10 @@ class Lawyer(ndb.Model):
             lawyer.email = kwargs.get('email')
         if kwargs.get('phone'):
             lawyer.phone = kwargs.get('phone')
-        if kwargs.get('province'):
-            lawyer.province = kwargs.get('province')
+        if kwargs.get('cityOrMunicipality'):
+            lawyer.cityOrMunicipality = kwargs.get('cityOrMunicipality')
         if kwargs.get('office'):
             lawyer.office = kwargs.get('office')
-        # if kwargs.get('law_practice'):
-        #     lawyer.law_practice = kwargs.get('law_practice')
         if kwargs.get('profile_pic'):
             lawyer.profile_pic = kwargs.get('profile_pic')
         if kwargs.get('password'):
@@ -137,9 +134,8 @@ class Lawyer(ndb.Model):
         data['last_name'] = self.last_name
         data['email'] = self.email
         data['phone'] = self.phone
-        data['province'] = self.province
+        data['cityOrMunicipality'] = self.cityOrMunicipality
         data['office'] = self.office
-        # data['law_practice'] = self.law_practice
         data['profile_pic'] = self.profile_pic
         data['created'] = self.created.isoformat() + 'Z'
         data['updated'] = self.updated.isoformat() + 'Z'

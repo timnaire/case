@@ -32,17 +32,20 @@ $(document).ready(function(){
         var first_name = $('#ufirst_name').val();
         var last_name = $('#ulast_name').val();
         var phone = $('#uphone').val();
-        var province= $('#uprovince').val();
+        var cityOrMunicipality= $('#ucityOrMunicipality').val();
         var office = $('#uoffice').val();
-        var law_practice = $('#ulaw_practice').val();
+        var practice = [];
+        $.each($("input[class='practice']:checked"), function(){            
+            practice.push($(this).val());
+        });
 
         sendInfo = {
             first_name : first_name,
             last_name : last_name,
             phone : phone,
-            province : province,
+            cityOrMunicipality : cityOrMunicipality,
             office : office,
-            law_practice : law_practice
+            law_practice : practice
         }
         $.post("/lawyer/"+id+"/account-setting/profile-information", JSON.stringify(sendInfo), function(response){
             console.log(response)
@@ -113,7 +116,7 @@ $(document).ready(function(){
         var last_name = $('#last_name').val();
         var email = $('#email').val();
         var phone = $('#phone').val();
-        var province = $('#province').val();
+        var cityOrMunicipality = $('#cityOrMunicipality').val();
         var office = $('#office').val();
         // var law_practice = $('#law_practice').val();
         var practice = [];
@@ -126,7 +129,7 @@ $(document).ready(function(){
             last_name : last_name,
             email : email,
             phone : phone,
-            province : province,
+            cityOrMunicipality : cityOrMunicipality,
             office : office,
             law_practice : practice
         }
@@ -179,28 +182,33 @@ $(document).ready(function(){
         readURL(this);
     });
 
-    function getBase64(file) {
-        return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result.substr(reader.result.indexOf(',') + 1));
-        reader.onerror = error => reject(error);
-        });
-    }
+    // function getBase64(file) {
+    //     return new Promise((resolve, reject) => {
+    //     const reader = new FileReader();
+    //     reader.readAsDataURL(file);
+    //     reader.onload = () => resolve(reader.result.substr(reader.result.indexOf(',') + 1));
+    //     reader.onerror = error => reject(error);
+    //     });
+    // }
         
     $( function() {
-        var province = ["Abra","Agusan del Norte","Agusan del Sur","Aklan","Albay","Antique","Apayao","Aurora","Basilan",
-        "Bataan","Batanes","Batangas","Benguet","Biliran","Bohol","Bukidnon","Bulacan","Camarines Norte","Camarines Sur",
-        "Camiguin","Capiz","Catandunes","Cavite","Cebu","Compostela Valley","Cotabato","Davao del Norte","Davao del Sur",
-        "Davao Occidental","Davao Oriental","Dinagat Island","Estern Samar","Guimaras","Ifugao","Ilocos Norte","Ilocos Sur",
-        "Iloilo","Isabela","Kalinga","La Union","Laguna","Lanao del Norte","Lanao del Sur","Leyte","Maguindanao","Manila",
-        "Marinduque","Masbate","Misamis Occidental","Misamis Oriental","Mountain Province","Negros Occidental","Negros Oriental"
-        ,"Northern Samar","Nueva Ecija","Occidental Mindoro","Oriental Mindoro","Palawan","Pampanga","Pangasinan","Quezon",
-        "Quirino","Rizal","Romblon","Samar","Sarangani","Siquijor","Sorsogon","South Cotabato","Southern Leyte","Sultan Kudarat",
-        "Sulu","Surigao del Norte","Surigao del Sur","Tarlac","Tawi-Tawi","Zambales","Zamboanga del Norte","Zamboanga del Sur",
-        "Zamboanga Sibugay"]
-        $( "#province" ).autocomplete({
-        source: province
+        // var province = ["Abra","Agusan del Norte","Agusan del Sur","Aklan","Albay","Antique","Apayao","Aurora","Basilan",
+        // "Bataan","Batanes","Batangas","Benguet","Biliran","Bohol","Bukidnon","Bulacan","Camarines Norte","Camarines Sur",
+        // "Camiguin","Capiz","Catandunes","Cavite","Cebu","Compostela Valley","Cotabato","Davao del Norte","Davao del Sur",
+        // "Davao Occidental","Davao Oriental","Dinagat Island","Estern Samar","Guimaras","Ifugao","Ilocos Norte","Ilocos Sur",
+        // "Iloilo","Isabela","Kalinga","La Union","Laguna","Lanao del Norte","Lanao del Sur","Leyte","Maguindanao","Manila",
+        // "Marinduque","Masbate","Misamis Occidental","Misamis Oriental","Mountain Province","Negros Occidental","Negros Oriental"
+        // ,"Northern Samar","Nueva Ecija","Occidental Mindoro","Oriental Mindoro","Palawan","Pampanga","Pangasinan","Quezon",
+        // "Quirino","Rizal","Romblon","Samar","Sarangani","Siquijor","Sorsogon","South Cotabato","Southern Leyte","Sultan Kudarat",
+        // "Sulu","Surigao del Norte","Surigao del Sur","Tarlac","Tawi-Tawi","Zambales","Zamboanga del Norte","Zamboanga del Sur",
+        // "Zamboanga Sibugay"]
+        var city = ["Alcantara","Alcoy","Alegria","Aloguinsan","Argao","Asturias","Badian","Balamban","Bantayan","Barili","Bogo","Boljoon","Borbon",
+        "Carcar","Carmen","Catmon","Cebu City","Compostela","Consolacion","Cordova","Daanbantayan","Dalaguete","Danao","Dumanjug","Ginatilan",
+        "Lapu-Lapu","Liloan","Madridejos","Malabuyoc","Mandaue","Medellin","Minglanilla","Moalboal","Naga","Oslob","Pilar","Pinamungajan",
+        "Poro","Ronda","Samboan","San Fernando","San Francisco","San Remigio","Santa Fe","Santander","Sibonga","Sogod","Tabogon","Tabuelan",
+        "Talisay","Toledo","Tuburan","Tudela"]
+        $("#cityOrMunicipality , #ucityOrMunicipality" ).autocomplete({
+        source: city
         });
     } );
 });

@@ -29,77 +29,18 @@
         <input type="text" id='phone' class="form-control" name="phone" placeholder="Phone" />
     </div>
     <div class="form-group">
-        <input type="text" id='province' class="form-control" name="province" placeholder="Province" />
+        <input type="text" id='cityOrMunicipality' class="form-control" name="cityOrMunicipality" placeholder="City Or Municipality" />
     </div>
     <div class="form-group">
         <input type="text" id='office' class="form-control" name="office" placeholder="Office Address" />
     </div>
     <div class="checkbox">
+        {% for key, value in law_practice.items()|sort %}
         <label>
-          <input type="checkbox" id="Family" value="Family"> Family 
+            <input type="checkbox" class="practice" value="{{ value }}"> {{ value }}
         </label>
+        {% endfor %}
     </div>
-    <div class="checkbox">
-        <label>
-          <input type="checkbox" class="practice" value="Employment"> Employment 
-        </label>
-    </div>
-    <div class="checkbox">
-        <label>
-          <input type="checkbox" class="practice" value="Criminal Defense"> Criminal Defense
-        </label>
-    </div>
-    <div class="checkbox">
-        <label>
-          <input type="checkbox" class="practice" value="Business"> Business 
-        </label>
-    </div>
-    <div class="checkbox">
-        <label>
-          <input type="checkbox" class="practice" value="Personal Injury"> Personal Injury 
-        </label>
-    </div>
-    <div class="checkbox">
-        <label>
-          <input type="checkbox" class="practice" value="Immigration"> Immigration 
-        </label>
-    </div>
-    <div class="checkbox">
-        <label>
-          <input type="checkbox" class="practice" value="Bankruptcy"> Bankruptcy 
-        </label>
-    </div>
-    <div class="checkbox">
-        <label>
-          <input type="checkbox" class="practice" value="Wills, Trust and Estates"> Wills, Trust, and Estates 
-        </label>
-    </div>
-    <div class="checkbox">
-        <label>
-          <input type="checkbox" class="practice" value="Real Estate"> Real Estate 
-        </label>
-    </div>
-    <div class="checkbox">
-        <label>
-          <input type="checkbox" class="practice" value="Commercial Law"> Commercial Law
-        </label>
-    </div>
-    <!-- <div class="form-group">
-        <select name="law_practice" id='law_practice' class="form-control">
-            <option selected value="">--Law Practice--</option>
-            <option value="Family">Family</option>
-            <option value="Employment">Employment</option>
-            <option value="Criminal Defense">Criminal Defense</option>
-            <option value="Real Estate">Real Estate</option>
-            <option value="Business">Business</option>
-            <option value="Immigration">Immigration</option>
-            <option value="Personal Injury">Personal Injury</option>
-            <option value="Wills & Estates">Wills & Estates</option>
-            <option value="Bankruptcy">Bankruptcy</option>
-            <option value="Intellectual Property">Intellectual Property</option>
-            <option value="Others">Others</option>
-        </select>
-    </div> -->
     <button id='btnLawyerSignup' class="btn btn-primary btn-block">Register</button>
 </form>
 {% endblock %}

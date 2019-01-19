@@ -8,7 +8,7 @@ class Practice(ndb.Model):
     updated = ndb.DateTimeProperty(auto_now=True)
 
     @classmethod
-    def save(cls, *args, **kwargs):
+    def save(cls,*args,**kwargs):
         practice_id = str(kwargs.get('id'))
 
         if practice_id and practice_id.isdigit():
@@ -29,7 +29,7 @@ class Practice(ndb.Model):
 
     def to_dict(self):
         data = {}
-
+        
         data['lawyer'] = None
         if self.lawyer:
             lawyer = self.lawyer.get()
