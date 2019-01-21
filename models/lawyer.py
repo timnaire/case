@@ -8,6 +8,7 @@ class Lawyer(ndb.Model):
     phone = ndb.StringProperty()    
     cityOrMunicipality = ndb.StringProperty()
     office = ndb.StringProperty()
+    aboutme = ndb.StringProperty()
     profile_pic = ndb.StringProperty()
     password = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
@@ -34,6 +35,8 @@ class Lawyer(ndb.Model):
             lawyer.cityOrMunicipality = kwargs.get('cityOrMunicipality')
         if kwargs.get('office'):
             lawyer.office = kwargs.get('office')
+        if kwargs.get('aboutme'):
+            lawyer.aboutme = kwargs.get('aboutme')
         if kwargs.get('profile_pic'):
             lawyer.profile_pic = kwargs.get('profile_pic')
         if kwargs.get('password'):
@@ -41,6 +44,16 @@ class Lawyer(ndb.Model):
 
         lawyer.put()
         return lawyer
+    
+    @classmethod
+    def find_city(cls, cityOrMunicipality):
+        lawyers = None
+        if cityOrMunicipality:
+            lawyers = cls.query(cls.cityOrMunicipality == cityOrMunicipality, cls.password != None).fetch()
+        
+        if not lawyers:
+            lawyers = None
+        return lawyers
     
     @classmethod
     def login(cls, email, password):
@@ -57,7 +70,7 @@ class Lawyer(ndb.Model):
     def check_email(cls,email):
         lawyer = None
         if email:
-            lawyer = cls.query(cls.email == email, cls.password==None).get()
+            lawyer = cls.query(cls.email == email).get()
         
         if not lawyer:
             lawyer = None
@@ -136,6 +149,7 @@ class Lawyer(ndb.Model):
         data['phone'] = self.phone
         data['cityOrMunicipality'] = self.cityOrMunicipality
         data['office'] = self.office
+        data['aboutme'] = self.aboutme
         data['profile_pic'] = self.profile_pic
         data['created'] = self.created.isoformat() + 'Z'
         data['updated'] = self.updated.isoformat() + 'Z'

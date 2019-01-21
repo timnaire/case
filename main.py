@@ -1,6 +1,5 @@
 import logging
-import base64
-from flask import Flask, render_template, url_for, request, session, redirect, abort, json
+from flask import Flask, render_template, url_for, request, session, redirect, abort
 from config import SECRET_KEY
 
 from models.lawyer import Lawyer
@@ -21,8 +20,46 @@ law_practice = {'Family':"Family", 'Employment': 'Employment', 'Criminal Defense
 @app.route('/home', methods=['GET','POST'])
 def home():
     global law_practice
-
     return render_template('home.html',title='Home',law_practice=law_practice)
+
+#####################################################################################################################################
+# for lawyers and below
+
+
+# find a lawyer
+@app.route('/lawyer/find',methods=['post'])
+def find_lawyer():
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'law_practice' in req_data:
+            law_practice = req_data['law_practice']
+        if 'cityOrMunicipality' in req_data:
+            cityOrMunicipality = req_data['cityOrMunicipality']
+
+        respo = {}
+        # lawyers = Lawyer.query(Lawyer.cityOrMunicipality == cityOrMunicipality, Lawyer.password != None).fetch()
+        counter = 0
+        # for lawyer in lawyers:
+        #     practice = Practice.query(Lawyer.)
+        #     respo[counter] = lawyer.to_dict()
+        #     counter = counter + 1
+        if law_practice and cityOrMunicipality:
+            found_lawyers = Practice.find_practice(law_practice=law_practice, cityOrMunicipality=cityOrMunicipality)
+            if found_lawyers:
+                return json_response({
+                    'error': False,
+                    'lawyers' : found_lawyers})
+            else:
+                return json_response({
+                    'error' : True,
+                    'message': "No lawyer(s) found in "+cityOrMunicipality+" with practice of "+law_practice})
+
+        else:
+            return json_response({
+                'error' : True,
+                'message' : "Please select your legal issue and city to find lawyer."})
+
+        return json_response(respo)
 
 #dashboard for lawyers
 @app.route('/lawyer/dashboard')
@@ -65,11 +102,13 @@ def lawyer_update_information(lawyer_id=None):
             cityOrMunicipality = req_data['cityOrMunicipality']
         if 'office' in req_data:
             office = req_data['office']
+        if 'aboutme' in req_data:
+            aboutme = req_data['aboutme']
         if 'law_practice' in req_data:
             law_practice = req_data['law_practice']
 
         if first_name and last_name and phone and cityOrMunicipality and office and law_practice:
-            lawyer = Lawyer.save(id=lawyer_id,first_name=first_name,last_name=last_name,phone=phone,cityOrMunicipality=cityOrMunicipality,office=office)
+            lawyer = Lawyer.save(id=lawyer_id,first_name=first_name,last_name=last_name,phone=phone,cityOrMunicipality=cityOrMunicipality,office=office,aboutme=aboutme)
             if lawyer:
                 lawyer = Lawyer.get_by_id(int(lawyer_id))
                 practices = Practice.query(Practice.lawyer == lawyer.key).fetch()
@@ -327,8 +366,6 @@ def lawyer_reset_pass():
                 url_for('lawyer_reset_pass',
                 err=1, m="You have entered an invalid email address, Please try again.",email=email))
     return render_template('lawyer/lawyer-reset-pass.html',title='Reset Password')
-
-#######################################################
 
 @app.route('/lawyer/signout')
 def signout():

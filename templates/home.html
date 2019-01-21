@@ -3,8 +3,9 @@
 {% block content %}
 <form method="POST">
     <h4>Find the Right Lawyer now</h4>
+    <!-- f in id means find lawyer -->
     <div class="form-group">
-        <select id="ulaw_practice" class="form-control">
+        <select id="practice" class="form-control">
             <option selected="true" disabled="disabled" >Select a Legel Issue</option>
             {% for key, value in law_practice.items()|sort %}
                 <option value="{{key}}" > {{value}}
@@ -15,12 +16,9 @@
     <div class="form-group">
         <input type="text" class="form-control" id="cityOrMunicipality" placeholder="City or Municipality">
     </div>
-    <button type='submit' class='btn btn-primary btn-block'>Find a Lawyer</button>
+    <button type='submit' id="btnFindLawyer" class='btn btn-primary btn-block'>Find a Lawyer</button>
 </form>
-    <!-- This is the list results -->
-    <div>
-        
-    </div>
+
     <h4>A Lawyer?</h4>
     <p>Getting to know you.</p>
     <small><a href="{{ url_for('lawyer_signup') }}">Become a lawyer with us.</a></small>
@@ -28,4 +26,10 @@
     
     <h4>Log In?</h4>
     <small><a href="#">Sign In Now!.</a></small>
+
+    <!-- This is the list results -->
+    <div id="found-lawyer">
+        
+    </div>
+
 {% endblock %}

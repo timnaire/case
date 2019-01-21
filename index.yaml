@@ -11,5 +11,10 @@ indexes:
 
 - kind: Lawyer
   properties:
+  - name: cityOrMunicipality
+  - name: password
+
+- kind: Lawyer
+  properties:
   - name: email
   - name: password

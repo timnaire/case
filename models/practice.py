@@ -27,6 +27,23 @@ class Practice(ndb.Model):
         practice.put()
         return practice
 
+    @classmethod
+    def find_practice(cls, law_practice,cityOrMunicipality):
+        found_lawyers = {}
+        counter = 0
+        lawyers = Lawyer.find_city(cityOrMunicipality=cityOrMunicipality)
+        if law_practice and cityOrMunicipality:
+            for lawyer in lawyers:
+                practice = cls.query(cls.law_practice == law_practice, cls.lawyer == lawyer.key).get()
+                if practice:
+                    found_lawyers[counter] = practice.to_dict()
+                    counter = counter + 1
+
+        if not found_lawyers:
+            found_lawyers = None
+
+        return found_lawyers
+
     def to_dict(self):
         data = {}
         
@@ -36,6 +53,4 @@ class Practice(ndb.Model):
             data['lawyer'] = lawyer.to_dict()
         
         data['law_practice'] = self.law_practice
-        data['created'] = self.created.isoformat() + 'Z'
-        data['updated'] = self.updated.isoformat() + 'Z'
         return data
