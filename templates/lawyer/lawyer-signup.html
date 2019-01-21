@@ -35,9 +35,9 @@
         <input type="text" id='office' class="form-control" name="office" placeholder="Office Address" />
     </div>
     <div class="checkbox">
-        {% for key, value in law_practice.items()|sort %}
+        {% for key, value in law_practice.items() | sort %}
         <label>
-            <input type="checkbox" class="practice" value="{{ value }}"> {{ value }}
+            <input type="checkbox" class="practice" value="{{ key }}"> {{ value }}
         </label>
         {% endfor %}
     </div>

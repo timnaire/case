@@ -10,17 +10,17 @@ from functions import json_response, is_email, save_to_gcs
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
 
-law_practice = {'Family':"Family", 'Employment': 'Employment', 'Criminal Defense': 'Criminal Defense',
+available_practice = {'Family':"Family", 'Employment': 'Employment', 'Criminal Defense': 'Criminal Defense',
         'Business': 'Business', 'Personal Injury' : 'Personal Injury', 'Immigration': 'Immigration' ,
          'Bankruptcy': 'Bankruptcy','Wills, Trust, and Estates':'Wills, Trust, and Estates', 'Real Estate':'Real Estate',
          'Commercial Law':'Commercial Law' }
 
 #home page for client
 @app.route('/', methods=['GET','POST'])
-@app.route('/home', methods=['GET','POST'])
+# @app.route('/home', methods=['GET','POST'])
 def home():
-    global law_practice
-    return render_template('home.html',title='Home',law_practice=law_practice)
+    global available_practice
+    return render_template('home.html',title='Home',law_practice=available_practice)
 
 #####################################################################################################################################
 # for lawyers and below
@@ -225,7 +225,7 @@ def lawyer_update_password(lawyer_id=None):
 @login_required_lawyer
 def lawyer_account_setting(lawyer_id=None):
     # get the lawyer details in a dictionary format
-    global law_practice
+    global available_practice
     if lawyer_id:
         lawyer_dict = Lawyer.get_by_id(int(lawyer_id))
         if lawyer_dict:
@@ -238,7 +238,7 @@ def lawyer_account_setting(lawyer_id=None):
     for practice in practices:
         practice_dict.append(practice.to_dict())
 
-    return render_template("lawyer/lawyer-account-setting.html",title="Account Setting",lawyer=session.get('lawyer'),lawyer_dict=lawyer_dict,law_practice=law_practice,practices=practice_dict)
+    return render_template("lawyer/lawyer-account-setting.html",title="Account Setting",lawyer=session.get('lawyer'),lawyer_dict=lawyer_dict,law_practice=available_practice,practices=practice_dict)
 
 #sign in route
 @app.route('/lawyer/signin',methods=['GET','POST'])
@@ -284,7 +284,6 @@ def lawyer_signin():
 #sign up attorney route
 @app.route('/lawyer/signup', methods=['GET','POST'])
 def lawyer_signup():
-    global law_practice
     if request.method == 'POST':
         req_data = request.get_json(force=True)
 
@@ -337,8 +336,9 @@ def lawyer_signup():
 
     if session.get('lawyer') is not None:
         return redirect(url_for('dashboard'))
+    global available_practice
     
-    return render_template('lawyer/lawyer-signup.html',title='Try it for Free',law_practice=law_practice)
+    return render_template('lawyer/lawyer-signup.html',title='Try it for Free',law_practice=available_practice)
 
 #reset password for the first time
 @app.route('/lawyer/reset-password',methods=['GET','POST'])
