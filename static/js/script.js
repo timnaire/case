@@ -1,6 +1,22 @@
 $(document).ready(function(){
     var sendInfo = {}
 
+    $('#btnAddCase').click(function(e){
+        e.preventDefault();
+        var id = $('#lawyer_id').val();
+        var case_name = $('#add-case').val();
+        var client_id = $('#client-id').val();
+        var case_description = $('#case-description').val()
+        sendInfo = { 
+            case_name : case_name,
+            client_id : client_id,
+            case_description : case_description
+        }
+        $.post("/lawyer/"+id+"/mycase", JSON.stringify(sendInfo) ,function(response){
+            console.log(response);
+        }, "json")
+    });
+
     // find a lawyer button
     $('#btnFindLawyer').click(function(e){
         e.preventDefault();
@@ -158,14 +174,14 @@ $(document).ready(function(){
             password : password
         }
 
-        $.post("/lawyer/signin",JSON.stringify(sendInfo),function(result){
+        $.post("/lawyer/signin",JSON.stringify(sendInfo),function(response){
             var err = 1;
-            var m = result['message'];
-            var email = result['email'];
-            if(result['error'] == false){
+            var m = response['message'];
+            var email = response['email'];
+            if(response['error'] == false){
                 window.location.replace('/lawyer/dashboard');
             }
-            else if(result['error'] == true){
+            else if(response['error'] == true){
                 window.location.replace('/lawyer/signin?err='+err+"&m="+m+"&email="+email)
             }
             
@@ -198,13 +214,13 @@ $(document).ready(function(){
             law_practice : practice
         }
 
-        $.post("/lawyer/signup",JSON.stringify(sendInfo),function(result){
+        $.post("/lawyer/signup",JSON.stringify(sendInfo),function(response){
             var succ = 1;
             var err = 1;
-            var m = result['message']
-            if(result['error'] == false){
+            var m = response['message']
+            if(response['error'] == false){
                 window.location.replace('/lawyer/signup?succ='+succ+"&m="+m);
-            }else if(result['error'] == true){
+            }else if(response['error'] == true){
                 window.location.replace('/lawyer/signup?err='+err+"&m="+m);
             }
         });

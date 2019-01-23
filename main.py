@@ -4,20 +4,18 @@ from config import SECRET_KEY
 
 from models.lawyer import Lawyer
 from models.practice import Practice
-from decorators import login_required_lawyer, login_required_client
+from models.case import Case
+from decorators import login_required_lawyer
 from functions import json_response, is_email, save_to_gcs
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
+app.jinja_env.trim_blocks = True
+app.jinja_env.lstrip_blocks = True
 
-available_practice = {'Family':"Family", 'Employment': 'Employment', 'Criminal Defense': 'Criminal Defense',
-        'Business': 'Business', 'Personal Injury' : 'Personal Injury', 'Immigration': 'Immigration' ,
-         'Bankruptcy': 'Bankruptcy','Wills, Trust, and Estates':'Wills, Trust, and Estates', 'Real Estate':'Real Estate',
-         'Commercial Law':'Commercial Law' }
-
-#home page for client
+# home page for client
 @app.route('/', methods=['GET','POST'])
-# @app.route('/home', methods=['GET','POST'])
+@app.route('/home', methods=['GET','POST'])
 def home():
     global available_practice
     return render_template('home.html',title='Home',law_practice=available_practice)
@@ -25,9 +23,13 @@ def home():
 #####################################################################################################################################
 # for lawyers and below
 
+available_practice = {'Family':"Family", 'Employment': 'Employment', 'Criminal Defense': 'Criminal Defense',
+        'Business': 'Business', 'Personal Injury' : 'Personal Injury', 'Immigration': 'Immigration' ,
+         'Bankruptcy': 'Bankruptcy','Wills, Trust, and Estates':'Wills, Trust, and Estates', 'Real Estate':'Real Estate',
+         'Commercial Law':'Commercial Law' }
 
-# find a lawyer
-@app.route('/lawyer/find',methods=['post'])
+# find a lawyer route
+@app.route('/lawyer/find',methods=['POST'])
 def find_lawyer():
     if request.method == "POST":
         req_data = request.get_json(force=True)
@@ -37,12 +39,7 @@ def find_lawyer():
             cityOrMunicipality = req_data['cityOrMunicipality']
 
         respo = {}
-        # lawyers = Lawyer.query(Lawyer.cityOrMunicipality == cityOrMunicipality, Lawyer.password != None).fetch()
         counter = 0
-        # for lawyer in lawyers:
-        #     practice = Practice.query(Lawyer.)
-        #     respo[counter] = lawyer.to_dict()
-        #     counter = counter + 1
         if law_practice and cityOrMunicipality:
             found_lawyers = Practice.find_practice(law_practice=law_practice, cityOrMunicipality=cityOrMunicipality)
             if found_lawyers:
@@ -61,11 +58,47 @@ def find_lawyer():
 
         return json_response(respo)
 
-#dashboard for lawyers
+#dashboard route for lawyers
+@app.route('/lawyer/')
 @app.route('/lawyer/dashboard')
 @login_required_lawyer
 def dashboard():
     return render_template('lawyer/lawyer-dashboard.html',title="Welcome to Dashboard",lawyer=session['lawyer'])
+
+# mycase route for lawyers 
+@app.route('/lawyer/<int:lawyer_id>/mycase', methods=['GET','POST'])
+@login_required_lawyer
+def mycase(lawyer_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'case_name' in req_data:
+            case_name = req_data['case_name']
+        if 'client_id' in req_data:
+            client_id = req_data['client_id']
+        if 'case_description' in req_data:
+            case_description = req_data['case_description']
+        
+        if case_name and client_id and case_description:
+            case = Case.save(lawyer=lawyer_id,case_name=case_name,client_id=client_id,case_description=case_description)
+            if case:
+                return json_response({
+                    "error" : False,
+                    "message" : "New case added."})
+            else:
+                return json_response({
+                    "error" : True,
+                    "message" : "Couldn't add a case, please try again."})
+        else:
+            return json_response({
+                'error' : True,
+                'message' : 'Please input the case name and try again.'})
+
+    lawyer = Lawyer.get_by_id(int(lawyer_id))
+    cases = Case.query(Case.lawyer == lawyer.key).fetch()
+    case_dict = []
+    for case in cases:
+        case_dict.append(case.to_dict())
+    return render_template('lawyer/lawyer-mycase.html',title="My Case",lawyer=session['lawyer'],cases=case_dict)
 
 # profile picture route
 @app.route('/lawyer/<int:lawyer_id>/account-setting/profile-picture', methods=['POST'])
@@ -79,8 +112,7 @@ def lawyer_update_picture(lawyer_id=None):
             if lawyer:
                 return json_response({
                     'error' : False,
-                    'message' : "Profile picture has been saved!",
-                    'profile_pic' : save_to_gcs(f).get("serving_url")})
+                    'message' : "Profile picture has been saved!"})
             else:
                 return json_response({
                     'error' : True,
@@ -220,7 +252,7 @@ def lawyer_update_password(lawyer_id=None):
                 "error" : True,
                 "message" : "Please dont leave the fields empty"})
 
-#main render template for account setting for lawyers / editing profile
+#main render template for account setting for lawyers / editing profile route
 @app.route('/lawyer/<int:lawyer_id>/account-setting',methods=['GET','POST'])
 @login_required_lawyer
 def lawyer_account_setting(lawyer_id=None):
@@ -281,7 +313,7 @@ def lawyer_signin():
 
     return render_template('lawyer/lawyer-signin.html',title='Sign In Lawyer')
 
-#sign up attorney route
+#sign up lawyer route
 @app.route('/lawyer/signup', methods=['GET','POST'])
 def lawyer_signup():
     if request.method == 'POST':
@@ -340,7 +372,7 @@ def lawyer_signup():
     
     return render_template('lawyer/lawyer-signup.html',title='Try it for Free',law_practice=available_practice)
 
-#reset password for the first time
+#reset password for the first time route
 @app.route('/lawyer/reset-password',methods=['GET','POST'])
 def lawyer_reset_pass():
     if request.method == "POST":
@@ -367,10 +399,12 @@ def lawyer_reset_pass():
                 err=1, m="You have entered an invalid email address, Please try again.",email=email))
     return render_template('lawyer/lawyer-reset-pass.html',title='Reset Password')
 
+# sign out route
 @app.route('/lawyer/signout')
 def signout():
     del session['lawyer']
     return redirect(url_for('lawyer_signin'))
+
 
 @app.errorhandler(500)
 def error_500(e):
@@ -381,3 +415,6 @@ def error_500(e):
 def error_404(e):
     logging.exception(e)
     return 'Page not found'
+
+if __name__ == "__main__":
+    app.run()
