@@ -1,8 +1,10 @@
 import logging
 from flask import Flask, render_template, url_for, request, session, redirect, abort
+from flask_mail import Mail, Message
 from config import SECRET_KEY
-
+import googlemaps
 from models.lawyer import Lawyer
+from models.client import Client
 from models.practice import Practice
 from models.case import Case
 from decorators import login_required_lawyer
@@ -10,8 +12,93 @@ from functions import json_response, is_email, save_to_gcs
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
+gmaps = googlemaps.Client(key='AIzaSyCNHYz-iF2kippAtUQiv4hCPesfP_3G0ZE')
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_USERNAME'] = 'timmydonaire@gmail.com'
+app.config['MAIL_PASSWORD'] = 'thepearl345'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+mail = Mail(app)
+# Geocoding an address
+# geocode_result = gmaps.geocode('1600 Amphitheatre Parkway, Mountain View, CA')
+
+# client sign in
+@app.route('/client/signin',methods=['GET'])
+def client_signin():
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'email' in req_data:
+            email = req_data['email']
+        if 'password' in req_data:
+            password = req_data['password']
+
+        client = Client.sign_in(email=email,password=password)
+        if email and password:
+            if client:
+                return json_response({
+                    "error" : False,
+                    "message" : "Successfully signed in"})
+            else:
+                return json_response({
+                    "error" : True,
+                    "message" : "Unsuccessful sign in, please try again."})
+        else:
+            return json_response({
+                "error" : True,
+                "message" : "Please enter your email and password to sign in."})
+
+@app.route('/client/signup',methods=['GET','POST'])
+def client_signup():
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'first_name' in req_data:
+            first_name = req_data['first_name']
+        if 'last_name' in req_data:
+            last_name = req_data['last_name']
+        if 'email' in req_data:
+            email = req_data['email']
+        if 'phone' in req_data:
+            phone = req_data['phone']
+        if 'address' in req_data:
+            address = req_data['address']
+        if 'password' in req_data:
+            password = req_data['password']
+        if 'confirm' in req_data:
+            confirm = req_data['confirm']
+        
+        if first_name and last_name and email and phone and address and password:
+            if is_email(email=email):
+                client = Client.check_email(email)
+                if not client:
+                    if password == confirm:
+                        client = Client.save(first_name=first_name,last_name=last_name,email=email,phone=phone,address=address,password=password)
+                        if client:
+                            return json_response({
+                                "error" : False,
+                                "message" : "Successfully signed up"})
+                    else:
+                        return json_response({
+                            "error" : True,
+                            "message" : "Confirmation password does not match, please try again."})
+                else:
+                    return json_response({
+                        "error" : True,
+                        "message" : "Email already taken, please try again."})
+            else:
+                return json_response({
+                    "error" : True,
+                    "message" : "Invalid email address, Please try again."})
+        else:
+            return json_response({
+                "error" : True,
+                "message" : "Please provide your details to sign up."})
+        
+
+        
+    return render_template('client/client-signup.html',title="Client Sign up")
 
 # home page for client
 @app.route('/', methods=['GET','POST'])
@@ -284,7 +371,7 @@ def lawyer_signin():
             password = req_data['password']
 
         if is_email(email):
-            lawyer = Lawyer.login(email=email,password=password)
+            lawyer = Lawyer.sign_in(email=email,password=password)
             if lawyer:
                 session['lawyer'] = lawyer.key.id()
                 return json_response({
@@ -348,7 +435,7 @@ def lawyer_signup():
 
                         return json_response({
                             'error': False,
-                            'message': 'Thank you for registering, We will contact you soon.'})
+                            'message': 'Thank you for signing up, We will contact you soon.'})
                     else:
                         return json_response({
                             'error': True,
@@ -373,8 +460,8 @@ def lawyer_signup():
     return render_template('lawyer/lawyer-signup.html',title='Try it for Free',law_practice=available_practice)
 
 #reset password for the first time route
-@app.route('/lawyer/reset-password',methods=['GET','POST'])
-def lawyer_reset_pass():
+@app.route('/lawyer/add-password',methods=['GET','POST'])
+def lawyer_add_password():
     if request.method == "POST":
         email = request.form.get('email')
         password = request.form.get('password')
@@ -382,22 +469,93 @@ def lawyer_reset_pass():
 
         if is_email(email):
             if password == confirm_password:
-                lawyer = Lawyer.f_reset_password(email=email,password=password)
+                lawyer = Lawyer.add_password(email=email,password=password)
                 if lawyer:
-                    return redirect(url_for('lawyer_reset_pass',succ=1,m='Password has been reset'))
+                    return redirect(url_for('lawyer_add_password',succ=1,m='Password has been reset'))
                 else:
                     return redirect(
-                    url_for('lawyer_reset_pass',
+                    url_for('lawyer_add_password',
                         err=1, m="These credentials do not match our records.", email=email))
             else:
                 return redirect(
-                    url_for('lawyer_reset_pass',
-                        err=1, m="Confirm password does not match, please try again.",email=email))
+                    url_for('lawyer_add_password',
+                        err=1, m="Confirmation password does not match, please try again.",email=email))
         else:
             return redirect(
-                url_for('lawyer_reset_pass',
+                url_for('lawyer_add_password',
                 err=1, m="You have entered an invalid email address, Please try again.",email=email))
-    return render_template('lawyer/lawyer-reset-pass.html',title='Reset Password')
+    return render_template('lawyer/lawyer-add-pass.html',title='Reset Password')
+
+# forget password area
+def send_reset_email(lawyer):
+    token = lawyer.get_reset_token()
+    msg = Message('Password Reset Request', sender='noreply@case.com', recipients=[lawyer.email])
+    msg.body  = "To reset your password, visit the following link: \n" + url_for('lawyer_reset_token',token=token, _external=True) +"\n if you did not make this request then simply ignore this email and no changes will be made."
+    mail.send(msg)
+
+@app.route('/lawyer/reset-password',methods=['GET','POST'])
+def lawyer_reset_request():
+    if session.get('lawyer') is not None:
+        return redirect(url_for('dashboard'))
+
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'email' in req_data:
+            email = req_data['email']
+        if email:
+            if is_email(email):
+                lawyer = Lawyer.check_email(email)
+                if lawyer:
+                    send_reset_email(lawyer)
+                else:
+                    return json_response({
+                        "error": True,
+                        "message" : "Sorry, your email does not match our records."})
+            else:
+                return json_response({
+                    "error" : True,
+                    "message" : "Invalid email address, please try again."})
+        else:
+            return json_response({
+                "error" : True,
+                "message" : "Please enter your email."})
+    return render_template('lawyer/lawyer-reset-pass.html',title="Reset")
+
+@app.route('/lawyer/reset-password/<token>',methods=['GET','POST'])
+def lawyer_reset_token(token):
+    if session.get('lawyer') is not None:
+        return redirect(url_for('dashboard'))
+    lawyer = Lawyer.verify_reset_token(token)
+    if lawyer is None:
+        return json_response({
+            "error" : True,
+            "message" : "That is an invalid or expired token"})
+    else:
+        if request.method == "POST":
+            req_data = request.get_json(force=True)
+            if 'password' in req_data:
+                password = req_data['password']
+            if 'confirm' in req_data:
+                confirm = req_data['confirm']
+            
+            if password and confirm:
+                if password == confirm:
+                    lawyer = lawyer.save(id=lawyer.key.id(),password=password)
+                    if lawyer:
+                        return json_response({
+                            "error" : False,
+                            "message" : "Your password has been updated! You are now able to sign in."})
+                else:
+                    return json_response({
+                        "error" : True,
+                        "message" : "Confirmation password does not match, please try again."})
+            else:
+                return json_response({
+                    "error" : True,
+                    "message" : "Please fill up the fields to reset password."})
+        
+    return render_template('lawyer/lawyer-reset-token.html',title="Reset Password",token=token)
+
 
 # sign out route
 @app.route('/lawyer/signout')

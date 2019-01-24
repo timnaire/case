@@ -20,18 +20,12 @@
                             <h4>Reset Password</h4>
                             <div class='form-group'>
                                 {% if request.args.get('email') %}
-                                <input type="text" name='email' value="{{ request.args.get('email') }}" placeholder="Email" class='form-control' >
+                                <input type="text" id='email' value="{{ request.args.get('email') }}" placeholder="Email" class='form-control' >
                                 {% else %}
-                                <input type="text" name='email' placeholder="Email" class='form-control' >
+                                <input type="text" id='email' placeholder="Email" class='form-control' >
                                 {% endif %}
                             </div>
-                            <div class='form-group'>
-                                <input type="password" name='password' placeholder="Password" class='form-control' >
-                            </div>
-                            <div class='form-group'>
-                                <input type="password" name='confirm_password' placeholder="Confirm Password" class='form-control' >
-                            </div>
-                            <button type="submit" class='btn btn-primary btn-block' >Reset Password</button>
+                            <button type="submit" id="btnForgotPass" class='btn btn-primary btn-block' >Reset Password</button>
                         </form>
                     </div>
                 </div>

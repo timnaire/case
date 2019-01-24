@@ -1,5 +1,8 @@
 from google.appengine.ext import ndb
 from passlib.hash import pbkdf2_sha256
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from config import SECRET_KEY
+# from models.client import Client
 
 class Lawyer(ndb.Model):
     first_name = ndb.StringProperty()
@@ -56,7 +59,7 @@ class Lawyer(ndb.Model):
         return lawyers
     
     @classmethod
-    def login(cls, email, password):
+    def sign_in(cls, email, password):
         lawyer = None
         if email and password:
             lawyer = cls.query(cls.email == email, cls.password != None).get()
@@ -94,6 +97,7 @@ class Lawyer(ndb.Model):
     @classmethod
     def email_exist(cls,newemail):
         lawyer = None
+
         if newemail:
             lawyer = cls.query(cls.email == newemail).get()
         
@@ -131,7 +135,7 @@ class Lawyer(ndb.Model):
         return lawyer
 
     @classmethod
-    def f_reset_password(cls,email,password):
+    def add_password(cls,email,password):
         lawyer = None
         if email and password:
             lawyer = cls.query(cls.email == email, cls.password == None).get()
@@ -139,6 +143,19 @@ class Lawyer(ndb.Model):
             lawyer.put()
         
         return lawyer
+    
+    def get_reset_token(self, expires_sec=1800):
+        s = Serializer(SECRET_KEY)
+        return s.dumps({'lawyer_id': self.key.id()})
+
+    @staticmethod
+    def verify_reset_token(token):
+        s = Serializer(SECRET_KEY)
+        try:
+            lawyer_id = s.loads(token)['lawyer_id']
+        except:
+            return None
+        return Lawyer.get_by_id(int(lawyer_id))
 
     def to_dict(self):
         data = {}

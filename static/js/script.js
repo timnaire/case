@@ -1,6 +1,40 @@
 $(document).ready(function(){
     var sendInfo = {}
+    
+    $('#btnClientSignUp').click(function(e){
+        e.preventDefault();
+        var first_name = $('#first_name').val();
+        var last_name = $('#last_name').val();
+        var email = $('#email').val();
+        var phone = $('#phone').val();
+        var address = $('#address').val();
+        var password = $('#password').val();
+        var confirm = $('#confirm-password').val();
+        sendInfo = {
+            first_name : first_name,
+            last_name : last_name,
+            email : email,
+            phone : phone,
+            address : address,
+            password : password,
+            confirm : confirm
+        }
+        $.ajax({
+            url: "/client/signup", // point to server-side controller method
+            dataType: 'json',
+            data: JSON.stringify(sendInfo),
+            type: 'POST',
+            beforeSend : function(response){
+                console.log('animation here') // put animation
+            },
+            success: function (response) {
+                console.log(response) // display success response from the server
+            }
+        });
+    });
 
+    // ---------------------------------------------------------------------------------------------------------------------------------------------
+    // for lawyers below
     $('#btnAddCase').click(function(e){
         e.preventDefault();
         var id = $('#lawyer_id').val();
@@ -224,6 +258,26 @@ $(document).ready(function(){
                 window.location.replace('/lawyer/signup?err='+err+"&m="+m);
             }
         });
+    });
+
+    $('#btnResetPassword').click(function(e){
+        e.preventDefault();
+        var token = $("#token").val();
+        var password = $('#password').val();
+        var confirm = $('#confirm-password').val();
+        sendInfo = { password : password , confirm : confirm }
+        $.post('/lawyer/reset-password/'+token, JSON.stringify(sendInfo), function(response){
+            console.log(response)
+        });
+    })
+
+    $("#btnForgotPass").click(function(e){
+        var email = $('#email').val();
+        sendInfo = { email : email }
+        $.post('/lawyer/reset-password', JSON.stringify(sendInfo), function(response){
+            console.log(response)
+        });
+        e.preventDefault()
     });
 
     // if(image){

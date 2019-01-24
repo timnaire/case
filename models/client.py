@@ -1,4 +1,6 @@
 from google.appengine.ext import ndb
+from passlib.hash import pbkdf2_sha256
+from models.lawyer import Lawyer
 
 class Client(ndb.Model):
     first_name = ndb.StringProperty()
@@ -6,31 +8,58 @@ class Client(ndb.Model):
     email = ndb.StringProperty()
     phone = ndb.StringProperty()
     address = ndb.StringProperty()
+    password = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
 
     @classmethod
     def save(cls,*args,**kwargs):
-        case_id = str(kwargs.get('id'))
+        client_id = str(kwargs.get('id'))
 
-        if case_id and case_id.isdigit():
-            case = cls.get_by_id(int(case_id))
+        if client_id and client_id.isdigit():
+            client = cls.get_by_id(int(client_id))
         else:
-            case = cls()
+            client = cls()
         
         if kwargs.get('first_name'):
-            case.first_name = kwargs.get('first_name')
+            client.first_name = kwargs.get('first_name')
         if kwargs.get('last_name'):
-            case.last_name = kwargs.get('last_name')
+            client.last_name = kwargs.get('last_name')
         if kwargs.get('email'):
-            case.email = kwargs.get('email')
+            client.email = kwargs.get('email')
         if kwargs.get('phone'):
-            case.phone = kwargs.get('phone')
+            client.phone = kwargs.get('phone')
         if kwargs.get('address'):
-            case.address = kwargs.get('address')
+            client.address = kwargs.get('address')
+        if kwargs.get('password'):
+            client.password = pbkdf2_sha256.hash(kwargs.get('password'))
 
-        case.put()
-        return case
+        client.put()
+        return client
+    
+    @classmethod
+    def check_email(cls,email):
+        client = None
+
+        if email:
+            if not Lawyer.check_email(email):
+                client = cls.query(cls.email == email).get()
+        
+        if not client:
+            client = None
+
+        return client
+    
+    @classmethod
+    def sign_in():
+        client = None
+        if email and password:
+            client = cls.query(cls.email == email, cls.password != None).get()
+
+        if client and not pbkdf2_sha256.verify(password, client.password):
+            client = None
+
+        return client
 
     def to_dict():
         data = {}

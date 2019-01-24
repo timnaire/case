@@ -1,0 +1,34 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+    <div class="container">
+        <h1>Client Sign up</h1>
+
+        <form method="POST">
+            <div class="form-group">
+                <input type="text" id="first_name" class="form-control" placeholder="First name">
+            </div>
+            <div class="form-group">
+                <input type="text" id="last_name" class="form-control" placeholder="Last name">
+            </div>
+            <div class="form-group">
+                <input type="text" id="email" class="form-control" placeholder="Email">
+            </div>
+            <div class="form-group">
+                <input type="text" id="phone" class="form-control" placeholder="Phone" maxlength="11">
+            </div>
+            <div class="form-group">
+                <input type="text" id="address" class="form-control" placeholder="Address">
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" class="form-control" placeholder="Password">
+            </div>
+            <div class="form-group">
+                <input type="password" id="confirm-password" class="form-control" placeholder="Confirm Password">
+            </div>
+            <button id="btnClientSignUp" class="btn btn-primary">Sign up</button>
+        </form>
+    </div>
+
+{% endblock %}
