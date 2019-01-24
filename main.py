@@ -26,7 +26,7 @@ mail = Mail(app)
 # geocode_result = gmaps.geocode('1600 Amphitheatre Parkway, Mountain View, CA')
 
 # client sign in
-@app.route('/client/signin',methods=['GET'])
+@app.route('/client/signin',methods=['GET','POST'])
 def client_signin():
     if request.method == "POST":
         req_data = request.get_json(force=True)
@@ -35,9 +35,10 @@ def client_signin():
         if 'password' in req_data:
             password = req_data['password']
 
-        client = Client.sign_in(email=email,password=password)
         if email and password:
+            client = Client.sign_in(email=email,password=password)
             if client:
+                session['client'] = client.key.id()
                 return json_response({
                     "error" : False,
                     "message" : "Successfully signed in"})
@@ -486,13 +487,14 @@ def lawyer_add_password():
                 err=1, m="You have entered an invalid email address, Please try again.",email=email))
     return render_template('lawyer/lawyer-add-pass.html',title='Reset Password')
 
-# forget password area
+# send email with token 
 def send_reset_email(lawyer):
     token = lawyer.get_reset_token()
     msg = Message('Password Reset Request', sender='noreply@case.com', recipients=[lawyer.email])
     msg.body  = "To reset your password, visit the following link: \n" + url_for('lawyer_reset_token',token=token, _external=True) +"\n if you did not make this request then simply ignore this email and no changes will be made."
     mail.send(msg)
 
+# ask for email to reset password
 @app.route('/lawyer/reset-password',methods=['GET','POST'])
 def lawyer_reset_request():
     if session.get('lawyer') is not None:
@@ -521,6 +523,7 @@ def lawyer_reset_request():
                 "message" : "Please enter your email."})
     return render_template('lawyer/lawyer-reset-pass.html',title="Reset")
 
+# resetting password with new password
 @app.route('/lawyer/reset-password/<token>',methods=['GET','POST'])
 def lawyer_reset_token(token):
     if session.get('lawyer') is not None:

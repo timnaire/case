@@ -1,5 +1,19 @@
 $(document).ready(function(){
     var sendInfo = {}
+
+    $('#btnClientSignin').click(function(e){
+        e.preventDefault()
+        var email = $('#email').val();
+        var password = $('#password').val();
+        sendInfo = { email : email, password : password }
+        $.post("/client/signin", JSON.stringify(sendInfo) ,function(response){
+            if(response['error'] == false){
+                alert(response['message']);
+            }else{
+                console.log(response['message']);
+            }
+        }, "json")
+    });
     
     $('#btnClientSignUp').click(function(e){
         e.preventDefault();

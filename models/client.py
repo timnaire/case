@@ -1,6 +1,5 @@
 from google.appengine.ext import ndb
 from passlib.hash import pbkdf2_sha256
-from models.lawyer import Lawyer
 
 class Client(ndb.Model):
     first_name = ndb.StringProperty()
@@ -42,8 +41,7 @@ class Client(ndb.Model):
         client = None
 
         if email:
-            if not Lawyer.check_email(email):
-                client = cls.query(cls.email == email).get()
+            client = cls.query(cls.email == email).get()
         
         if not client:
             client = None
@@ -51,7 +49,7 @@ class Client(ndb.Model):
         return client
     
     @classmethod
-    def sign_in():
+    def sign_in(cls, email, password):
         client = None
         if email and password:
             client = cls.query(cls.email == email, cls.password != None).get()

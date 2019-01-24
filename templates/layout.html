@@ -24,6 +24,10 @@
     <a href="{{ url_for('lawyer_account_setting',lawyer_id=lawyer) }}" class='btn btn-primary'>Account Setting</a>
     <a href="{{ url_for('signout') }}" class='btn btn-primary'>Sign Out</a>
     {% endif %}
+
+    {% if client %}
+        <h4>Welcome client !! {{ client }}</h4>
+    {% endif %}
     
     {% block content %} {% endblock %}
     <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
