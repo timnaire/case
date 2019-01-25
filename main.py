@@ -16,8 +16,8 @@ gmaps = googlemaps.Client(key='AIzaSyCNHYz-iF2kippAtUQiv4hCPesfP_3G0ZE')
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_USERNAME'] = 'timmydonaire@gmail.com'
-app.config['MAIL_PASSWORD'] = 'thepearl345'
+app.config['MAIL_USERNAME'] = 'casesteamaid@gmail.com'
+app.config['MAIL_PASSWORD'] = 'Caseadmin123'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False

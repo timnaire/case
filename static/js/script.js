@@ -175,6 +175,7 @@ $(document).ready(function(){
             aboutme : aboutme,
             law_practice : practice
         }
+        console.log(JSON.stringify(sendInfo))
         $.post("/lawyer/"+id+"/account-setting/profile-information", JSON.stringify(sendInfo), function(response){
             console.log(response)
         } ,"json" );
