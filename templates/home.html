@@ -1,12 +1,13 @@
 {% extends 'layout.html' %}
 
 {% block content %}
+<h1>Find your Lawyer!</h1>
+<h2>Let us help you find the right lawyer.</h2>
 <form method="POST">
-    <h4>Find the Right Lawyer now</h4>
     <!-- f in id means find lawyer -->
     <div class="form-group">
         <select id="practice" class="form-control">
-            <option selected="true" disabled="disabled" >Select a Legel Issue</option>
+            <option selected="true" disabled="disabled" >Select a Legal Issue</option>
             {% for key, value in law_practice.items()|sort %}
                 <option value="{{key}}" > {{value}}
             </option>
@@ -16,18 +17,18 @@
     <div class="form-group">
         <input type="text" class="form-control" id="cityOrMunicipality" placeholder="City or Municipality">
     </div>
-    <button type='submit' id="btnFindLawyer" class='btn btn-primary btn-block'>Find a Lawyer</button>
+    <button type='submit' id="btnFindLawyer" class="btn-get-started">Find a Lawyer</button>
 </form>
-
+<!-- 
     <h4>A Lawyer?</h4>
     <p>Getting to know you.</p>
     <small><a href="{{ url_for('lawyer_signup') }}">Become a lawyer with us.</a></small>
 
     <h4>Sign-Up Client</h4>
     <p>Start finding your client now.</p>
-    <small><a href="{{ url_for('client_signup') }}">Sign-Up</a></small>
+    <small><a href="{{ url_for('client_signup') }}">Sign-Up</a></small> -->
     
-    <h4>Sign in Here</h4>
+    <!-- <h4>Sign in Here</h4>
     
     <form method="POST">
         <div class="form-group">
@@ -37,7 +38,7 @@
             <input type="password" id='password' class="form-control" placeholder="Password">
         </div>
         <button id='btnClientSignin' class="btn btn-primary">Sign In</button>
-    </form>
+    </form> -->
     <!-- This is the list results -->
     <div id="found-lawyer">
         

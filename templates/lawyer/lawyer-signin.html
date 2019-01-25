@@ -10,8 +10,7 @@
 {% endif %}
 
 <form method="POST">
-    <h4>Sign In</h4>
-    <p>Enter your email and password to use the system.</p>
+    <h2>Lawyer Signin</h2>
     <div class="form-group">
         {% if request.args.get('email') %}
         <input type="text" id="lawyer_email" value="{{ request.args.get('email') }}"  class="form-control" name="email" placeholder="Email" />
