@@ -54,3 +54,8 @@ class Practice(ndb.Model):
         
         data['law_practice'] = self.law_practice
         return data
+
+    def practice(self):
+        data = {}
+        data['law_practice'] = self.law_practice
+        return self.law_practice

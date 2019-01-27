@@ -125,9 +125,7 @@ def find_lawyer():
             law_practice = req_data['law_practice']
         if 'cityOrMunicipality' in req_data:
             cityOrMunicipality = req_data['cityOrMunicipality']
-
-        respo = {}
-        counter = 0
+            
         if law_practice and cityOrMunicipality:
             found_lawyers = Practice.find_practice(law_practice=law_practice, cityOrMunicipality=cityOrMunicipality)
             if found_lawyers:
@@ -205,6 +203,25 @@ def lawyer_update_picture(lawyer_id=None):
                 return json_response({
                     'error' : True,
                     'message' : "Profile picture was not saved!"})
+
+# profile picture route android save image
+@app.route('/lawyer/<int:lawyer_id>/profile-picture', methods=['POST'])
+@login_required_lawyer
+def update_lawyer_picture(lawyer_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'profile_pic' in req_data:
+            profile_pic = req_data['profile_pic']
+            
+        lawyer = Lawyer.save(id=lawyer_id, profile_pic=profile_pic)
+        if lawyer:
+            return json_response({
+                'error' : False,
+                'message' : "Profile picture has been saved!"})
+        else:
+            return json_response({
+                'error' : True,
+                'message' : "Profile picture was not saved!"})
 
 # profile information route
 @app.route('/lawyer/<int:lawyer_id>/account-setting/profile-information',methods=['POST'])
@@ -360,6 +377,15 @@ def lawyer_account_setting(lawyer_id=None):
 
     return render_template("lawyer/lawyer-account-setting.html",title="Account Setting",lawyer=session.get('lawyer'),lawyer_dict=lawyer_dict,law_practice=available_practice,practices=practice_dict)
 
+@app.route('/lawyer/<int:lawyer_id>/practice',methods=['GET'])
+def getPractice(lawyer_id=None):
+    lawyer = Lawyer.get_by_id(int(lawyer_id))
+    practices = Practice.query(Practice.lawyer == lawyer.key).fetch()
+    practice_dict = []
+    for practice in practices:
+        practice_dict.append(practice.practice())
+    return json_response({ "asd": practice_dict })
+
 #sign in route
 @app.route('/lawyer/signin',methods=['GET','POST'])
 def lawyer_signin():
@@ -378,6 +404,7 @@ def lawyer_signin():
                 return json_response({
                     'error' : False,
                     'message' : 'Successfully Logged in.',
+                    'lawyer' : lawyer.key.id(),
                     'first_name' : lawyer.first_name,
                     'last_name': lawyer.last_name,
                     'email': lawyer.email,
@@ -393,7 +420,7 @@ def lawyer_signin():
         else:
             return json_response({
                     'error': True,
-                    'message': 'Please check your email and password to login.',
+                    'message': 'Please check your email and password and try again.',
                     'email' : email})
 
     if session.get('lawyer') is not None:
