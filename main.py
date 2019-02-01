@@ -119,13 +119,10 @@ available_practice = {'Family':"Family", 'Employment': 'Employment', 'Criminal D
 # find a lawyer route
 @app.route('/lawyer/find',methods=['GET','POST'])
 def find_lawyer():
-    if request.method == "POST":
-        req_data = request.get_json(force=True)
-        if 'law_practice' in req_data:
-            law_practice = req_data['law_practice']
-        if 'cityOrMunicipality' in req_data:
-            cityOrMunicipality = req_data['cityOrMunicipality']
-            
+    if request.method == "POST":        
+        
+        law_practice=request.get('lawpractice')
+        cityOrMunicipality = request.get('city')
         if law_practice and cityOrMunicipality:
             found_lawyers = Practice.find_practice(law_practice=law_practice, cityOrMunicipality=cityOrMunicipality)
             if found_lawyers:
