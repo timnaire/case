@@ -65,7 +65,14 @@ class Case(ndb.Model):
         if self.lawyer:
             lawyer = self.lawyer.get()
             data['lawyer'] = lawyer.to_dict()
+
+        data['client'] = None
+        if self.client:
+            client = self.client.get()
+            data['client'] = client.to_dict()
         
-        data['case_title'] = self.case_name
+        data['case_title'] = self.case_title
         data['case_description'] = self.case_title
+        data['created'] = self.created.isoformat() + 'Z'
+        data['updated'] = self.updated.isoformat() + 'Z'
         return data

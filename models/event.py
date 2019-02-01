@@ -19,6 +19,4 @@ class Event(ndb.Model):
             lawyer = self.lawyer.get()
             data['lawyer'] = lawyer.to_dict()
         
-        data['case_title'] = self.case_name
-        data['case_description'] = self.case_title
         return data

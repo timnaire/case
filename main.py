@@ -153,7 +153,7 @@ def dashboard():
 
 # mycase route for lawyers 
 @app.route('/lawyer/<int:lawyer_id>/mycase', methods=['GET','POST'])
-@login_required_lawyer
+# @login_required_lawyer
 def mycase(lawyer_id=None):
     if request.method == "POST":
         req_data = request.get_json(force=True)
@@ -185,6 +185,17 @@ def mycase(lawyer_id=None):
     for case in cases:
         case_dict.append(case.to_dict())
     return render_template('lawyer/lawyer-mycase.html',title="My Case",lawyer=session['lawyer'],cases=case_dict)
+
+@app.route('/lawyer/<int:lawyer_id>/getAllCase',methods=['GET','POST'])
+def getAllCase(lawyer_id=None):
+    lawyer = Lawyer.get_by_id(int(lawyer_id))
+    cases = Case.query(Case.lawyer == lawyer.key).fetch()
+    case_dict = []
+    for case in cases:
+        case_dict.append(case.to_dict())
+        
+    return json_response({"cases" : case_dict})
+
 
 # profile picture route
 @app.route('/lawyer/<int:lawyer_id>/account-setting/profile-picture', methods=['POST'])
