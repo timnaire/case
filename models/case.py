@@ -4,7 +4,7 @@ from models.client import Client
 
 class Case(ndb.Model):
     lawyer = ndb.KeyProperty(kind=Lawyer)
-    case_name = ndb.StringProperty()
+    case_title = ndb.StringProperty()
     client = ndb.KeyProperty(kind=Client)
     case_description = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
@@ -29,8 +29,8 @@ class Case(ndb.Model):
             client_key = ndb.Key('Client', int(client_id))
             case.client = client_key 
         
-        if kwargs.get('case_name'):
-            case.case_name = kwargs.get('case_name')
+        if kwargs.get('case_title'):
+            case.case_title = kwargs.get('case_title')
         if kwargs.get('case_description'):
             case.case_description = kwargs.get('case_description')
 
@@ -47,6 +47,12 @@ class Case(ndb.Model):
             if lawyer_key:
                 case = cls.query(cls.lawyer == lawyer_key).order(cls.created).fetch()
         
+        client_id = str(kwargs.get('client'))
+        if client_id.isdigit():
+            client_key = ndb.Key('Lawyer',int(client_id))
+            if client_key:
+                case = cls.query(cls.client == client_key).order(cls.created).fetch()
+        
         if not case:
             case = None
 
@@ -60,5 +66,6 @@ class Case(ndb.Model):
             lawyer = self.lawyer.get()
             data['lawyer'] = lawyer.to_dict()
         
-        data['case_name'] = self.case_name
+        data['case_title'] = self.case_name
+        data['case_description'] = self.case_title
         return data

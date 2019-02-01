@@ -22,4 +22,10 @@ indexes:
 - kind: Lawyer
   properties:
   - name: email
+  - name: status
+  - name: password
+
+- kind: Lawyer
+  properties:
+  - name: email
   - name: password
