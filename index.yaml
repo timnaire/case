@@ -23,3 +23,9 @@ indexes:
   properties:
   - name: email
   - name: password
+
+- kind: Lawyer
+  properties:
+  - name: email
+  - name: status
+  - name: password

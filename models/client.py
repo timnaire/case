@@ -59,7 +59,7 @@ class Client(ndb.Model):
 
         return client
 
-    def to_dict():
+    def to_dict(self):
         data = {}
 
         data['first_name'] = self.first_name
@@ -69,3 +69,5 @@ class Client(ndb.Model):
         data['address'] = self.address
         data['created'] = self.created.isoformat() + 'Z'
         data['updated'] = self.updated.isoformat() + 'Z'
+
+        return data

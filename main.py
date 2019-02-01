@@ -153,19 +153,19 @@ def dashboard():
 
 # mycase route for lawyers 
 @app.route('/lawyer/<int:lawyer_id>/mycase', methods=['GET','POST'])
-@login_required_lawyer
+# @login_required_lawyer
 def mycase(lawyer_id=None):
     if request.method == "POST":
         req_data = request.get_json(force=True)
-        if 'case_name' in req_data:
-            case_name = req_data['case_name']
+        if 'case_title' in req_data:
+            case_title = req_data['case_title']
         if 'client_id' in req_data:
             client_id = req_data['client_id']
         if 'case_description' in req_data:
             case_description = req_data['case_description']
         
-        if case_name and client_id and case_description:
-            case = Case.save(lawyer=lawyer_id,case_name=case_name,client_id=client_id,case_description=case_description)
+        if case_title and client_id and case_description:
+            case = Case.save(lawyer=lawyer_id,case_title=case_title,client_id=client_id,case_description=case_description)
             if case:
                 return json_response({
                     "error" : False,
@@ -185,6 +185,17 @@ def mycase(lawyer_id=None):
     for case in cases:
         case_dict.append(case.to_dict())
     return render_template('lawyer/lawyer-mycase.html',title="My Case",lawyer=session['lawyer'],cases=case_dict)
+
+@app.route('/lawyer/<int:lawyer_id>/getAllCase',methods=['GET','POST'])
+def getAllCase(lawyer_id=None):
+    lawyer = Lawyer.get_by_id(int(lawyer_id))
+    cases = Case.query(Case.lawyer == lawyer.key).fetch()
+    case_dict = []
+    for case in cases:
+        case_dict.append(case.to_dict())
+        
+    return json_response({"cases" : case_dict})
+
 
 # profile picture route
 @app.route('/lawyer/<int:lawyer_id>/account-setting/profile-picture', methods=['POST'])
@@ -455,26 +466,36 @@ def lawyer_signup():
             office = req_data['office']
         if 'law_practice' in req_data:
             law_practice = req_data['law_practice']
+        if 'password' in req_data:
+            password = req_data['password']
+        if 'confirm_password' in req_data:
+            confirm_password = req_data['confirm_password']
 
         #all fields required
-        if first_name and last_name and email and phone and cityOrMunicipality and office and law_practice:
+        if first_name and last_name and email and phone and cityOrMunicipality and office and law_practice and password:
             #valid email address
             if is_email(email):
                 lawyer = Lawyer.check_email(email=email)
                 if not lawyer:
-                    lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,cityOrMunicipality=cityOrMunicipality,office=office,password='')
-                    if lawyer:
-                        # pract as in practice
-                        for pract in law_practice:
-                            Practice.save(lawyer=lawyer.key.id(),pract=pract)
+                    if password == confirm_password:
 
-                        return json_response({
-                            'error': False,
-                            'message': 'Thank you for signing up, We will contact you soon.'})
+                        lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,cityOrMunicipality=cityOrMunicipality,office=office,password=password,status="deactivate")
+                        if lawyer:
+                            # pract as in practice
+                            for pract in law_practice:
+                                Practice.save(lawyer=lawyer.key.id(),pract=pract)
+
+                            return json_response({
+                                'error': False,
+                                'message': 'Thank you for signing up, We will contact you soon.'})
+                        else:
+                            return json_response({
+                                'error': True,
+                                'message': 'Unable to process your request.'})
                     else:
                         return json_response({
                             'error': True,
-                            'message': 'Unable to process your request.'})
+                            'message' : "Confirm password does not match, please try again."})
                 else:
                     return json_response({
                             'error': True,
@@ -577,7 +598,7 @@ def lawyer_reset_token(token):
             
             if password and confirm:
                 if password == confirm:
-                    lawyer = lawyer.save(id=lawyer.key.id(),password=password)
+                    lawyer = lawyer.save(id=lawyer.key.id(),password=password,status="activated")
                     if lawyer:
                         return json_response({
                             "error" : False,
