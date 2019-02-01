@@ -1,5 +1,5 @@
 jQuery(document).ready(function ($) {
-  $('#signinlawyerblock').hide();
+  $('#login-container-div').show(1000);
   // Header fixed and Back to top button
   $(window).scroll(function () {
     if ($(this).scrollTop() > 100) {
@@ -16,19 +16,6 @@ jQuery(document).ready(function ($) {
     }, 1500, 'easeInOutExpo');
     return false;
   });
-
-  $('#openLawyerSignIn').click(function(){
-    $('#signinclientblock').hide();
-    $('#findlawyer').fadeOut(1000);
-    $('#signinlawyerblock').show(1500);
-  });
-
-  $('#openClientSignIn').click(function(){
-    $('#signinlawyerblock').hide();
-    $('#findlawyer').fadeOut(1000);
-    $('#signinclientblock').show(1500);
-  });
-
 
   // Initiate the wowjs
   new WOW().init();

@@ -1,0 +1,29 @@
+{% extends 'empty_layout.html' %}
+
+{% block content %}
+
+    <div id="card-result-container">
+        <form method="POST" class="form-inline">
+            <!-- f in id means find lawyer -->
+            
+            <div class="form-group">
+                <select id="practice" class="form-control">
+                    <option selected="true" disabled="disabled" >Select a Legal Issue</option>
+                    {% for key, value in law_practice.items()|sort %}
+                        <option value="{{key}}" > {{value}}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" id="cityOrMunicipality" placeholder="City or Municipality">
+            </div>
+            <button type='submit' id="btnFindLawyer" class="btn-get-started">Find a Lawyer</button>
+        </form> 
+        <div id="found-lawyers">
+            
+        </div>    
+        
+    </div>
+
+{% endblock %}

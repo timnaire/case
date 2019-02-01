@@ -117,7 +117,7 @@ available_practice = {'Family':"Family", 'Employment': 'Employment', 'Criminal D
          'Commercial Law':'Commercial Law' }
 
 # find a lawyer route
-@app.route('/lawyer/find',methods=['POST'])
+@app.route('/lawyer/find',methods=['GET','POST'])
 def find_lawyer():
     if request.method == "POST":
         req_data = request.get_json(force=True)
@@ -142,7 +142,7 @@ def find_lawyer():
                 'error' : True,
                 'message' : "Please select your legal issue and city to find lawyer."})
 
-        return json_response(respo)
+    return render_template('lawyer-found.html',title='Find',law_practice=available_practice,response=json_response)
 
 #dashboard route for lawyers
 @app.route('/lawyer/')
@@ -433,7 +433,7 @@ def lawyer_signin():
     if session.get('lawyer') is not None:
         return redirect(url_for('dashboard'))
 
-    return render_template('lawyer/lawyer-signin.html',title='Sign In Lawyer')
+    return render_template('lawyer/login.html',title='Sign In Lawyer')
 
 #sign up lawyer route
 @app.route('/lawyer/signup', methods=['GET','POST'])

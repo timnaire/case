@@ -11,7 +11,6 @@
 	  <link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
 	  <link href="assets/css/themify-icons.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='paper-bootstrap-wizard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dropzone.css') }}">
@@ -41,16 +40,11 @@
                   <nav id="nav-menu-container">
                     <ul class="nav-menu">
                       <li class="menu-active"><a href="/">Home</a></li>
-                      <li><a href="#about">About Us</a></li>
-                      <li><a href="#services">Services</a></li>
-                      <li><a href="#team">Team</a></li>                      
+                      <li><a href="/home#about">About Us</a></li>
+                      <li><a href="/home#services">Services</a></li>
+                      <li><a href="/home#team">Team</a></li>                      
                       <li><a href="#contact">Contact Us</a></li>
-                      <li class="menu-has-children"><a href="#">Sign In</a>
-                        <ul>
-                          <li><a href="{{ url_for('client_signin') }}">As a Client</a></li>
-                          <li><a href="{{ url_for('lawyer_signin') }}">As a Lawyer</a></li>
-                        </ul>
-                      </li>
+                      <li><a href="/lawyer/signin">Sign In</a></li>
                     </ul>
                   </nav><!-- #nav-menu-container -->
                 </div>
@@ -74,7 +68,7 @@
     {% if client %}
         <h4>Welcome client !! {{ client }}</h4>
     {% endif %}
-    <script src="{{ url_for('static', filename='js/paper-bootstrap-wizard.js') }}"></script>
+    
     <script src="{{ url_for('static', filename='js/jquery.bootstrap.wizard.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='js/hoverIntent.js') }}"></script>
