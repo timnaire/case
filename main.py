@@ -41,7 +41,12 @@ def client_signin():
                 session['client'] = client.key.id()
                 return json_response({
                     "error" : False,
-                    "message" : "Successfully signed in"})
+                    "message" : "Successfully signed in",
+                    "first_name" : client.first_name,
+                    "last_name" : client.last_name,
+                    "email" : client.email,
+                    "phone" : client.phone,
+                    "address" : client.address})
             else:
                 return json_response({
                     "error" : True,
@@ -91,7 +96,7 @@ def client_signup():
             else:
                 return json_response({
                     "error" : True,
-                    "message" : "Invalid email address, Please try again."})
+                    "message" : "Invalid email address, please try again."})
         else:
             return json_response({
                 "error" : True,
@@ -148,6 +153,44 @@ def find_lawyer():
 def dashboard():
     return render_template('lawyer/lawyer-dashboard.html',title="Welcome to Dashboard",lawyer=session['lawyer'])
 
+@app.route('/lawyer/<int:lawyer_id>/add-event',methods=['GET','POST'])
+def add_event(lawyer_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'client_id' in req_data:
+            client_id = req_data['client_id']
+        if 'event_content' in req_data:
+            event_content = req_data['event_data']
+        if 'event_type' in req_data:
+            event_type = req_data['event_type']
+        if 'date' in req_data:
+            date = req_data['date']
+
+        if client_id and event_content and event_type and date:
+            event = Event.save(lawyer=lawyer_id, client=client_id,event_content=event_content,event_type=event_type,date=date)
+            if event:
+                return json_response({
+                    "error" : False,
+                    "message" : "Event created !"})
+            else:
+                return json_response({
+                    "error" : True,
+                    "message" : "Couldn't create event, please try again."})
+        else:
+            return json_response({
+                "error" : True,
+                "message" : "Please fill up all the fields and try again."})
+
+@app.route('/lawyer/<int:lawyer_id>/get-event',methods=['GET','POST'])
+def get_event(lawyer_id=None):
+    lawyer = Lawyer.get_by_id(int(lawyer_id))
+    events = Event.query(Event.lawyer == lawyer.key).fetch()
+    event_dict = []
+    for event in events:
+        event_dict.append(event.to_dict())
+        
+    return json_response({"events" : event_dict})
+
 # mycase route for lawyers 
 @app.route('/lawyer/<int:lawyer_id>/mycase', methods=['GET','POST'])
 # @login_required_lawyer
@@ -183,7 +226,7 @@ def mycase(lawyer_id=None):
         case_dict.append(case.to_dict())
     return render_template('lawyer/lawyer-mycase.html',title="My Case",lawyer=session['lawyer'],cases=case_dict)
 
-@app.route('/lawyer/<int:lawyer_id>/getAllCase',methods=['GET','POST'])
+@app.route('/lawyer/<int:lawyer_id>/get-case',methods=['GET','POST'])
 def getAllCase(lawyer_id=None):
     lawyer = Lawyer.get_by_id(int(lawyer_id))
     cases = Case.query(Case.lawyer == lawyer.key).fetch()
@@ -430,7 +473,7 @@ def lawyer_signin():
             else:
                 return json_response({
                     'error': True,
-                    'message': 'Credintials do not much, Please try again.',
+                    'message': 'Credintials do not much, please try again.',
                     'email' : email})
         else:
             return json_response({
