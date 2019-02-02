@@ -15,6 +15,7 @@ body {
      -o-perspective: 800px;
         perspective: 800px;
         margin-bottom: 30px;
+        margin: 23px;
 }
 /* flip the pane when hovered */
 .card-container:not(.manual-flip):hover .card,
@@ -86,8 +87,15 @@ body {
     border-radius: 4px;
     color: #444444;
 }
+/* .card-container{
+    float:left;
+    width: 272px;
+    height:  420px;
+    border-radius: 4px;
+} */
 .card-container, .front, .back {
-	width: 100%;
+    width: 272px;
+    float:left;
 	height: 420px;
 	border-radius: 4px;
 }

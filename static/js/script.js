@@ -1,7 +1,7 @@
 $(document).ready(function(){
     var sendInfo = {}
 
-
+    $('#card-result-container').fadeIn(1000);
 
 
     $('#btnClientSignin').click(function(e){
@@ -25,7 +25,7 @@ $(document).ready(function(){
         var email = $('#email').val();
         var phone = $('#phone').val();
         var address = $('#address').val();
-        var password = $('#password').val();
+        var password = $('#the-password').val();
         var confirm = $('#confirm-password').val();
         sendInfo = {
             first_name : first_name,

@@ -509,10 +509,10 @@ def lawyer_signup():
         if 'password' in req_data:
             password = req_data['password']
         if 'confirm_password' in req_data:
-            confirm_password = req_data['confirm_password']
+            confirm_password = req_data['confirm']
 
         #all fields required
-        if first_name and last_name and email and phone and cityOrMunicipality and office and law_practice and password:
+        if first_name and last_name and email and phone and cityOrMunicipality and office and law_practice and password and confirm_password:
             #valid email address
             if is_email(email):
                 lawyer = Lawyer.check_email(email=email)

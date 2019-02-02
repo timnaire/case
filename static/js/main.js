@@ -1,5 +1,8 @@
 jQuery(document).ready(function ($) {
   $('#login-container-div').show(1000);
+  $('#lawyer-signup-form').fadeIn(1000);
+  $('#findlawyer').fadeIn(1000);
+  $('#card-result-container').fadeIn(1000);
   // Header fixed and Back to top button
   $(window).scroll(function () {
     if ($(this).scrollTop() > 100) {
