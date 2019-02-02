@@ -7,6 +7,7 @@ class Case(ndb.Model):
     case_title = ndb.StringProperty()
     client = ndb.KeyProperty(kind=Client)
     case_description = ndb.StringProperty()
+    case_status = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
 
@@ -33,6 +34,8 @@ class Case(ndb.Model):
             case.case_title = kwargs.get('case_title')
         if kwargs.get('case_description'):
             case.case_description = kwargs.get('case_description')
+        if kwargs.get('case_status'):
+            case.case_status = kwargs.get('case_status')
 
         case.put()
         return case
@@ -73,6 +76,7 @@ class Case(ndb.Model):
         
         data['case_title'] = self.case_title
         data['case_description'] = self.case_title
+        data['case_status'] = self.case_status
         data['created'] = self.created.isoformat() + 'Z'
         data['updated'] = self.updated.isoformat() + 'Z'
         return data

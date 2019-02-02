@@ -5,7 +5,10 @@ from models.client import Client
 class Event(ndb.Model):
     lawyer = ndb.KeyProperty(kind=Lawyer)
     client = ndb.KeyProperty(kind=Client)
-    event_content = ndb.StringProperty()
+    event_title = ndb.StringProperty()
+    event_location = ndb.StringProperty()
+    event_details = ndb.StringProperty()
+    event_duration = ndb.StringProperty()
     event_type = ndb.StringProperty()
     date = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
@@ -30,10 +33,16 @@ class Event(ndb.Model):
             client_key = ndb.Key('Client', int(client_id))
             event.client = client_key 
         
-        if kwargs.get('event_content'):
-            event.event_content = kwargs.get('event_content')
+        if kwargs.get('event_title'):
+            event.event_content = kwargs.get('event_title')
+        if kwargs.get('event_location'):
+            event.event_content = kwargs.get('event_location')
+        if kwargs.get('event_details'):
+            event.event_content = kwargs.get('event_details')
         if kwargs.get('event_type'):
             event.event_type = kwargs.get('event_type')
+        if kwargs.get('event_duration'):
+            event.event_duration = kwargs.get('event_duration')
         if kwargs.get('date'):
             event.date = kwargs.get('date')
 
@@ -47,7 +56,16 @@ class Event(ndb.Model):
         if self.lawyer:
             lawyer = self.lawyer.get()
             data['lawyer'] = lawyer.to_dict()
-        data['event_content'] = self.event_content
+
+        data['client'] = None
+        if self.client:
+            client = self.client.get()
+            data['client'] = client.to_dict()
+        
+        data['event_duration'] = self.event_duration
+        data['event_title'] = self.event_title
+        data['event_details'] = self.event_details
+        data['event_location'] = self.event_location
         data['date'] = self.date
         
         return data
