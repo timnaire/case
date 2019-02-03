@@ -39,8 +39,10 @@
                     <input type="submit" class="btnSubmit" value="Login" />
                 </div>
                 <div class="form-group">
-
                     <a href="#" class="ForgetPwd" value="Login">Forget Password?</a>
+                </div>
+                <div class="form-group">
+                    <a href="{{url_for('client_signup')}}">Don't have an account yet?</a>
                 </div>
             </form>
         </div>
@@ -63,8 +65,12 @@
                 <div class="form-group">
                     <a href="#" class="ForgetPwd">Forget Password?</a>
                 </div>
+                <div class="form-group">
+                    <a href="{{url_for('lawyer_signup')}}" style="color: #fff">Don't have an account yet?</a>
+                </div>
             </form>
         </div>
     </div>
 </div>
+ 
 {% endblock %}
