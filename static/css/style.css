@@ -1012,6 +1012,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 }
 #lawyer-signup-form{
   margin: 0;
+  width: 35%;
   display: none;
 }
 
@@ -1031,7 +1032,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 /*form styles*/
 
 #msform {
-  width: 612px;
+  width: 100%;
   margin: 50px auto 550px;
   text-align: center;
   position: relative;
@@ -1241,4 +1242,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 }
 #card-result-container-cards{
   margin:0 2%;
+}
+#account-profile-container{
+  margin-top: 67px;
 }

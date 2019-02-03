@@ -41,7 +41,18 @@
                       <li><a href="#services">Services</a></li>
                       <li><a href="#team">Team</a></li>                      
                       <li><a href="#contact">Contact Us</a></li>
+                      {% if lawyer %}                      
+                      <li><a href="#">My Account</a>
+                         <ul>
+                           <li><a href="/lawyer/dashboard">My Dashboard</a></li>
+                           <li><a href="/lawyer/{{lawyer}}/mycase">Cases</a></li>
+                           <li><a href="/lawyer/{{lawyer}}/account-setting">Account Settings</a></li>
+                           <li><a href="/lawyer/signout">Log Out</a></li>
+                         </ul>
+                      </li>                      
+                      {% else %}                      
                       <li><a href="/lawyer/signin">Sign In</a></li>
+                      {% endif %}
                     </ul>
                   </nav><!-- #nav-menu-container -->
                 </div>
@@ -221,16 +232,6 @@
             </div>
           </section><!-- #team -->
     </main>
-    {% if lawyer %}
-    <a href="{{ url_for('dashboard') }}" class='btn btn-primary'>Dashboard</a>
-    <a href="{{ url_for('mycase',lawyer_id=lawyer) }}" class='btn btn-primary'>My Case</a>
-    <a href="{{ url_for('lawyer_account_setting',lawyer_id=lawyer) }}" class='btn btn-primary'>Account Setting</a>
-    <a href="{{ url_for('signout') }}" class='btn btn-primary'>Sign Out</a>
-    {% endif %}
-
-    {% if client %}
-        <h4>Welcome client !! {{ client }}</h4>
-    {% endif %}
     
     
     <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>

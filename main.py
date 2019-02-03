@@ -111,8 +111,11 @@ def client_signup():
 @app.route('/home', methods=['GET','POST'])
 def home():
     global available_practice
-    return render_template('home.html',title='Home',law_practice=available_practice)
 
+    if session.get('lawyer') is not None:
+        return render_template('home.html',title='Home',lawyer=session['lawyer'],law_practice=available_practice)
+    else:
+        return render_template('home.html',title='Home',law_practice=available_practice)
 #####################################################################################################################################
 # for lawyers and below
 
@@ -124,6 +127,7 @@ available_practice = {'Family':"Family", 'Employment': 'Employment', 'Criminal D
 # find a lawyer route
 @app.route('/lawyer/find',methods=['GET','POST'])
 def find_lawyer():
+    found_lawyers = []
     if request.method == "POST":        
         
         law_practice=request.get('lawpractice')
@@ -131,20 +135,19 @@ def find_lawyer():
         if law_practice and cityOrMunicipality:
             found_lawyers = Practice.find_practice(law_practice=law_practice, cityOrMunicipality=cityOrMunicipality)
             if found_lawyers:
-                return json_response({
-                    'error': False,
-                    'lawyers' : found_lawyers})
+                return found_lawyers
             else:
                 return json_response({
                     'error' : True,
                     'message': "No lawyer(s) found in "+cityOrMunicipality+" with practice of "+law_practice})
-
+                   
         else:
             return json_response({
                 'error' : True,
                 'message' : "Please select your legal issue and city to find lawyer."})
 
-    return render_template('lawyer-found.html',title='Find',law_practice=available_practice,response=json_response)
+    return render_template('lawyer-found.html',title='Find',law_practice=available_practice,response=json_response,results=found_lawyers)
+    
 
 #dashboard route for lawyers
 @app.route('/lawyer/')
@@ -480,7 +483,7 @@ def lawyer_signin():
             else:
                 return json_response({
                     'error': True,
-                    'message': 'Credintials do not much, please try again.',
+                    'message': 'Credentials do not match, please try again.',
                     'email' : email})
         else:
             return json_response({
@@ -515,7 +518,11 @@ def lawyer_signup():
         if 'password' in req_data:
             password = req_data['password']
         if 'confirm' in req_data:
+<<<<<<< HEAD
             confirm = req_data['confirm']
+=======
+            confirm_password = req_data['confirm']
+>>>>>>> 42877224d27d1bfa0871f24fc523e1d3f4419804
 
         #all fields required
         if first_name and last_name and email and phone and cityOrMunicipality and office and law_practice and password and confirm:

@@ -251,6 +251,8 @@ $(document).ready(function(){
         var phone = $('#phone').val().trim();
         var cityOrMunicipality = $('#cityOrMunicipality').val().trim();
         var office = $('#office').val().trim();
+        var password = $('#the-password').val();
+        var confirm = $('#confirm-password').val();
         // var law_practice = $('#law_practice').val();
         var practice = [];
         $.each($("input[class='practice']:checked"), function(){            
@@ -267,7 +269,11 @@ $(document).ready(function(){
             office : office,
             law_practice : practice,
             password : password,
+<<<<<<< HEAD
             confirm : confirm
+=======
+            confirm: confirm
+>>>>>>> 42877224d27d1bfa0871f24fc523e1d3f4419804
         }
 
         $.post("/lawyer/signup",JSON.stringify(sendInfo),function(response){
