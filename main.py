@@ -205,7 +205,7 @@ def mycase(lawyer_id=None):
             case_description = req_data['case_description']
         
         if case_title and client_id and case_description:
-            case = Case.save(lawyer=lawyer_id,case_title=case_title,client_id=client_id,case_description=case_description)
+            case = Case.save(lawyer=lawyer_id,case_title=case_title,client_id=client_id,case_description=case_description,status='Active')
             if case:
                 return json_response({
                     "error" : False,
@@ -230,12 +230,19 @@ def mycase(lawyer_id=None):
 def getAllCase(lawyer_id=None):
     lawyer = Lawyer.get_by_id(int(lawyer_id))
     cases = Case.query(Case.lawyer == lawyer.key).fetch()
-    case_dict = []
-    for case in cases:
-        case_dict.append(case.to_dict())
-        
-    return json_response({"cases" : case_dict})
-
+    if cases != None:
+        case_dict = []
+        for case in cases:
+            case_dict.append(case.to_dict())
+        return json_response({
+            "error" : False,
+            "message" : `len(case_dict)`+" case(s) found.",
+            "cases" : case_dict})
+    else:
+        return json_response({ 
+            "error" : True,
+            "message" : "No case found",
+            "cases" : "Empty"})
 
 # profile picture route
 @app.route('/lawyer/<int:lawyer_id>/account-setting/profile-picture', methods=['POST'])
@@ -507,16 +514,16 @@ def lawyer_signup():
             law_practice = req_data['law_practice']
         if 'password' in req_data:
             password = req_data['password']
-        if 'confirm_password' in req_data:
-            confirm_password = req_data['confirm']
+        if 'confirm' in req_data:
+            confirm = req_data['confirm']
 
         #all fields required
-        if first_name and last_name and email and phone and cityOrMunicipality and office and law_practice and password and confirm_password:
+        if first_name and last_name and email and phone and cityOrMunicipality and office and law_practice and password and confirm:
             #valid email address
             if is_email(email):
                 lawyer = Lawyer.check_email(email=email)
                 if not lawyer:
-                    if password == confirm_password:
+                    if password == confirm:
                         lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,cityOrMunicipality=cityOrMunicipality,office=office,password=password,status="deactivate")
                         if lawyer:
                             # pract as in practice

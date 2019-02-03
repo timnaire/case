@@ -256,7 +256,8 @@ $(document).ready(function(){
         $.each($("input[class='practice']:checked"), function(){            
             practice.push($(this).val());
         });
-        
+        var password = $('#the-password').val();
+        var confirm = $('#confirm-password').val();
         sendInfo = {
             first_name : first_name,
             last_name : last_name,
@@ -264,7 +265,9 @@ $(document).ready(function(){
             phone : phone,
             cityOrMunicipality : cityOrMunicipality,
             office : office,
-            law_practice : practice
+            law_practice : practice,
+            password : password,
+            confirm : confirm
         }
 
         $.post("/lawyer/signup",JSON.stringify(sendInfo),function(response){
