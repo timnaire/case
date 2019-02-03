@@ -491,7 +491,6 @@ def lawyer_signin():
 def lawyer_signup():
     if request.method == 'POST':
         req_data = request.get_json(force=True)
-
         if 'first_name' in req_data:
             first_name = req_data['first_name']
         if 'last_name' in req_data:
@@ -518,13 +517,11 @@ def lawyer_signup():
                 lawyer = Lawyer.check_email(email=email)
                 if not lawyer:
                     if password == confirm_password:
-
                         lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,cityOrMunicipality=cityOrMunicipality,office=office,password=password,status="deactivate")
                         if lawyer:
                             # pract as in practice
                             for pract in law_practice:
                                 Practice.save(lawyer=lawyer.key.id(),pract=pract)
-
                             return json_response({
                                 'error': False,
                                 'message': 'Thank you for signing up, We will contact you soon.'})
@@ -662,15 +659,15 @@ def signout():
     return redirect(url_for('lawyer_signin'))
 
 
-@app.errorhandler(500)
-def error_500(e):
-    logging.exception(e)
-    return 'Something went wrong'
+# @app.errorhandler(500)
+# def error_500(e):
+#     logging.exception(e)
+#     return 'Something went wrong'
 
-@app.errorhandler(404)
-def error_404(e):
-    logging.exception(e)
-    return 'Page not found'
+# @app.errorhandler(404)
+# def error_404(e):
+#     logging.exception(e)
+#     return 'Page not found'
 
 if __name__ == "__main__":
     app.run()
