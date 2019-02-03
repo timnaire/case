@@ -269,11 +269,7 @@ $(document).ready(function(){
             office : office,
             law_practice : practice,
             password : password,
-<<<<<<< HEAD
             confirm : confirm
-=======
-            confirm: confirm
->>>>>>> 42877224d27d1bfa0871f24fc523e1d3f4419804
         }
 
         $.post("/lawyer/signup",JSON.stringify(sendInfo),function(response){

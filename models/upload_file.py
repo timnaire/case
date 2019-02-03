@@ -4,6 +4,8 @@ from models.case import Case
 class UploadFile(ndb.Model):
     case = ndb.KeyProperty(kind=Case)
     case_file = ndb.StringProperty()
+    file_privacy = ndb.StringProperty()
+    file_type= ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
 
@@ -23,6 +25,10 @@ class UploadFile(ndb.Model):
         
         if kwargs.get('case_file'):
             uploadfile.case_name = kwargs.get('case_file')
+        if kwargs.get('file_privacy'):
+            uploadfile.file_privacy = kwargs.get('casfile_privacye_file')
+        if kwargs.get('file_type'):
+            uploadfile.file_type = kwargs.get('file_type')
 
         uploadfile.put()
         return uploadfile
@@ -51,4 +57,6 @@ class UploadFile(ndb.Model):
             data['case'] = case.to_dict()
         
         data['case_file'] = self.case_file
+        data['file_privacy'] = self.file_privacy
+        data['file_type'] = self.file_type
         return data
