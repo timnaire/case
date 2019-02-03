@@ -49,6 +49,18 @@ class Client(ndb.Model):
         return client
     
     @classmethod
+    def get_client(cls, client_id):
+        client = None
+
+        if client_id:
+            client = cls.get_by_id(int(client_id))
+        
+        if not client:
+            client = None
+
+        return client
+    
+    @classmethod
     def sign_in(cls, email, password):
         client = None
         if email and password:

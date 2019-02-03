@@ -208,15 +208,21 @@ def mycase(lawyer_id=None):
             case_description = req_data['case_description']
         
         if case_title and client_id and case_description:
-            case = Case.save(lawyer=lawyer_id,case_title=case_title,client_id=client_id,case_description=case_description,status='Active')
+            case = Client.get_client(client_id=client_id)
             if case:
-                return json_response({
-                    "error" : False,
-                    "message" : "New case added."})
+                case = Case.save(lawyer=lawyer_id,case_title=case_title,client_id=client_id,case_description=case_description,status='Active')
+                if case:
+                    return json_response({
+                        "error" : False,
+                        "message" : "New case added."})
+                else:
+                    return json_response({
+                        "error" : True,
+                        "message" : "Couldn't add a case, please try again."})
             else:
                 return json_response({
                     "error" : True,
-                    "message" : "Couldn't add a case, please try again."})
+                    "message" : "No client found with that id, please try again."})
         else:
             return json_response({
                 'error' : True,
@@ -433,16 +439,6 @@ def lawyer_account_setting(lawyer_id=None):
         practice_dict.append(practice.to_dict())
 
     return render_template("lawyer/lawyer-account-setting.html",title="Account Setting",lawyer=session.get('lawyer'),lawyer_dict=lawyer_dict,law_practice=available_practice,practices=practice_dict)
-
-# @app.route('/lawyer/<int:lawyer_id>/get-lawyer',methods=['GET'])
-# def getLawyer(lawyer_id=None):
-#     if lawyer_id:
-#         lawyer_dict = Lawyer.get_by_id(int(lawyer_id))
-#         if lawyer_dict:
-#             lawyer_dict = lawyer_dict.to_dict()
-#             return json_response(lawyer_dict)
-#         else:
-#             abort(404)
     
 @app.route('/lawyer/<int:lawyer_id>/get-lawyer-practice',methods=['GET'])
 def getPractice(lawyer_id=None):
@@ -518,11 +514,7 @@ def lawyer_signup():
         if 'password' in req_data:
             password = req_data['password']
         if 'confirm' in req_data:
-<<<<<<< HEAD
             confirm = req_data['confirm']
-=======
-            confirm_password = req_data['confirm']
->>>>>>> 42877224d27d1bfa0871f24fc523e1d3f4419804
 
         #all fields required
         if first_name and last_name and email and phone and cityOrMunicipality and office and law_practice and password and confirm:
@@ -673,15 +665,15 @@ def signout():
     return redirect(url_for('lawyer_signin'))
 
 
-# @app.errorhandler(500)
-# def error_500(e):
-#     logging.exception(e)
-#     return 'Something went wrong'
+@app.errorhandler(500)
+def error_500(e):
+    logging.exception(e)
+    return 'Something went wrong'
 
-# @app.errorhandler(404)
-# def error_404(e):
-#     logging.exception(e)
-#     return 'Page not found'
+@app.errorhandler(404)
+def error_404(e):
+    logging.exception(e)
+    return 'Page not found'
 
 if __name__ == "__main__":
     app.run()
