@@ -123,7 +123,7 @@ def update_client_picture(client_id=None):
             profile_pic = req_data['profile_pic']
             
         client = Client.save(id=client_id, profile_pic=profile_pic)
-        if lawyer:
+        if client:
             return json_response({
                 'error' : False,
                 'message' : "Profile picture has been saved!"})
@@ -183,10 +183,10 @@ def client_update_email(client_id=None):
                     if not client:
                         # check if the password is correct
                         client = Client.check_pass(id=client_id,password=password)
-                        if lawyer:
+                        if client:
                             # changing email
                             client = Client.change_email(id=client_id,current=current,newemail=newemail,password=password)
-                            if lawyer:
+                            if client:
                                 return json_response({"error" : False,
                                 "message" : "Email has been changed!"})
                             else:
