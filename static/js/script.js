@@ -6,8 +6,8 @@ $(document).ready(function(){
 
     $('#btnClientSignin').click(function(e){
         e.preventDefault()
-        var email = $('#email').val();
-        var password = $('#password').val();
+        var email = $('#client_email').val();
+        var password = $('#client_password').val();
         sendInfo = { email : email, password : password }
         $.post("/client/signin", JSON.stringify(sendInfo) ,function(response){
             if(response['error'] == false){
@@ -41,11 +41,15 @@ $(document).ready(function(){
             dataType: 'json',
             data: JSON.stringify(sendInfo),
             type: 'POST',
-            beforeSend : function(response){
-                console.log('animation here') // put animation
-            },
             success: function (response) {
-                console.log(response) // display success response from the server
+                var succ = 1;
+                var err = 1;
+                var m = response['message']
+                if(response['error'] == false){
+                    window.location.replace('/client/signup?succ='+succ+"&m="+m);                
+                }else if(response['error'] == true){
+                    window.location.replace('/client/signup?err='+err+"&m="+m);
+                }
             }
         });
     });
@@ -286,22 +290,72 @@ $(document).ready(function(){
         
     });
 
-    $('#btnResetPassword').click(function(e){
+    // reset password for client
+    $('#btnResetPassClient').click(function(e){
+        e.preventDefault();
+        var token = $("#token").val();
+        var password = $('#password').val();
+        var confirm = $('#confirm-password').val();
+        sendInfo = { password : password , confirm : confirm }
+        $.post('/client/reset-password/'+token, JSON.stringify(sendInfo), function(response){
+            var succ = 1;
+            var err = 1;
+            var m = response['message'];
+            if(response['error'] == false){
+                window.location.replace('/client/reset-password/'+token+'?succ='+succ+"&m="+m);
+            } else {
+                window.location.replace('/client/reset-password/'+token+'?err='+err+"&m="+m);
+            }
+        });
+    })
+
+    $("#btnForgotPassClient").click(function(e){
+        var email = $('#email').val();
+        sendInfo = { email : email }
+        $.post('/client/reset-password', JSON.stringify(sendInfo), function(response){
+            var succ = 1;
+            var err = 1;
+            var m = response['message'];
+            if(response['error'] == false){
+                window.location.replace('/client/reset-password?succ='+succ+"&m="+m);
+            } else {
+                window.location.replace('/client/reset-password?err='+err+"&m="+m);
+            }
+        });
+        e.preventDefault()
+    });
+
+    // reset password for lawyer
+    $('#btnResetPassLawyer').click(function(e){
         e.preventDefault();
         var token = $("#token").val();
         var password = $('#password').val();
         var confirm = $('#confirm-password').val();
         sendInfo = { password : password , confirm : confirm }
         $.post('/lawyer/reset-password/'+token, JSON.stringify(sendInfo), function(response){
-            console.log(response)
+            var succ = 1;
+            var err = 1;
+            var m = response['message'];
+            if(response['error'] == false){
+                window.location.replace('/lawyer/reset-password/'+token+'?succ='+succ+"&m="+m);
+            } else {
+                window.location.replace('/lawyer/reset-password/'+token+'?err='+err+"&m="+m);
+            }
         });
     })
 
-    $("#btnForgotPass").click(function(e){
+    $("#btnForgotPassLawyer").click(function(e){
         var email = $('#email').val();
         sendInfo = { email : email }
         $.post('/lawyer/reset-password', JSON.stringify(sendInfo), function(response){
-            console.log(response)
+            var succ = 1;
+            var err = 1;
+            var m = response['message'];
+            if(response['error'] == false){
+                window.location.replace('/lawyer/reset-password?succ='+succ+"&m="+m);
+            } else {
+                window.location.replace('/lawyer/reset-password?err='+err+"&m="+m);
+            }
         });
         e.preventDefault()
     });

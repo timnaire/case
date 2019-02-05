@@ -42,6 +42,7 @@ def client_signin():
                 return json_response({
                     "error" : False,
                     "message" : "Successfully signed in",
+                    "client" : client.key.id(),
                     "first_name" : client.first_name,
                     "last_name" : client.last_name,
                     "email" : client.email,
@@ -50,11 +51,16 @@ def client_signin():
             else:
                 return json_response({
                     "error" : True,
-                    "message" : "Unsuccessful sign in, please try again."})
+                    "message" : "Credentials do not match, please try again."})
         else:
             return json_response({
                 "error" : True,
-                "message" : "Please enter your email and password to sign in."})
+                "message" : "Please check your email and password and try again."})
+
+    if session.get('client') is not None:
+        return redirect(url_for('dashboard'))
+
+    return render_template('lawyer/login.html',title='Sign In')
 
 @app.route('/client/signup',methods=['GET','POST'])
 def client_signup():
@@ -85,6 +91,10 @@ def client_signup():
                             return json_response({
                                 "error" : False,
                                 "message" : "Successfully signed up"})
+                        else:
+                            return json_response({
+                                "error" : True,
+                                "message" : "Unable to process your request."})
                     else:
                         return json_response({
                             "error" : True,
@@ -92,19 +102,154 @@ def client_signup():
                 else:
                     return json_response({
                         "error" : True,
-                        "message" : "Email already taken, please try again."})
+                        "message" : "Email already taken, please try another email."})
             else:
                 return json_response({
                     "error" : True,
-                    "message" : "Invalid email address, please try again."})
+                    "message" : "You have entered an invalid email address, please try again."})
         else:
             return json_response({
                 "error" : True,
-                "message" : "Please provide your details to sign up."})
-        
-
+                "message" : "Please dont leave the fields empty and try again."})
         
     return render_template('client/client-signup.html',title="Client Sign up")
+
+# for mobile upload with no login required
+@app.route('/client/<int:client_id>/profile-picture', methods=['POST'])
+def update_client_picture(client_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'profile_pic' in req_data:
+            profile_pic = req_data['profile_pic']
+            
+        client = Client.save(id=client_id, profile_pic=profile_pic)
+        if lawyer:
+            return json_response({
+                'error' : False,
+                'message' : "Profile picture has been saved!"})
+        else:
+            return json_response({
+                'error' : True,
+                'message' : "Profile picture was not saved!"})
+
+# profile information route
+@app.route('/client/<int:client_id>/account-setting/profile-information',methods=['POST'])
+def client_update_information(client_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'first_name' in req_data:
+            first_name = req_data['first_name']
+        if 'last_name' in req_data:
+            last_name = req_data['last_name']
+        if 'phone' in req_data:
+            phone = req_data['phone']
+        if 'address' in req_data:
+            address = req_data['address']
+
+        if first_name and last_name and phone and address:
+            client = Client.save(id=client_id,first_name=first_name,last_name=last_name,phone=phone,address=address)
+            if client:
+                return json_response({
+                    'error' : False,
+                    'message' : "Profile information has been saved!"})
+            else:
+                return json_response({
+                    'error' : True,
+                    'message' : "Profile information was not saved!"})
+        else:
+            return json_response({
+                'error' : True,
+                'message' : "Please dont leave the fields empty."})
+
+# changing email
+@app.route('/client/<int:client_id>/account-setting/change-email',methods=['POST'])
+def client_update_email(client_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'current' in req_data:
+            current = req_data['current']
+        if 'new_email' in req_data:
+            newemail = req_data['new_email'] 
+        if 'password' in req_data:
+            password = req_data['password']
+        
+        if current and newemail and password:
+            # check if the current email is email
+            if is_email(current):
+                # check if the new email is email
+                if is_email(newemail):
+                    # check if the new email already exist or not
+                    client = Client.email_exist(newemail=newemail)
+                    if not client:
+                        # check if the password is correct
+                        client = Client.check_pass(id=client_id,password=password)
+                        if lawyer:
+                            # changing email
+                            client = Client.change_email(id=client_id,current=current,newemail=newemail,password=password)
+                            if lawyer:
+                                return json_response({"error" : False,
+                                "message" : "Email has been changed!"})
+                            else:
+                                return json_response({"error" : True,
+                                "message" : "Email was not changed, please try again."})
+                        else:
+                            return json_response({"error" : True,
+                            "message" : "Incorrect password, please try again."})
+                    else:
+                        return json_response({"error" : True,
+                        "message" : "Email already taken, please try another email"})
+                else:
+                    return json_response({
+                        "error" : True,
+                        "message" : "Please enter a valid new email."})
+            else:
+                return json_response({
+                    "error" : True,
+                    "message" : "Please enter your correct email"}) 
+        else:
+            return json_response({
+                "error" : True,
+                "message" : "Please dont leave the fileds empty."})
+
+# change password
+@app.route('/client/<int:client_id>/account-setting/change-password',methods=['POST'])
+def client_update_password(client_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'current' in req_data:
+            password = req_data['current']
+        if 'newpass' in req_data:
+            newpass = req_data['newpass']
+        if 'confirm' in req_data:
+            confirm = req_data['confirm']
+        
+        if password and newpass and confirm:
+            client = Client.check_pass(id=client_id, password=password)
+            if client:
+                if newpass == confirm:
+                    if newpass != password:
+                        client = Client.change_pass(id=client_id, password=password,newpass=newpass)
+                        if client:
+                            return json_response({"error" : False,
+                            "message" : "Password has been changed!"})
+                        else:
+                            return json_response({"error" : True,
+                            "message" : "Password was not changed, please try again."})
+                    else:
+                        return json_response({'error' : True,
+                        "message" : "New password must not be the same to your current password."})
+                else:
+                    return json_response({"error" : True,
+                    "message" : "Confirmation password does not match, please try again. "})
+            else:
+                return json_response({
+                    "error" : True,
+                    "message" : "Please enter your current password."})
+        else:
+            return json_response({
+                "error" : True,
+                "message" : "Please dont leave the fields empty"})
+
 
 # home page for client
 @app.route('/', methods=['GET','POST'])
@@ -490,7 +635,7 @@ def lawyer_signin():
     if session.get('lawyer') is not None:
         return redirect(url_for('dashboard'))
 
-    return render_template('lawyer/login.html',title='Sign In Lawyer')
+    return render_template('lawyer/login.html',title='Sign In')
 
 #sign up lawyer route
 @app.route('/lawyer/signup', methods=['GET','POST'])
@@ -538,7 +683,7 @@ def lawyer_signup():
                     else:
                         return json_response({
                             'error': True,
-                            'message' : "Confirm password does not match, please try again."})
+                            'message' : "Confirmation password does not match, please try again."})
                 else:
                     return json_response({
                             'error': True,
@@ -546,11 +691,11 @@ def lawyer_signup():
             else:
                 return json_response({
                         'error': True,
-                        'message': 'You have entered an invalid email address, Please try again.'})
+                        'message': 'You have entered an invalid email address, please try again.'})
         else:
             return json_response({
                         'error': True,
-                        'message': 'Please provide all the information below.'})
+                        'message': 'Please dont leave the fields empty and try again.'})
 
     if session.get('lawyer') is not None:
         return redirect(url_for('dashboard'))
@@ -559,40 +704,117 @@ def lawyer_signup():
     return render_template('lawyer/lawyer-signup.html',title='Try it for Free',law_practice=available_practice)
 
 #reset password for the first time route
-@app.route('/lawyer/add-password',methods=['GET','POST'])
-def lawyer_add_password():
+# @app.route('/lawyer/add-password',methods=['GET','POST'])
+# def lawyer_add_password():
+#     if request.method == "POST":
+#         email = request.form.get('email')
+#         password = request.form.get('password')
+#         confirm_password = request.form.get('confirm_password')
+
+#         if is_email(email):
+#             if password == confirm_password:
+#                 lawyer = Lawyer.add_password(email=email,password=password)
+#                 if lawyer:
+#                     return redirect(url_for('lawyer_add_password',succ=1,m='Password has been reset'))
+#                 else:
+#                     return redirect(
+#                     url_for('lawyer_add_password',
+#                         err=1, m="These credentials do not match our records.", email=email))
+#             else:
+#                 return redirect(
+#                     url_for('lawyer_add_password',
+#                         err=1, m="Confirmation password does not match, please try again.",email=email))
+#         else:
+#             return redirect(
+#                 url_for('lawyer_add_password',
+#                 err=1, m="You have entered an invalid email address, Please try again.",email=email))
+#     return render_template('lawyer/lawyer-add-pass.html',title='Reset Password')
+
+
+# send email with token client
+def send_reset_email(client):
+    token = client.get_reset_token()
+    msg = Message('Password Reset Request', sender='noreply@case.com', recipients=[client.email])
+    msg.body  = "To reset your password, visit the following link: \n" + url_for('lawyer_reset_token',token=token, _external=True) +"\n if you did not make this request then simply ignore this email and no changes will be made."
+    mail.send(msg)
+
+# ask for email to reset password lawyer
+@app.route('/client/reset-password',methods=['GET','POST'])
+def client_reset_request():
+    if session.get('client') is not None:
+        return redirect(url_for('dashboard'))
+
     if request.method == "POST":
-        email = request.form.get('email')
-        password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password')
-
-        if is_email(email):
-            if password == confirm_password:
-                lawyer = Lawyer.add_password(email=email,password=password)
-                if lawyer:
-                    return redirect(url_for('lawyer_add_password',succ=1,m='Password has been reset'))
+        req_data = request.get_json(force=True)
+        if 'email' in req_data:
+            email = req_data['email']
+        if email:
+            if is_email(email):
+                client = Client.check_email(email)
+                if client:
+                    send_reset_email(client)
+                    return json_response({
+                        "error" : False,
+                        "message" : "A password reset message was sent to your email. Please click the link in that message to reset your password."})
                 else:
-                    return redirect(
-                    url_for('lawyer_add_password',
-                        err=1, m="These credentials do not match our records.", email=email))
+                    return json_response({
+                        "error": True,
+                        "message" : "Sorry, your email does not match our records."})
             else:
-                return redirect(
-                    url_for('lawyer_add_password',
-                        err=1, m="Confirmation password does not match, please try again.",email=email))
+                return json_response({
+                    "error" : True,
+                    "message" : "You have entered an invalid email address, Please try again."})
         else:
-            return redirect(
-                url_for('lawyer_add_password',
-                err=1, m="You have entered an invalid email address, Please try again.",email=email))
-    return render_template('lawyer/lawyer-add-pass.html',title='Reset Password')
+            return json_response({
+                "error" : True,
+                "message" : "Please enter your email and try again."})
+    return render_template('client/client-reset-pass.html',title="Reset")
 
-# send email with token 
+# resetting password with new password lawyer
+@app.route('/client/reset-password/<token>',methods=['GET','POST'])
+def client_reset_token(token):
+    if session.get('client') is not None:
+        return redirect(url_for('dashboard'))
+    client = Client.verify_reset_token(token)
+    if client is None:
+        return json_response({
+            "error" : True,
+            "message" : "That is an invalid or expired token"})
+    else:
+        if request.method == "POST":
+            req_data = request.get_json(force=True)
+            if 'password' in req_data:
+                password = req_data['password']
+            if 'confirm' in req_data:
+                confirm = req_data['confirm']
+            
+            if password and confirm:
+                if password == confirm:
+                    client = client.save(id=client.key.id(),password=password,status="activated")
+                    if client:
+                        return json_response({
+                            "error" : False,
+                            "message" : "Your password has been updated! You are now able to sign in."})
+                else:
+                    return json_response({
+                        "error" : True,
+                        "message" : "Confirmation password does not match, please try again."})
+            else:
+                return json_response({
+                    "error" : True,
+                    "message" : "Please dont leave the fields empty and try again."})
+        
+    return render_template('client/client-reset-token.html',title="Reset Password",token=token)
+
+
+# send email with token lawyer
 def send_reset_email(lawyer):
     token = lawyer.get_reset_token()
     msg = Message('Password Reset Request', sender='noreply@case.com', recipients=[lawyer.email])
     msg.body  = "To reset your password, visit the following link: \n" + url_for('lawyer_reset_token',token=token, _external=True) +"\n if you did not make this request then simply ignore this email and no changes will be made."
     mail.send(msg)
 
-# ask for email to reset password
+# ask for email to reset password lawyer
 @app.route('/lawyer/reset-password',methods=['GET','POST'])
 def lawyer_reset_request():
     if session.get('lawyer') is not None:
@@ -607,6 +829,9 @@ def lawyer_reset_request():
                 lawyer = Lawyer.check_email(email)
                 if lawyer:
                     send_reset_email(lawyer)
+                    return json_response({
+                        "error" : False,
+                        "message" : "A password reset message was sent to your email. Please click the link in that message to reset your password."})
                 else:
                     return json_response({
                         "error": True,
@@ -614,14 +839,14 @@ def lawyer_reset_request():
             else:
                 return json_response({
                     "error" : True,
-                    "message" : "Invalid email address, please try again."})
+                    "message" : "You have entered an invalid email address, Please try again."})
         else:
             return json_response({
                 "error" : True,
-                "message" : "Please enter your email."})
+                "message" : "Please enter your email and try again."})
     return render_template('lawyer/lawyer-reset-pass.html',title="Reset")
 
-# resetting password with new password
+# resetting password with new password lawyer
 @app.route('/lawyer/reset-password/<token>',methods=['GET','POST'])
 def lawyer_reset_token(token):
     if session.get('lawyer') is not None:
@@ -653,17 +878,23 @@ def lawyer_reset_token(token):
             else:
                 return json_response({
                     "error" : True,
-                    "message" : "Please fill up the fields to reset password."})
+                    "message" : "Please dont leave the fields empty and try again."})
         
     return render_template('lawyer/lawyer-reset-token.html',title="Reset Password",token=token)
 
 
 # sign out route
 @app.route('/lawyer/signout')
-def signout():
+def lawyer_signout():
     del session['lawyer']
     return redirect(url_for('lawyer_signin'))
 
+
+# sign out route
+@app.route('/client/signout')
+def client_signout():
+    del session['client']
+    return redirect(url_for('lawyer_signin'))
 
 @app.errorhandler(500)
 def error_500(e):

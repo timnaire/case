@@ -30,16 +30,16 @@
             <h3>Client</h3>
             <form>
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Your Email *" value="" />
+                    <input type="text" id="client_email" class="form-control" placeholder="Your Email *" value="" />
                 </div>
                 <div class="form-group">
-                    <input type="password" class="form-control" placeholder="Your Password *" value="" />
+                    <input type="password" id="client_password" class="form-control" placeholder="Your Password *" value="" />
                 </div>
                 <div class="form-group">
                     <input type="submit" class="btnSubmit" value="Login" />
                 </div>
                 <div class="form-group">
-                    <a href="#" class="ForgetPwd" value="Login">Forget Password?</a>
+                    <a href="{{url_for('client_reset_request')}}" class="ForgetPwd">Forget Password?</a>
                 </div>
                 <div class="form-group">
                     <a href="{{url_for('client_signup')}}">Don't have an account yet?</a>
@@ -63,7 +63,7 @@
                     <button id="btnLawyerSignin" class="btnSubmit">Login</button>
                 </div>
                 <div class="form-group">
-                    <a href="#" class="ForgetPwd">Forget Password?</a>
+                    <a href="{{url_for('lawyer_reset_request')}}" class="ForgetPwd">Forget Password?</a>
                 </div>
                 <div class="form-group">
                     <a href="{{url_for('lawyer_signup')}}" style="color: #fff">Don't have an account yet?</a>

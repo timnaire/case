@@ -1,5 +1,7 @@
 from google.appengine.ext import ndb
 from passlib.hash import pbkdf2_sha256
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from config import SECRET_KEY
 
 class Client(ndb.Model):
     first_name = ndb.StringProperty()
@@ -47,6 +49,48 @@ class Client(ndb.Model):
             client = None
 
         return client
+
+    @classmethod
+    def change_email(cls, *args, **kwargs):
+        client_id = str(kwargs.get('id'))
+
+        if client_id and client_id.isdigit():
+            client = cls.get_by_id(int(client_id))
+            if client and pbkdf2_sha256.verify(kwargs.get('password'), client.password):
+                client.email = kwargs.get('newemail')
+                client.put()
+        else:
+            client = None
+            
+        return client
+
+    @classmethod
+    def change_pass(cls, *args, **kwargs):
+        client_id = str(kwargs.get('id'))
+
+        if client_id and client_id.isdigit():
+            client = cls.get_by_id(int(client_id))
+            if client and pbkdf2_sha256.verify(kwargs.get('password'), client.password):
+                client.password = pbkdf2_sha256.hash(kwargs.get('newpass'))
+                client.put()
+                return client
+            else:
+                return None
+
+        return client
+
+    @classmethod
+    def check_pass(cls, *args, **kwargs):
+        client_id = str(kwargs.get('id'))
+
+        if client_id and client_id.isdigit():
+            client = cls.get_by_id(int(client_id))
+            if client and pbkdf2_sha256.verify(kwargs.get('password'), client.password):
+                return client
+            else:
+                return None
+
+        return client
     
     @classmethod
     def get_client(cls, client_id):
@@ -54,6 +98,18 @@ class Client(ndb.Model):
 
         if client_id:
             client = cls.get_by_id(int(client_id))
+        
+        if not client:
+            client = None
+
+        return client
+
+    @classmethod
+    def email_exist(cls,newemail):
+        client = None
+
+        if newemail:
+            client = cls.query(cls.email == newemail).get()
         
         if not client:
             client = None
@@ -70,6 +126,19 @@ class Client(ndb.Model):
             client = None
 
         return client
+    
+    def get_reset_token(self, expires_sec=1800):
+        s = Serializer(SECRET_KEY)
+        return s.dumps({'client_id': self.key.id()})
+
+    @staticmethod
+    def verify_reset_token(token):
+        s = Serializer(SECRET_KEY)
+        try:
+            client_id = s.loads(token)['client_id']
+        except:
+            return None
+        return Client.get_by_id(int(client_id))
 
     def to_dict(self):
         data = {}
