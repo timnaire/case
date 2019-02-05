@@ -93,12 +93,12 @@ class Case(ndb.Model):
                 case = cls.query(cls.client == client_key).order(cls.created).fetch()
                 if case:
                     for c in case:
-                        list_clients.append(c.get_lawyers())
+                        list_lawyer.append(c.get_lawyers())
         
-        if not list_clients:
-            list_clients = None
+        if not list_lawyer:
+            list_lawyer = None
         
-        return list_clients
+        return list_lawyer
 
     def get_clients(self):
         data = {}
