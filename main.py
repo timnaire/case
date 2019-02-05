@@ -275,24 +275,25 @@ def find_lawyer():
     found_lawyers = []
     if request.method == "POST":        
         
-        law_practice=request.get('lawpractice')
-        cityOrMunicipality = request.get('city')
+        law_practice = request.form.get('lawpractice')
+        cityOrMunicipality = request.form.get('city')
         if law_practice and cityOrMunicipality:
             found_lawyers = Practice.find_practice(law_practice=law_practice, cityOrMunicipality=cityOrMunicipality)
             if found_lawyers:
-                return found_lawyers
+                return redirect(json_response({
+                    "error" : False,
+                    "message" : "message here"}))
             else:
-                return json_response({
+                return redirect(json_response({
                     'error' : True,
-                    'message': "No lawyer(s) found in "+cityOrMunicipality+" with practice of "+law_practice})
+                    'message': "No lawyer(s) found in "+cityOrMunicipality+" with practice of "+law_practice}))
                    
         else:
-            return json_response({
+            return redirect(json_response({
                 'error' : True,
-                'message' : "Please select your legal issue and city to find lawyer."})
+                'message' : "Please select your legal issue and city to find lawyer."}))
 
-    return render_template('lawyer-found.html',title='Find',law_practice=available_practice,response=json_response,results=found_lawyers)
-    
+    return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=found_lawyers)
 
 #dashboard route for lawyers
 @app.route('/lawyer/')
