@@ -10,6 +10,7 @@ class Client(ndb.Model):
     phone = ndb.StringProperty()
     address = ndb.StringProperty()
     password = ndb.StringProperty()
+    profile_pic = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
 
@@ -32,6 +33,8 @@ class Client(ndb.Model):
             client.phone = kwargs.get('phone')
         if kwargs.get('address'):
             client.address = kwargs.get('address')
+        if kwargs.get('profile_pic'):
+            client.profile_pic = kwargs.get('profile_pic')
         if kwargs.get('password'):
             client.password = pbkdf2_sha256.hash(kwargs.get('password'))
 
@@ -148,6 +151,7 @@ class Client(ndb.Model):
         data['email'] = self.email
         data['phone'] = self.phone
         data['address'] = self.address
+        data['profile_pic'] = self.profile_pic
         data['created'] = self.created.isoformat() + 'Z'
         data['updated'] = self.updated.isoformat() + 'Z'
 

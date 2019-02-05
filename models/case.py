@@ -52,7 +52,7 @@ class Case(ndb.Model):
         
         client_id = str(kwargs.get('client'))
         if client_id.isdigit():
-            client_key = ndb.Key('Lawyer',int(client_id))
+            client_key = ndb.Key('Client',int(client_id))
             if client_key:
                 case = cls.query(cls.client == client_key).order(cls.created).fetch()
         
@@ -60,7 +60,62 @@ class Case(ndb.Model):
             case = None
 
         return case
+
+    
+    @classmethod
+    def lawyers_client(cls, *args, **kwargs):
+        list_clients = []
+        case = None
+
+        lawyer_id = str(kwargs.get('lawyer'))
+        if lawyer_id.isdigit():
+            lawyer_key = ndb.Key('Lawyer',int(lawyer_id))
+            if lawyer_key:
+                case = cls.query(cls.lawyer == lawyer_key).order(cls.created).fetch()
+                if case:
+                    for c in case:
+                        list_clients.append(c.get_clients())
         
+        if not list_clients:
+            list_clients = None
+        
+        return list_clients
+    
+    @classmethod
+    def clients_lawyer(cls, *args, **kwargs):
+        list_lawyer = []
+        case = None
+
+        client_id = str(kwargs.get('client'))
+        if client_id.isdigit():
+            client_key = ndb.Key('Client',int(client_id))
+            if client_key:
+                case = cls.query(cls.client == client_key).order(cls.created).fetch()
+                if case:
+                    for c in case:
+                        list_lawyer.append(c.get_lawyers())
+        
+        if not list_lawyer:
+            list_lawyer = None
+        
+        return list_lawyer
+
+    def get_clients(self):
+        data = {}
+        data['client'] = None
+        if self.client:
+            client = self.client.get()
+            data['client'] = client.to_dict()
+        return data
+
+    def get_lawyers(self):
+        data = {}
+        data['lawyer'] = None
+        if self.lawyer:
+            lawyer = self.lawyer.get()
+            data['lawyer'] = lawyer.to_dict()
+        return data
+
     def to_dict(self):
         data = {}
 
