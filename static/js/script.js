@@ -59,11 +59,11 @@ $(document).ready(function(){
     $('#btnAddCase').click(function(e){
         e.preventDefault();
         var id = $('#lawyer_id').val();
-        var case_name = $('#add-case').val();
+        var case_title = $('#add-case').val();
         var client_id = $('#client-id').val();
         var case_description = $('#case-description').val()
         sendInfo = { 
-            case_name : case_name,
+            case_title : case_title,
             client_id : client_id,
             case_description : case_description
         }

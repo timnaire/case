@@ -329,6 +329,19 @@ def add_event(lawyer_id=None):
                 "error" : True,
                 "message" : "Please fill up all the fields and try again."})
 
+@app.route('/lawyer/<int:lawyer_id>/list-client',methods=['GET','POST'])
+def list_client(lawyer_id=None):
+    list_of_clients = Case.lawyers_client(lawyer=lawyer_id)
+    if list_of_clients:
+        return json_response({
+            "error" : False,
+            "message" : "Found clients",
+            "clients" : list_of_clients})
+    else:
+        return json_response({
+            "error" : True,
+            "message" : "No clients found.",})
+
 @app.route('/lawyer/<int:lawyer_id>/get-event',methods=['GET','POST'])
 def get_event(lawyer_id=None):
     lawyer = Lawyer.get_by_id(int(lawyer_id))
