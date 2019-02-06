@@ -14,6 +14,7 @@ class Lawyer(ndb.Model):
     aboutme = ndb.StringProperty()
     profile_pic = ndb.StringProperty()
     password = ndb.StringProperty()
+    status = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
 
@@ -44,6 +45,8 @@ class Lawyer(ndb.Model):
             lawyer.profile_pic = kwargs.get('profile_pic')
         if kwargs.get('password'):
             lawyer.password = pbkdf2_sha256.hash(kwargs.get('password'))
+        if kwargs.get('status'):
+            lawyer.status = kwargs.get('status')
 
         lawyer.put()
         return lawyer
@@ -62,7 +65,7 @@ class Lawyer(ndb.Model):
     def sign_in(cls, email, password):
         lawyer = None
         if email and password:
-            lawyer = cls.query(cls.email == email, cls.password != None).get()
+            lawyer = cls.query(cls.email == email, cls.password != None, cls.status == "activated").get()
 
         if lawyer and not pbkdf2_sha256.verify(password, lawyer.password):
             lawyer = None
@@ -168,6 +171,7 @@ class Lawyer(ndb.Model):
         data['office'] = self.office
         data['aboutme'] = self.aboutme
         data['profile_pic'] = self.profile_pic
+        data['status'] = self.status
         data['created'] = self.created.isoformat() + 'Z'
         data['updated'] = self.updated.isoformat() + 'Z'
 

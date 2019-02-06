@@ -1,13 +1,13 @@
 $(document).ready(function(){
     var sendInfo = {}
 
-
+    $('#card-result-container').fadeIn(1000);
 
 
     $('#btnClientSignin').click(function(e){
         e.preventDefault()
-        var email = $('#email').val();
-        var password = $('#password').val();
+        var email = $('#client_email').val();
+        var password = $('#client_password').val();
         sendInfo = { email : email, password : password }
         $.post("/client/signin", JSON.stringify(sendInfo) ,function(response){
             if(response['error'] == false){
@@ -25,7 +25,7 @@ $(document).ready(function(){
         var email = $('#email').val();
         var phone = $('#phone').val();
         var address = $('#address').val();
-        var password = $('#password').val();
+        var password = $('#the-password').val();
         var confirm = $('#confirm-password').val();
         sendInfo = {
             first_name : first_name,
@@ -41,11 +41,15 @@ $(document).ready(function(){
             dataType: 'json',
             data: JSON.stringify(sendInfo),
             type: 'POST',
-            beforeSend : function(response){
-                console.log('animation here') // put animation
-            },
             success: function (response) {
-                console.log(response) // display success response from the server
+                var succ = 1;
+                var err = 1;
+                var m = response['message']
+                if(response['error'] == false){
+                    window.location.replace('/client/signup?succ='+succ+"&m="+m);                
+                }else if(response['error'] == true){
+                    window.location.replace('/client/signup?err='+err+"&m="+m);
+                }
             }
         });
     });
@@ -55,11 +59,11 @@ $(document).ready(function(){
     $('#btnAddCase').click(function(e){
         e.preventDefault();
         var id = $('#lawyer_id').val();
-        var case_name = $('#add-case').val();
+        var case_title = $('#add-case').val();
         var client_id = $('#client-id').val();
         var case_description = $('#case-description').val()
         sendInfo = { 
-            case_name : case_name,
+            case_title : case_title,
             client_id : client_id,
             case_description : case_description
         }
@@ -67,68 +71,68 @@ $(document).ready(function(){
             console.log(response);
         }, "json")
     });
-
+    
     // find a lawyer button
-    $('#btnFindLawyer').click(function(e){
-        e.preventDefault();
-        var law_practice = $('#practice').val();
-        var cityOrMunicipality = $('#cityOrMunicipality').val();
-        sendInfo = {
-            law_practice : law_practice,
-            cityOrMunicipality : cityOrMunicipality
-        }
-        // console.log(JSON.stringify(sendInfo))
-        $.post("/lawyer/find", JSON.stringify(sendInfo), function(response){
-            var content = $();
-            if(response['error'] == false){
-                var lawyers = response['lawyers']
-                // looping through all found layers and displaying the info
-                for(var key in lawyers){
-                    if(lawyers.hasOwnProperty(key)){
-                        // setting the default info for about me
-                        if(lawyers[key].lawyer.aboutme == null){
-                            lawyers[key].lawyer.aboutme = "No overview found";
-                        }
-                        // setting default image if there is no image foundd
-                        if(lawyers[key].lawyer.profile_pic == null){
-                            lawyers[key].lawyer.profile_pic = "../static/images/default_lawyer_pic.png";
-                        }
-                        // var stateObj = { practice : law_practice, cityOrMunicipality : cityOrMunicipality }
-                        // window.history.pushState( stateObj, 'Find Lawyer', '/law-pactice='+law_practice+'&city-or-municipality='+cityOrMunicipality);
-                        content = content.add(`
-                                    <div class="col-md-2">&nbsp;</div>
-                                        <div class="col-md-8">
-                                            <div class="row space-16">&nbsp;</div>
-                                            <div class="row">
-                                                <div class="col-sm-4">
-                                                    <div class="thumbnail">
-                                                        <div class="caption text-center" onclick="location.href='localhost:8080/#'">
-                                                            <div class="position-relative">
-                                                                <img src="${lawyers[key].lawyer.profile_pic}" alt="profile" style="width:160px;height:160px;" />
-                                                            </div>
-                                                            <h4 id="thumbnail-label"><a href="#" target="_blank">${lawyers[key].lawyer.first_name} ${lawyers[key].lawyer.last_name}</a></h4>
-                                                            <p><i class="glyphicon glyphicon-envelope  light-red lighter bigger-120"></i>&nbsp;${lawyers[key].lawyer.email}</p>
-                                                            <div class="thumbnail-description smaller">${lawyers[key].lawyer.aboutme}</div>
-                                                        </div>
-                                                        <div class="caption card-footer text-center">
-                                                            <a class="btn btn-primary btn-block" href="#">View More</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        <div class="col-md-2">&nbsp;</div>
-                                    </div>
-                                `);
-                    }
-                }
-                // displaying to the found-lawyer div in home.html
-                $('#found-lawyer').html(content)
+    // $('#btnFindLawyer').click(function(e){
+    //     e.preventDefault();
+    //     var law_practice = $('#practice').val();
+    //     var cityOrMunicipality = $('#cityOrMunicipality').val();
+    //     sendInfo = {
+    //         law_practice : law_practice,
+    //         cityOrMunicipality : cityOrMunicipality
+    //     }
+    //     // console.log(JSON.stringify(sendInfo))
+    //     $.post("/lawyer/find", JSON.stringify(sendInfo), function(response){
+    //         var content = $();
+    //         if(response['error'] == false){
+    //             var lawyers = response['lawyers']
+    //             // looping through all found layers and displaying the info
+    //             for(var key in lawyers){
+    //                 if(lawyers.hasOwnProperty(key)){
+    //                     // setting the default info for about me
+    //                     if(lawyers[key].lawyer.aboutme == null){
+    //                         lawyers[key].lawyer.aboutme = "No overview found";
+    //                     }
+    //                     // setting default image if there is no image foundd
+    //                     if(lawyers[key].lawyer.profile_pic == null){
+    //                         lawyers[key].lawyer.profile_pic = "../static/images/default_lawyer_pic.png";
+    //                     }
+    //                     // var stateObj = { practice : law_practice, cityOrMunicipality : cityOrMunicipality }
+    //                     // window.history.pushState( stateObj, 'Find Lawyer', '/law-pactice='+law_practice+'&city-or-municipality='+cityOrMunicipality);
+    //                     content = content.add(`
+    //                                 <div class="col-md-2">&nbsp;</div>
+    //                                     <div class="col-md-8">
+    //                                         <div class="row space-16">&nbsp;</div>
+    //                                         <div class="row">
+    //                                             <div class="col-sm-4">
+    //                                                 <div class="thumbnail">
+    //                                                     <div class="caption text-center" onclick="location.href='localhost:8080/#'">
+    //                                                         <div class="position-relative">
+    //                                                             <img src="${lawyers[key].lawyer.profile_pic}" alt="profile" style="width:160px;height:160px;" />
+    //                                                         </div>
+    //                                                         <h4 id="thumbnail-label"><a href="#" target="_blank">${lawyers[key].lawyer.first_name} ${lawyers[key].lawyer.last_name}</a></h4>
+    //                                                         <p><i class="glyphicon glyphicon-envelope  light-red lighter bigger-120"></i>&nbsp;${lawyers[key].lawyer.email}</p>
+    //                                                         <div class="thumbnail-description smaller">${lawyers[key].lawyer.aboutme}</div>
+    //                                                     </div>
+    //                                                     <div class="caption card-footer text-center">
+    //                                                         <a href=" class="btn btn-primary btn-block" href="#">View More</a>
+    //                                                     </div>
+    //                                                 </div>
+    //                                             </div>
+    //                                         </div>
+    //                                     <div class="col-md-2">&nbsp;</div>
+    //                                 </div>
+    //                             `);
+    //                 }
+    //             }
+    //             // displaying to the found-lawyer div in home.html
+    //             $('#found-lawyer').html(content)
                 
-            } else if(response['error'] == true){
-                console.log(response['message']);
-            }
-        } , "json" );
-    });
+    //         } else if(response['error'] == true){
+    //             console.log(response['message']);
+    //         }
+    //     } , "json" );
+    // });
 
     // profile picture update
     $('#btnLawyerSavePicture').click(function(e){
@@ -251,12 +255,15 @@ $(document).ready(function(){
         var phone = $('#phone').val().trim();
         var cityOrMunicipality = $('#cityOrMunicipality').val().trim();
         var office = $('#office').val().trim();
+        var password = $('#the-password').val();
+        var confirm = $('#confirm-password').val();
         // var law_practice = $('#law_practice').val();
         var practice = [];
         $.each($("input[class='practice']:checked"), function(){            
             practice.push($(this).val());
         });
-        
+        var password = $('#the-password').val();
+        var confirm = $('#confirm-password').val();
         sendInfo = {
             first_name : first_name,
             last_name : last_name,
@@ -264,7 +271,9 @@ $(document).ready(function(){
             phone : phone,
             cityOrMunicipality : cityOrMunicipality,
             office : office,
-            law_practice : practice
+            law_practice : practice,
+            password : password,
+            confirm : confirm
         }
 
         $.post("/lawyer/signup",JSON.stringify(sendInfo),function(response){
@@ -272,29 +281,81 @@ $(document).ready(function(){
             var err = 1;
             var m = response['message']
             if(response['error'] == false){
-                window.location.replace('/lawyer/signup?succ='+succ+"&m="+m);
+                window.location.replace('/lawyer/signup?succ='+succ+"&m="+m);                
             }else if(response['error'] == true){
                 window.location.replace('/lawyer/signup?err='+err+"&m="+m);
             }
         });
+
+        
     });
 
-    $('#btnResetPassword').click(function(e){
+    // reset password for client
+    $('#btnResetPassClient').click(function(e){
+        e.preventDefault();
+        var token = $("#token").val();
+        var password = $('#password').val();
+        var confirm = $('#confirm-password').val();
+        sendInfo = { password : password , confirm : confirm }
+        $.post('/client/reset-password/'+token, JSON.stringify(sendInfo), function(response){
+            var succ = 1;
+            var err = 1;
+            var m = response['message'];
+            if(response['error'] == false){
+                window.location.replace('/client/reset-password/'+token+'?succ='+succ+"&m="+m);
+            } else {
+                window.location.replace('/client/reset-password/'+token+'?err='+err+"&m="+m);
+            }
+        });
+    })
+
+    $("#btnForgotPassClient").click(function(e){
+        var email = $('#email').val();
+        sendInfo = { email : email }
+        $.post('/client/reset-password', JSON.stringify(sendInfo), function(response){
+            var succ = 1;
+            var err = 1;
+            var m = response['message'];
+            if(response['error'] == false){
+                window.location.replace('/client/reset-password?succ='+succ+"&m="+m);
+            } else {
+                window.location.replace('/client/reset-password?err='+err+"&m="+m);
+            }
+        });
+        e.preventDefault()
+    });
+
+    // reset password for lawyer
+    $('#btnResetPassLawyer').click(function(e){
         e.preventDefault();
         var token = $("#token").val();
         var password = $('#password').val();
         var confirm = $('#confirm-password').val();
         sendInfo = { password : password , confirm : confirm }
         $.post('/lawyer/reset-password/'+token, JSON.stringify(sendInfo), function(response){
-            console.log(response)
+            var succ = 1;
+            var err = 1;
+            var m = response['message'];
+            if(response['error'] == false){
+                window.location.replace('/lawyer/reset-password/'+token+'?succ='+succ+"&m="+m);
+            } else {
+                window.location.replace('/lawyer/reset-password/'+token+'?err='+err+"&m="+m);
+            }
         });
     })
 
-    $("#btnForgotPass").click(function(e){
+    $("#btnForgotPassLawyer").click(function(e){
         var email = $('#email').val();
         sendInfo = { email : email }
         $.post('/lawyer/reset-password', JSON.stringify(sendInfo), function(response){
-            console.log(response)
+            var succ = 1;
+            var err = 1;
+            var m = response['message'];
+            if(response['error'] == false){
+                window.location.replace('/lawyer/reset-password?succ='+succ+"&m="+m);
+            } else {
+                window.location.replace('/lawyer/reset-password?err='+err+"&m="+m);
+            }
         });
         e.preventDefault()
     });
@@ -371,80 +432,91 @@ $(document).ready(function(){
         var left, opacity, scale; //fieldset properties which we will animate
         var animating; //flag to prevent quick multi-click glitches
         $('#msform').fadeIn('slow');
-        $(".next").click(function(){
-
-            if(animating) return false;
+        $(".next").click(function() {
+            if (animating) return false;
             animating = true;
-            
+        
             current_fs = $(this).parent();
             next_fs = $(this).parent().next();
-            
+        
             //activate next step on progressbar using the index of next_fs
             $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
-            
+        
             //show the next fieldset
-            next_fs.show(); 
+            next_fs.show();
             //hide the current fieldset with style
-            current_fs.animate({opacity: 0}, {
-                step: function(now, mx) {
-                    //as the opacity of current_fs reduces to 0 - stored in "now"
-                    //1. scale current_fs down to 80%
-                    scale = 1 - (1 - now) * 0.2;
-                    //2. bring next_fs from the right(50%)
-                    left = (now * 50)+"%";
-                    //3. increase opacity of next_fs to 1 as it moves in
-                    opacity = 1 - now;
-                    current_fs.css({
-                'transform': 'scale('+scale+')',
-                'position': 'absolute'
+            current_fs.animate({
+              opacity: 0
+            }, {
+              step: function(now, mx) {
+                //as the opacity of current_fs reduces to 0 - stored in "now"
+                //1. scale current_fs down to 80%
+                scale = 1 - (1 - now) * 0.2;
+                //2. bring next_fs from the right(50%)
+                left = (now * 50) + "%";
+                //3. increase opacity of next_fs to 1 as it moves in
+                opacity = 1 - now;
+                current_fs.css({
+                  'transform': 'scale(' + scale + ')'
+                });
+                next_fs.css({
+                  'left': left,
+                  'opacity': opacity
+                });
+              },
+              duration: 800,
+              complete: function() {
+                current_fs.hide();
+                animating = false;
+              },
+              //this comes from the custom easing plugin
+              easing: 'easeInOutBack'
             });
-                    next_fs.css({'left': left, 'opacity': opacity});
-                }, 
-                duration: 800, 
-                complete: function(){
-                    current_fs.hide();
-                    animating = false;
-                }, 
-                //this comes from the custom easing plugin
-                easing: 'easeInOutBack'
-            });
-        });
-
-        $(".previous").click(function(){
-            if(animating) return false;
+          });
+        
+          $(".previous").click(function() {
+            if (animating) return false;
             animating = true;
-            
+        
             current_fs = $(this).parent();
             previous_fs = $(this).parent().prev();
-            
+        
             //de-activate current step on progressbar
             $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
-            
+        
             //show the previous fieldset
-            previous_fs.show(); 
+            previous_fs.show();
             //hide the current fieldset with style
-            current_fs.animate({opacity: 0}, {
-                step: function(now, mx) {
-                    //as the opacity of current_fs reduces to 0 - stored in "now"
-                    //1. scale previous_fs from 80% to 100%
-                    scale = 0.8 + (1 - now) * 0.2;
-                    //2. take current_fs to the right(50%) - from 0%
-                    left = ((1-now) * 50)+"%";
-                    //3. increase opacity of previous_fs to 1 as it moves in
-                    opacity = 1 - now;
-                    current_fs.css({'left': left});
-                    previous_fs.css({'transform': 'scale('+scale+')', 'opacity': opacity, 'position': 'relative' });
-                }, 
-                duration: 0, 
-                complete: function(){
-                    current_fs.hide();
-                    animating = false;
-                
-                }, 
-                //this comes from the custom easing plugin
-                easing: 'easeInOutBack'
+            current_fs.animate({
+              opacity: 0
+            }, {
+              step: function(now, mx) {
+                //as the opacity of current_fs reduces to 0 - stored in "now"
+                //1. scale previous_fs from 80% to 100%
+                scale = 0.8 + (1 - now) * 0.2;
+                //2. take current_fs to the right(50%) - from 0%
+                left = ((1 - now) * 50) + "%";
+                //3. increase opacity of previous_fs to 1 as it moves in
+                opacity = 1 - now;
+                current_fs.css({
+                  'left': left
+                });
+                previous_fs.css({
+                  'transform': 'scale(' + scale + ')',
+                  'opacity': opacity
+                });
+              },
+              duration: 800,
+              complete: function() {
+                current_fs.hide();
+                animating = false;
+              },
+              //this comes from the custom easing plugin
+              easing: 'easeInOutBack'
             });
-        });
+          });
+
+        
 
         
 });

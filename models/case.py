@@ -4,9 +4,10 @@ from models.client import Client
 
 class Case(ndb.Model):
     lawyer = ndb.KeyProperty(kind=Lawyer)
-    case_name = ndb.StringProperty()
+    case_title = ndb.StringProperty()
     client = ndb.KeyProperty(kind=Client)
     case_description = ndb.StringProperty()
+    case_status = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
 
@@ -29,10 +30,12 @@ class Case(ndb.Model):
             client_key = ndb.Key('Client', int(client_id))
             case.client = client_key 
         
-        if kwargs.get('case_name'):
-            case.case_name = kwargs.get('case_name')
+        if kwargs.get('case_title'):
+            case.case_title = kwargs.get('case_title')
         if kwargs.get('case_description'):
             case.case_description = kwargs.get('case_description')
+        if kwargs.get('case_status'):
+            case.case_status = kwargs.get('case_status')
 
         case.put()
         return case
@@ -47,11 +50,72 @@ class Case(ndb.Model):
             if lawyer_key:
                 case = cls.query(cls.lawyer == lawyer_key).order(cls.created).fetch()
         
+        client_id = str(kwargs.get('client'))
+        if client_id.isdigit():
+            client_key = ndb.Key('Client',int(client_id))
+            if client_key:
+                case = cls.query(cls.client == client_key).order(cls.created).fetch()
+        
         if not case:
             case = None
 
         return case
+
+    
+    @classmethod
+    def lawyers_client(cls, *args, **kwargs):
+        list_clients = []
+        case = None
+
+        lawyer_id = str(kwargs.get('lawyer'))
+        if lawyer_id.isdigit():
+            lawyer_key = ndb.Key('Lawyer',int(lawyer_id))
+            if lawyer_key:
+                case = cls.query(cls.lawyer == lawyer_key).order(cls.created).fetch()
+                if case:
+                    for c in case:
+                        list_clients.append(c.get_clients())
         
+        if not list_clients:
+            list_clients = None
+        
+        return list_clients
+    
+    @classmethod
+    def clients_lawyer(cls, *args, **kwargs):
+        list_lawyer = []
+        case = None
+
+        client_id = str(kwargs.get('client'))
+        if client_id.isdigit():
+            client_key = ndb.Key('Client',int(client_id))
+            if client_key:
+                case = cls.query(cls.client == client_key).order(cls.created).fetch()
+                if case:
+                    for c in case:
+                        list_lawyer.append(c.get_lawyers())
+        
+        if not list_lawyer:
+            list_lawyer = None
+        
+        return list_lawyer
+
+    def get_clients(self):
+        data = {}
+        data['client'] = None
+        if self.client:
+            client = self.client.get()
+            data['client'] = client.to_dict()
+        return data
+
+    def get_lawyers(self):
+        data = {}
+        data['lawyer'] = None
+        if self.lawyer:
+            lawyer = self.lawyer.get()
+            data['lawyer'] = lawyer.to_dict()
+        return data
+
     def to_dict(self):
         data = {}
 
@@ -59,6 +123,15 @@ class Case(ndb.Model):
         if self.lawyer:
             lawyer = self.lawyer.get()
             data['lawyer'] = lawyer.to_dict()
+
+        data['client'] = None
+        if self.client:
+            client = self.client.get()
+            data['client'] = client.to_dict()
         
-        data['case_name'] = self.case_name
+        data['case_title'] = self.case_title
+        data['case_description'] = self.case_title
+        data['case_status'] = self.case_status
+        data['created'] = self.created.isoformat() + 'Z'
+        data['updated'] = self.updated.isoformat() + 'Z'
         return data

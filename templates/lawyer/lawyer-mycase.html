@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'empty_layout.html' %}
 
 {% block content %}
 <i class="fa fa-cloud"></i>
@@ -8,7 +8,7 @@
             <select class="form-control" id="case">
                 <option selected="true" disabled="disabled">Select Case</option>
                 {% for case in cases %}
-                <option class="case" value="{{ case.case_name }}"> {{ case.case_name }} </option>>
+                <option class="case" value="{{ case.case_title }}"> {{ case.case_title }} </option>>
                 {% endfor %}
             </select>
         </div>
@@ -34,10 +34,5 @@
         </form>
 
         <br />
-        <form action="file-upload" class="dropzone" id="my-awesome-dropzone" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                
-            </div>
-        </form>
     </div>
 {% endblock %}

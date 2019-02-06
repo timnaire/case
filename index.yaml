@@ -9,12 +9,30 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+<<<<<<< HEAD
+- kind: "Client"
+  properties:
+  - name: "email"
+  - name: "password"
+- kind: "Lawyer"
+  properties:
+  - name: "email"
+  - name: "status"
+  - name: "password"
+- kind: "Lawyer"
+=======
+- kind: Case
+  properties:
+  - name: lawyer
+  - name: created
+
 - kind: Client
   properties:
   - name: email
   - name: password
 
 - kind: Lawyer
+>>>>>>> 95beeaec45012c6d26a049fa56852890215f3929
   properties:
   - name: cityOrMunicipality
   - name: password
@@ -22,4 +40,10 @@ indexes:
 - kind: Lawyer
   properties:
   - name: email
+  - name: password
+
+- kind: Lawyer
+  properties:
+  - name: email
+  - name: status
   - name: password

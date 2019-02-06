@@ -8,7 +8,7 @@
     <form method="POST">
         <!-- f in id means find lawyer -->
         <div class="form-group">
-            <select id="practice" class="form-control">
+            <select id="practice" class="form-control" name="lawpractice">
                 <option selected="true" disabled="disabled" >Select a Legal Issue</option>
                 {% for key, value in law_practice.items()|sort %}
                     <option value="{{key}}" > {{value}}
@@ -17,10 +17,10 @@
             </select>
         </div>
         <div class="form-group">
-            <input type="text" class="form-control" id="cityOrMunicipality" placeholder="City or Municipality">
+            <input type="text" name="city" class="form-control" id="cityOrMunicipality" placeholder="City or Municipality">
         </div>
-        <button type='submit' id="btnFindLawyer" class="btn-get-started">Find a Lawyer</button>
-    </form>
+        <a type='submit' id="btnFindLawyer" href="{{url_for('find_lawyer')}}"class="btn-get-started">Find a Lawyer</a>
+    </form>                                  
 </div>
 <!-- 
     <h4>A Lawyer?</h4>

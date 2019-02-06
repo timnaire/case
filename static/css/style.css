@@ -14,7 +14,7 @@
 body {
   background: #fff;
   color: #666666;
-  font-family: "Open Sans", sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 a {
@@ -193,9 +193,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 #hero h2 {
-  color: #eee;
-  margin-bottom: 50px;
-  font-size: 24px;
+  color: #fff;
+    margin-bottom: 50px;
+    font-size: 24px;
 }
 
 @media (max-width: 768px) {
@@ -230,7 +230,9 @@ h1, h2, h3, h4, h5, h6 {
   background: #2dc997;
   border: 2px solid #2dc997;
 }
-
+#findlawyer{
+  display: none;
+}
 #btnFindLawyer{
   background: none; 
   margin-top: 40px !important;
@@ -1010,117 +1012,237 @@ body.mobile-nav-active #mobile-nav-toggle {
 }
 #lawyer-signup-form{
   margin: 0;
-}
-#msform {
+  width: 35%;
   display: none;
-	width: 50%;
-	margin: 50px auto;
-	text-align: center;
-	position: relative;
+}
+
+.profilepress-reg-status {
+  border-radius: 6px;
+  font-size: 17px;
+  line-height: 1.471;
+  padding: 10px 19px;
+  background-color: #e74c3c;
+  color: #ffffff;
+  font-weight: normal;
+  display: block;
+  text-align: center;
+  vertical-align: middle;
+  margin: 5px 0;
+}
+/*form styles*/
+
+#msform {
+  width: 100%;
+  margin: 50px auto 550px;
+  text-align: center;
+  position: relative;
+}
+#msform fieldset h2{
+  color: #2dc997e0;
+  margin-bottom: 50px;
+  font-size: 24px;  
 }
 #msform fieldset {
   background: white;
   border: 0 none;
   border-radius: 14px;
   box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
-  padding: 33px 34px;
+  padding: 47px  30px;
   box-sizing: border-box;
-  width: 100%;
-  margin: 0 0%;
-	
-	/*stacking fieldsets above each other*/
-	position: relative;
+  width: 80%;
+  margin: 0 10%;
+  /*stacking fieldsets above each other*/
+  
+  position: absolute;
 }
 /*Hide all except first fieldset*/
+
 #msform fieldset:not(:first-of-type) {
-	display: none;
+  display: none;
 }
 /*inputs*/
-#msform input, #msform textarea {
-	padding: 15px;
-	border: 1px solid #ccc;
-	border-radius: 3px;
-	margin-bottom: 10px;
-	width: 100%;
-	box-sizing: border-box;
-	color: #2C3E50;
-	font-size: 14px;
+
+#msform input,
+#msform textarea {
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin-bottom: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  color: #2C3E50;
+  font-size: 13px;
 }
 /*buttons*/
+
 #msform .action-button {
-	width: 100px;
-	background: #27AE60;
-	font-weight: bold;
-	color: white;
-	border: 0 none;
-	border-radius: 1px;
-	cursor: pointer;
-	padding: 10px 5px;
-	margin: 10px 5px;
+  width: 100px;
+  background: #2dc997e0;
+  /* font-weight: bold; */
+  color: white;
+  border: 0 none;
+  border-radius: 13px;
+  cursor: pointer;
+  padding: 10px 5px;
+  margin: 10px 5px;
 }
-#msform .action-button:hover, #msform .action-button:focus {
-	box-shadow: 0 0 0 2px white, 0 0 0 3px #27AE60;
+
+#msform .action-button:hover,
+#msform .action-button:focus {
+  box-shadow: 0 0 0 2px white, 0 0 0 3px #27AE60;
 }
 /*headings*/
+
 .fs-title {
-	font-size: 15px;
-	text-transform: uppercase;
-	color: #2C3E50;
-	margin-bottom: 10px;
+  font-size: 15px;
+  text-transform: uppercase;
+  color: #2C3E50;
+  margin-bottom: 10px;
 }
+
 .fs-subtitle {
-	font-weight: normal;
-	font-size: 13px;
-	color: #666;
-	margin-bottom: 20px;
+  font-weight: normal;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 20px;
 }
 /*progressbar*/
+
 #progressbar {
-	margin-bottom: 30px;
+  margin-bottom: 30px;
   overflow: hidden;
-  padding-inline-start: 0px;
-	/*CSS counters to number the steps*/
-	counter-reset: step;
+  /*CSS counters to number the steps*/
+  
+  counter-reset: step;
 }
+
 #progressbar li {
-	list-style-type: none;
-	color: white;
-	text-transform: uppercase;
-	font-size: 9px;
-	width: 33.33%;
-	float: left;
-	position: relative;
+  list-style-type: none;
+  color: #ffffff;
+  text-transform: uppercase;
+  font-size: 14px;
+  width: 33.33%;
+  float: left;
+  position: relative;
 }
+
 #progressbar li:before {
-	content: counter(step);
-	counter-increment: step;
-	width: 20px;
-	line-height: 20px;
-	display: block;
-	font-size: 10px;
-	color: #333;
-	background: white;
-	border-radius: 3px;
-	margin: 0 auto 5px auto;
+  content: counter(step);
+  counter-increment: step;
+  width: 20px;
+  line-height: 20px;
+  display: block;
+  font-size: 15px;
+  color: #333;
+  background: white;
+  border-radius: 3px;
+  margin: 0 auto 5px auto;
 }
-/*progressbar connectors*/
-#progressbar li:after {
-	content: '';
-	width: 100%;
-	height: 2px;
-	background: white;
-	position: absolute;
-	left: -50%;
-	top: 9px;
-	z-index: -1; /*put it behind the numbers*/
-}
+
 #progressbar li:first-child:after {
-	/*connector not needed before the first step*/
-	content: none; 
+  /*connector not needed before the first step*/
+  
+  content: none;
 }
 /*marking active/completed steps green*/
 /*The number of the step and the connector before it = green*/
-#progressbar li.active:before,  #progressbar li.active:after{
-	background: #27AE60;
-	color: white;
+
+#progressbar li.active:before,
+#progressbar li.active:after {
+  background: #27AE60;
+  color: white;
+}
+/*--------------------------------------------------------------
+/*-----------LOGIN LAWYER AND CLIENTS
+/*--------------------------------------------------------------
+*/
+
+#login-container-div{
+  display: none;
+}
+.login-container{
+  margin-top: 5%;
+  margin-bottom: 5%;
+}
+.login-form-1:hover{
+  transform: scale(1.1);
+}
+.login-form-2:hover{
+  transform: scale(1.1);
+}
+.login-form-1{
+  
+  background: #fff;
+  padding: 5%;
+  transition: transform .2s;
+  border-radius: 20px 0 0 20px;
+  box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
+}
+.login-form-1 h3{
+  text-align: center;
+  color: #2dc997e0;
+}
+.login-form-2{
+  
+  padding: 5%;
+  background: #2dc997e0;
+  transition: transform .2s;
+  border-radius: 0 20px 20px 0;
+  box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2), 0 9px 26px 0 rgba(0, 0, 0, 0.19);
+}
+.login-form-2 h3{
+  text-align: center;
+  color: #fff;
+}
+.login-container form{
+  padding: 10%;
+}
+.btnSubmit
+{
+  width: 50%;
+  border-radius: 1rem;
+  padding: 1.5%;
+  border: none;
+  cursor: pointer;
+}
+.login-form-1 .btnSubmit{
+  font-weight: 600;
+    color: #fff;
+    background-color: #2ab58b;
+}
+.login-form-2 .btnSubmit{
+  font-weight: 600;
+  color: #2ab58b;
+  background-color: #fff;
+}
+.login-form-2 .ForgetPwd{
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+}
+.login-form-1 .ForgetPwd{
+  color: #2ab58b;
+  font-weight: 600;
+  text-decoration: none;
+}
+/*--------------------------------------------------------------
+/*----------FOUNT LAWYERS CARDS
+/*--------------------------------------------------------------
+*/
+#found-lawyers{
+    margin-top: 40px;
+    margin-left: 40px;
+    margin-right: 40px;
+}
+#card-result-container{
+
+  position: absolute;
+    width: 100%;
+    height: 70%;
+}
+#card-result-container-cards{
+  margin:0 2%;
+}
+#account-profile-container{
+  margin-top: 5%;
 }

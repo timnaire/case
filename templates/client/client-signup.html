@@ -3,6 +3,17 @@
 {% block content %}
 
     <div class="container">
+
+        {% if request.args.get('err') %}
+        <div class="alert alert-danger">
+            {{ request.args.get('m') }}
+        </div>
+        {% elif request.args.get('succ') %}
+        <div class="alert alert-success">
+            {{ request.args.get('m') }}
+        </div>
+        {% endif %}
+
         <h1>Client Sign up</h1>
 
         <form method="POST">
@@ -22,7 +33,7 @@
                 <input type="text" id="address" class="form-control" placeholder="Address">
             </div>
             <div class="form-group">
-                <input type="password" id="password" class="form-control" placeholder="Password">
+                <input type="password" id="the-password" class="form-control" placeholder="Password">
             </div>
             <div class="form-group">
                 <input type="password" id="confirm-password" class="form-control" placeholder="Confirm Password">

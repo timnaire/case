@@ -1,0 +1,76 @@
+{% extends 'empty_layout.html' %}
+
+{% block content %}
+
+<!-- error message info  -->
+{% if request.args.get('err') %}
+<div class="alert alert-danger">
+    {{ request.args.get('m') }}
+</div>
+{% endif %}
+<!-- <div id="signinlawyerblock">
+    <form method="POST">
+        <h2>Lawyer Signin</h2>
+        <div class="form-group">
+            {% if request.args.get('email') %}
+            <input type="text" id="lawyer_email" value="{{ request.args.get('email') }}"  class="form-control" name="email" placeholder="Email" />
+            {% else %}
+            <input type="text" id="lawyer_email" class="form-control" name="email" placeholder="Email" />
+            {% endif %}
+        </div>  
+        <div class="form-group">
+            <input type="password" id="lawyer_password" class="form-control" name="password" placeholder="Password" />
+        </div>
+        <button id="btnLawyerSignin" class="btn btn-primary btn-block">Login</button>
+    </form>                    
+</div> -->
+<div class="container login-container" id="login-container-div">
+    <div class="row">        
+        <div class="col-md-6 login-form-1">
+            <h3>Client</h3>
+            <form>
+                <div class="form-group">
+                    <input type="text" id="client_email" class="form-control" placeholder="Your Email *" value="" />
+                </div>
+                <div class="form-group">
+                    <input type="password" id="client_password" class="form-control" placeholder="Your Password *" value="" />
+                </div>
+                <div class="form-group">
+                    <input type="submit" id="btnClientSignin" class="btnSubmit" value="Login" />
+                </div>
+                <div class="form-group">
+                    <a href="{{url_for('client_reset_request')}}" class="ForgetPwd">Forget Password?</a>
+                </div>
+                <div class="form-group">
+                    <a href="{{url_for('client_signup')}}">Don't have an account yet?</a>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6 login-form-2">
+            <h3>Lawyer</h3>
+            <form method="POST">
+                <div class="form-group">
+                    {% if request.args.get('email') %}
+                    <input type="text" id="lawyer_email" value="{{ request.args.get('email') }}"  class="form-control" name="email" placeholder="Email" />
+                    {% else %}
+                    <input type="text" id="lawyer_email" class="form-control" name="email" placeholder="Email" />
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <input type="password" id="lawyer_password" class="form-control" name="password" placeholder="Password" />
+                </div>
+                <div class="form-group">
+                    <button id="btnLawyerSignin" class="btnSubmit">Login</button>
+                </div>
+                <div class="form-group">
+                    <a href="{{url_for('lawyer_reset_request')}}" class="ForgetPwd">Forget Password?</a>
+                </div>
+                <div class="form-group">
+                    <a href="{{url_for('lawyer_signup')}}" style="color: #fff">Don't have an account yet?</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+ 
+{% endblock %}
