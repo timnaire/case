@@ -295,6 +295,14 @@ def home():
 #         return redirect(json_response({
 #             'error' : True,
 #             'message' : "Please select your legal issue and city to find lawyer."}))
+
+# appoint lawyer 
+@app.route('/lawyer/<int:client_id>/pre-appoint',methods=['POST'])
+def lawyer_clicked(client_id=None):
+    if request.methods == "POST":
+        lawyer_id = request.form.get('id')
+        
+
 @app.route('/lawyer/find',methods=['GET','POST'])
 def find_lawyer():
     found_lawyers = []
