@@ -29,15 +29,13 @@ class Practice(ndb.Model):
 
     @classmethod
     def find_practice(cls, law_practice,cityOrMunicipality):
-        found_lawyers = {}
-        counter = 0
+        found_lawyers = []
         lawyers = Lawyer.find_city(cityOrMunicipality=cityOrMunicipality)
         if law_practice and cityOrMunicipality:
             for lawyer in lawyers:
                 practice = cls.query(cls.law_practice == law_practice, cls.lawyer == lawyer.key).get()
                 if practice:
-                    found_lawyers[counter] = practice.to_dict()
-                    counter = counter + 1
+                    found_lawyers.append(practice.to_dict())
 
         if not found_lawyers:
             found_lawyers = None

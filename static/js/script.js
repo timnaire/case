@@ -134,6 +134,10 @@ $(document).ready(function(){
     //     } , "json" );
     // });
 
+    // $("#btnFindLawyer").click(function(e){
+    //     e.preventDefault();
+    // });
+
     // profile picture update
     $('#btnLawyerSavePicture').click(function(e){
         e.preventDefault();
@@ -167,6 +171,7 @@ $(document).ready(function(){
         var phone = $('#uphone').val().trim();
         var cityOrMunicipality= $('#ucityOrMunicipality').val().trim();
         var office = $('#uoffice').val().trim();
+        var firm = $("#ufirm").val() == undefined ? '' : $("#ufirm").val().trim();
         var aboutme = $('#uaboutme').val().trim();
         var practice = [];
         $.each($("input[class='practice']:checked"), function(){            
@@ -179,6 +184,7 @@ $(document).ready(function(){
             phone : phone,
             cityOrMunicipality : cityOrMunicipality,
             office : office,
+            firm : firm,
             aboutme : aboutme,
             law_practice : practice
         }
@@ -253,8 +259,10 @@ $(document).ready(function(){
         var last_name = $('#last_name').val().trim();
         var email = $('#email').val().trim();
         var phone = $('#phone').val().trim();
+        var rollno = $('#rollno').val().trim();
         var cityOrMunicipality = $('#cityOrMunicipality').val().trim();
         var office = $('#office').val().trim();
+        var firm = $('#firm').val().trim();
         var password = $('#the-password').val();
         var confirm = $('#confirm-password').val();
         // var law_practice = $('#law_practice').val();
@@ -269,8 +277,10 @@ $(document).ready(function(){
             last_name : last_name,
             email : email,
             phone : phone,
+            rollno : rollno,
             cityOrMunicipality : cityOrMunicipality,
             office : office,
+            firm : firm,
             law_practice : practice,
             password : password,
             confirm : confirm

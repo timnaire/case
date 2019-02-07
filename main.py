@@ -25,6 +25,15 @@ mail = Mail(app)
 # Geocoding an address
 # geocode_result = gmaps.geocode('1600 Amphitheatre Parkway, Mountain View, CA')
 
+# method to check if the lawyer exist in cebu lawyer list.
+def get_rollno(rollno):
+    lawyer = None
+    with open("cebulawyers.txt") as line:
+        for l in line:
+            if rollno in l:
+                lawyer = True
+    return lawyer
+
 # client sign in
 @app.route('/client/signin',methods=['GET','POST'])
 def client_signin():
@@ -251,6 +260,9 @@ def client_update_password(client_id=None):
                 "message" : "Please dont leave the fields empty"})
 
 
+available_practice = {'Constitutional Law':"Constitutional Law", 'Criminal Law': 'Criminal Law', 'Business Law': 'Business Law',
+        'Labor Law': 'Labor Law', 'Civil Law' : 'Civil Law', 'Taxation Law': 'Taxation Law' ,'Family Law': 'Family Law'}
+
 # home page for client
 @app.route('/', methods=['GET','POST'])
 @app.route('/home', methods=['GET','POST'])
@@ -261,15 +273,28 @@ def home():
         return render_template('home.html',title='Home',lawyer=session['lawyer'],law_practice=available_practice)
     else:
         return render_template('home.html',title='Home',law_practice=available_practice)
+
 #####################################################################################################################################
 # for lawyers and below
 
-available_practice = {'Family':"Family", 'Employment': 'Employment', 'Criminal Defense': 'Criminal Defense',
-        'Business': 'Business', 'Personal Injury' : 'Personal Injury', 'Immigration': 'Immigration' ,
-         'Bankruptcy': 'Bankruptcy','Wills, Trust, and Estates':'Wills, Trust, and Estates', 'Real Estate':'Real Estate',
-         'Commercial Law':'Commercial Law' }
-
 # find a lawyer route
+# @app.route('/lawer/find',methods=['POST'])
+# def find_lawyer():
+#     law_practice = request.form.get('lawpractice')
+#     cityOrMunicipality = request.form.get('city')
+#     if law_practice and cityOrMunicipality:
+#         found_lawyers = Practice.find_practice(law_practice=law_practice, cityOrMunicipality=cityOrMunicipality)
+#         if found_lawyers:
+#             return json_response({"found" : found_lawyers})
+#         else:
+#             return redirect(json_response({
+#                 'error' : True,
+#                 'message': "No lawyer(s) found in "+cityOrMunicipality+" with practice of "+law_practice}))
+                   
+#     else:
+#         return redirect(json_response({
+#             'error' : True,
+#             'message' : "Please select your legal issue and city to find lawyer."}))
 @app.route('/lawyer/find',methods=['GET','POST'])
 def find_lawyer():
     found_lawyers = []
@@ -280,14 +305,11 @@ def find_lawyer():
         if law_practice and cityOrMunicipality:
             found_lawyers = Practice.find_practice(law_practice=law_practice, cityOrMunicipality=cityOrMunicipality)
             if found_lawyers:
-                return redirect(json_response({
-                    "error" : False,
-                    "message" : "message here"}))
+                return json_response({"found" : found_lawyers})
             else:
                 return redirect(json_response({
                     'error' : True,
                     'message': "No lawyer(s) found in "+cityOrMunicipality+" with practice of "+law_practice}))
-                   
         else:
             return redirect(json_response({
                 'error' : True,
@@ -463,13 +485,15 @@ def lawyer_update_information(lawyer_id=None):
             cityOrMunicipality = req_data['cityOrMunicipality']
         if 'office' in req_data:
             office = req_data['office']
+        if 'firm' in req_data:
+            firm = req_data['firm']
         if 'aboutme' in req_data:
             aboutme = req_data['aboutme']
         if 'law_practice' in req_data:
             law_practice = req_data['law_practice']
 
         if first_name and last_name and phone and cityOrMunicipality and office and law_practice:
-            lawyer = Lawyer.save(id=lawyer_id,first_name=first_name,last_name=last_name,phone=phone,cityOrMunicipality=cityOrMunicipality,office=office,aboutme=aboutme)
+            lawyer = Lawyer.save(id=lawyer_id,first_name=first_name,last_name=last_name,phone=phone,cityOrMunicipality=cityOrMunicipality,office=office,firm=firm,aboutme=aboutme)
             if lawyer:
                 lawyer = Lawyer.get_by_id(int(lawyer_id))
                 practices = Practice.query(Practice.lawyer == lawyer.key).fetch()
@@ -633,6 +657,7 @@ def lawyer_signin():
                     'phone': lawyer.phone,
                     'cityOrMunicipality': lawyer.cityOrMunicipality,
                     'office': lawyer.office,
+                    'firm': lawyer.firm,
                     'profile_pic': lawyer.profile_pic,
                     'aboutme' : lawyer.aboutme })
             else:
@@ -664,10 +689,14 @@ def lawyer_signup():
             email = req_data['email']
         if 'phone' in req_data:
             phone = req_data['phone']
+        if 'rollno' in req_data:
+            rollno = req_data['rollno']
         if 'cityOrMunicipality' in req_data:
             cityOrMunicipality = req_data['cityOrMunicipality']    
         if 'office' in req_data:
             office = req_data['office']
+        if 'firm' in req_data:
+            firm = req_data['firm']
         if 'law_practice' in req_data:
             law_practice = req_data['law_practice']
         if 'password' in req_data:
@@ -676,24 +705,44 @@ def lawyer_signup():
             confirm = req_data['confirm']
 
         #all fields required
-        if first_name and last_name and email and phone and cityOrMunicipality and office and law_practice and password and confirm:
+        if first_name and last_name and email and phone and rollno and cityOrMunicipality and office and law_practice and password and confirm:
             #valid email address
             if is_email(email):
                 lawyer = Lawyer.check_email(email=email)
                 if not lawyer:
                     if password == confirm:
-                        lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,cityOrMunicipality=cityOrMunicipality,office=office,password=password,status="deactivate")
-                        if lawyer:
-                            # pract as in practice
-                            for pract in law_practice:
-                                Practice.save(lawyer=lawyer.key.id(),pract=pract)
-                            return json_response({
-                                'error': False,
-                                'message': 'Thank you for signing up, We will contact you soon.'})
+                        if get_rollno(str(rollno)):
+                            roll_exist = Lawyer.rollno_exist(rollno=rollno)
+                            if not roll_exist:
+                                lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,rollno=rollno,cityOrMunicipality=cityOrMunicipality,office=office,firm=firm,password=password,status="activated")
+                                if lawyer:
+                                    # pract as in practice
+                                    for pract in law_practice:
+                                        Practice.save(lawyer=lawyer.key.id(),pract=pract)
+                                    return json_response({
+                                        'error': False,
+                                        'message': 'Thank you for signing up, you can now log into your account.'})
+                                else:
+                                    return json_response({
+                                        'error': True,
+                                        'message': 'Unable to process your request.'})
+                            else:
+                                return json_response({
+                                    'error': True,
+                                    'message': 'Account with roll number '+rollno+' already exist. Contact us if you need help.'})
                         else:
-                            return json_response({
-                                'error': True,
-                                'message': 'Unable to process your request.'})
+                            lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,rollno=rollno,cityOrMunicipality=cityOrMunicipality,office=office,firm=firm,password=password,status="deactivated")
+                            if lawyer:
+                                # pract as in practice
+                                for pract in law_practice:
+                                    Practice.save(lawyer=lawyer.key.id(),pract=pract)
+                                return json_response({
+                                    'error': False,
+                                    'message': 'Thank you for signing up, We will contact you soon.'})
+                            else:
+                                return json_response({
+                                    'error': True,
+                                    'message': 'Unable to process your request.'})
                     else:
                         return json_response({
                             'error': True,
@@ -716,34 +765,6 @@ def lawyer_signup():
     global available_practice
     
     return render_template('lawyer/lawyer-signup.html',title='Try it for Free',law_practice=available_practice)
-
-#reset password for the first time route
-# @app.route('/lawyer/add-password',methods=['GET','POST'])
-# def lawyer_add_password():
-#     if request.method == "POST":
-#         email = request.form.get('email')
-#         password = request.form.get('password')
-#         confirm_password = request.form.get('confirm_password')
-
-#         if is_email(email):
-#             if password == confirm_password:
-#                 lawyer = Lawyer.add_password(email=email,password=password)
-#                 if lawyer:
-#                     return redirect(url_for('lawyer_add_password',succ=1,m='Password has been reset'))
-#                 else:
-#                     return redirect(
-#                     url_for('lawyer_add_password',
-#                         err=1, m="These credentials do not match our records.", email=email))
-#             else:
-#                 return redirect(
-#                     url_for('lawyer_add_password',
-#                         err=1, m="Confirmation password does not match, please try again.",email=email))
-#         else:
-#             return redirect(
-#                 url_for('lawyer_add_password',
-#                 err=1, m="You have entered an invalid email address, Please try again.",email=email))
-#     return render_template('lawyer/lawyer-add-pass.html',title='Reset Password')
-
 
 # send email with token client
 def send_reset_email(client):
