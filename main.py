@@ -286,6 +286,16 @@ def home():
 def lawyer_clicked(client_id=None):
     if request.methods == "POST":
         lawyer_id = request.form.get('id')
+        lawyer = Lawyer.get_by_id(int(lawyer_id))
+        event = Event.save(lawyer=lawyer_id,client=client_id,event_type="pre-appointment")
+        if event:
+            return json_response({
+                "error" : False,
+                "message" : "You have now set a pre appointment with "+lawyer.first_name+" "+lawyer.last_name})
+        else:
+            return json_response({
+                "error" : True,
+                "message" : "Pre-appointment was not made, please try again."})
         
 # find a lawyer route
 @app.route('/lawyer/found',methods=['GET','POST'])
@@ -293,7 +303,6 @@ def find_lawyer():
     lawyers = None
     found_lawyers = []
     if request.method == "POST":        
-        
         law_practice = request.form.get('lawpractice')
         cityOrMunicipality = request.form.get('city')
         if law_practice and cityOrMunicipality:
