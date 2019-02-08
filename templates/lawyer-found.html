@@ -8,26 +8,31 @@
                 <select id="practice" name="lawpractice" class="form-control">
                     <option selected="true" disabled="disabled" >Select a Legal Issue</option>
                     {% for key, value in law_practice.items()|sort %}
+                        {% if request.args.get('practice') == value %}
+                        <option selected value="{{key}}" > {{value}}
+                        {% else %}
                         <option value="{{key}}" > {{value}}
+                        {% endif %}
                     </option>
                     {% endfor %}
                 </select>
             </div>
             <div class="form-group">
-                <input type="text" name="city" class="form-control" id="cityOrMunicipality" placeholder="City or Municipality">
+                <input type="text" name="city" value="{% if request.args.get('cityOrMunicipality') %}{{request.args.get('cityOrMunicipality')}}{% endif %}" class="form-control" id="cityOrMunicipality" placeholder="City or Municipality">
             </div>
             <button type='submit' id="btnFindLawyer" class="btn-get-started">Find a Lawyer</button>
         </form> 
+        {%if lawyers %}
         <div id="found-lawyers">
             <div id="card-result-container-cards">
                     <div class="card-container">
                             <div class="card">
                                 <div class="front">
                                     <div class="cover">
-                                        <img src="images/rotating_card_thumb3.png"/>
+                                        <img src="/static/img/rotating_card_thumb3.png"/>
                                     </div>
                                     <div class="user">
-                                        <img class="img-circle" src="images/rotating_card_profile.png"/>
+                                        <img class="img-circle" src="/static/img/team1.png"/>
                                     </div>
                                     <div class="content">
                                         <div class="main">
@@ -150,8 +155,11 @@
                                 
                         </div>              
             </div>
-        </div>    
+        </div>
+        {% else %}
         
+        <h4>no lawyers found</h4>
+        {% endif %}
     </div>
 
 {% endblock %}

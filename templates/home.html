@@ -5,10 +5,10 @@
 <div id="findlawyer">
         <h1>Find your Lawyer!</h1>
         <h2>Let us help you find the right lawyer.</h2>
-    <form method="POST">
+    <form id="find-lawyer-form" method="POST">
         <!-- f in id means find lawyer -->
         <div class="form-group">
-            <select id="practice" class="form-control" name="lawpractice">
+            <select id="lawpractice" class="form-control" name="lawpractice">
                 <option selected="true" disabled="disabled" >Select a Legal Issue</option>
                 {% for key, value in law_practice.items()|sort %}
                     <option value="{{key}}" > {{value}}
@@ -17,9 +17,9 @@
             </select>
         </div>
         <div class="form-group">
-            <input type="text" name="city" class="form-control" id="cityOrMunicipality" placeholder="City or Municipality">
+            <input type="text" name="cityOrMunicipality" class="form-control" id="cityOrMunicipality" placeholder="City or Municipality">
         </div>
-        <a type='submit' id="btnFindLawyer" onclick="load_home()" style="cursor: pointer" class="btn-get-started">Find a Lawyer</a>
+        <a type='submit' id="btnFindLawyer" onclick="document.getElementById('find-lawyer-form').submit()" style="cursor: pointer" class="btn-get-started">Find a Lawyer</a>
     </form>                                  
 </div>
 <!-- 

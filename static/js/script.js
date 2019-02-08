@@ -71,6 +71,21 @@ $(document).ready(function(){
             console.log(response);
         }, "json")
     });
+
+    $('btnFindLawyer').click(function(e){
+        console.log("findlawyerclicked");
+        var form_data = new FormData();
+        var law_practice = $('#lawpractice');
+        var cityOrMunicipalitycity = $('#cityOrMunicipality');
+        form_data.append('law_practice', law_practice);
+        form_data.append('cityOrMunicipality', cityOrMunicipality);
+
+        $.post("/lawyer/found", form_data ,function(response){
+            if(response['error'] == false){
+                window.location.replace("/lawyer/found/practice="+law_practice+"&cityOrMunicipality="+cityOrMunicipalitycity);
+            }
+        }, "json")
+    });
     
     // find a lawyer button
     // $('#btnFindLawyer').click(function(e){

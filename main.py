@@ -268,6 +268,10 @@ available_practice = {'Constitutional Law':"Constitutional Law", 'Criminal Law':
 @app.route('/home', methods=['GET','POST'])
 def home():
     global available_practice
+    if request.method == "POST":
+        law_practice = request.form.get('lawpractice')
+        cityOrMunicipality = request.form.get('cityOrMunicipality')
+        return redirect(url_for('find_lawyer',practice=law_practice,cityOrMunicipality=cityOrMunicipality))
 
     if session.get('lawyer') is not None:
         return render_template('home.html',title='Home',lawyer=session['lawyer'],law_practice=available_practice)
@@ -277,33 +281,14 @@ def home():
 #####################################################################################################################################
 # for lawyers and below
 
-# find a lawyer route
-# @app.route('/lawer/find',methods=['POST'])
-# def find_lawyer():
-#     law_practice = request.form.get('lawpractice')
-#     cityOrMunicipality = request.form.get('city')
-#     if law_practice and cityOrMunicipality:
-#         found_lawyers = Practice.find_practice(law_practice=law_practice, cityOrMunicipality=cityOrMunicipality)
-#         if found_lawyers:
-#             return json_response({"found" : found_lawyers})
-#         else:
-#             return redirect(json_response({
-#                 'error' : True,
-#                 'message': "No lawyer(s) found in "+cityOrMunicipality+" with practice of "+law_practice}))
-                   
-#     else:
-#         return redirect(json_response({
-#             'error' : True,
-#             'message' : "Please select your legal issue and city to find lawyer."}))
-
 # appoint lawyer 
 @app.route('/lawyer/<int:client_id>/pre-appoint',methods=['POST'])
 def lawyer_clicked(client_id=None):
     if request.methods == "POST":
         lawyer_id = request.form.get('id')
         
-
-@app.route('/lawyer/find',methods=['GET','POST'])
+# find a lawyer route
+@app.route('/lawyer/found',methods=['GET','POST'])
 def find_lawyer():
     found_lawyers = []
     if request.method == "POST":        
@@ -322,8 +307,19 @@ def find_lawyer():
             return redirect(json_response({
                 'error' : True,
                 'message' : "Please select your legal issue and city to find lawyer."}))
+    
+    law_practice = request.args.get('practice')
+    cityOrMunicipality = request.args.get('cityOrMunicipality')
 
-    return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=found_lawyers)
+    if law_practice and cityOrMunicipality:
+        found_lawyers = Practice.find_practice(law_practice=law_practice, cityOrMunicipality=cityOrMunicipality)
+        if found_lawyers:
+            lawyers = found_lawyers
+        else:
+            lawyers = None
+    
+
+    return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers)
 
 #dashboard route for lawyers
 @app.route('/lawyer/')
