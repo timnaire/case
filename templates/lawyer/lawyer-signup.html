@@ -71,6 +71,7 @@
                 <input type="text" id='phone' class="form-control" name="phone" placeholder="Phone" maxlength="11"/>   
                 <input type="text" id='rollno' class="form-control" name="rollno" placeholder="Roll Number" />
                 <input type="button" name="next" class="next action-button" value="Next" />
+                <br><br> <a href="{{url_for('lawyer_signin')}}" >Already have an account?</a>
                 </fieldset>
                 <fieldset>
                 <h2 class="fs-title">Contact</h2>
@@ -100,7 +101,8 @@
                 <input type="submit" id="btnLawyerSignup" name="submit" class="submit action-button" value="Submit" />               
                 </fieldset>                
             </div>
-            <br><br> <a href="{{url_for('lawyer_signin')}}" >Already have an account?</a>
+            
         </form>
+        
     </div>
 {% endblock %}

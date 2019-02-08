@@ -290,6 +290,7 @@ def lawyer_clicked(client_id=None):
 # find a lawyer route
 @app.route('/lawyer/found',methods=['GET','POST'])
 def find_lawyer():
+    lawyers = None
     found_lawyers = []
     if request.method == "POST":        
         
@@ -298,7 +299,10 @@ def find_lawyer():
         if law_practice and cityOrMunicipality:
             found_lawyers = Practice.find_practice(law_practice=law_practice, cityOrMunicipality=cityOrMunicipality)
             if found_lawyers:
-                return json_response({"found" : found_lawyers})
+
+                lawyers = found_lawyers
+                return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers)
+                #return json_response({"found" : found_lawyers})
             else:
                 return redirect(json_response({
                     'error' : True,
@@ -311,12 +315,12 @@ def find_lawyer():
     law_practice = request.args.get('practice')
     cityOrMunicipality = request.args.get('cityOrMunicipality')
 
-    if law_practice and cityOrMunicipality:
-        found_lawyers = Practice.find_practice(law_practice=law_practice, cityOrMunicipality=cityOrMunicipality)
-        if found_lawyers:
-            lawyers = found_lawyers
-        else:
-            lawyers = None
+    # if law_practice and cityOrMunicipality:
+    #     found_lawyers = Practice.find_practice(law_practice=law_practice, cityOrMunicipality=cityOrMunicipality)
+    #     if found_lawyers:
+    #         lawyers = found_lawyers
+    #     else:
+    #         lawyers = None
     
 
     return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers)

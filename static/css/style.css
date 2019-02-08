@@ -237,6 +237,98 @@ h1, h2, h3, h4, h5, h6 {
   background: none; 
   margin-top: 40px !important;
 }
+
+#heroFind {
+  width: 100%;
+  height: 100vh;
+  background: url(../img/hero-bg.jpg) top center;
+  background-size: cover;
+  position: relative;
+}
+
+@media (min-width: 1024px) {
+  #heroFind {
+    background-attachment: fixed;
+  }
+}
+
+#heroFind:before {
+  content: "";
+  background: rgba(0, 0, 0, 0.6);
+  position: absolute;
+  bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+#heroFind .hero-container {
+  position: absolute;
+  bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+#heroFind h1 {
+  margin: 30px 0 10px 0;
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 56px;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  #heroFind h1 {
+    font-size: 28px;
+    line-height: 36px;
+  }
+}
+
+#heroFind h2 {
+  color: #fff;
+    margin-bottom: 50px;
+    font-size: 24px;
+}
+
+@media (max-width: 768px) {
+  #heroFind h2 {
+    font-size: 18px;
+    line-height: 24px;
+    margin-bottom: 30px;
+  }
+}
+
+#heroFind .btn-get-started {
+  font-family: "Poppins", sans-serif;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: 1px;
+  display: inline-block;
+  padding: 8px 28px;
+  border-radius: 50px;
+  transition: 0.5s;
+  margin: 10px;
+  border: 2px solid #fff;
+  color: #fff;
+}
+#heroFind .form-group{
+  
+}
+#heroFind .form-control{
+  height: 55px;
+}
+#heroFind .btn-get-started:hover {
+  background: #2dc997;
+  border: 2px solid #2dc997;
+}
 /*--------------------------------------------------------------
 # Navigation Menu
 --------------------------------------------------------------*/
@@ -1049,11 +1141,22 @@ body.mobile-nav-active #mobile-nav-toggle {
   box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
   padding: 47px  30px;
   box-sizing: border-box;
-  width: 80%;
+  width: 520px;
   margin: 0 10%;
   /*stacking fieldsets above each other*/
   
   position: absolute;
+}
+@media (max-width: 1024px) {
+  #msform fieldset{
+    width: 305px;
+  }
+  #progressbar li{
+    font-size: 20px !important;
+  }
+  #header #logo img {
+    max-height: 40px;
+  }
 }
 /*Hide all except first fieldset*/
 
@@ -1119,7 +1222,6 @@ body.mobile-nav-active #mobile-nav-toggle {
 #progressbar li {
   list-style-type: none;
   color: #ffffff;
-  text-transform: uppercase;
   font-size: 14px;
   width: 33.33%;
   float: left;
@@ -1245,4 +1347,20 @@ body.mobile-nav-active #mobile-nav-toggle {
 }
 #account-profile-container{
   margin-top: 5%;
+}
+#seeMore{
+  border-radius: 20px;
+    background-color: #32afd4;
+    border: 1px solid white;
+    padding: 10px;
+    color: white;
+    font-size: 15px;
+}
+#preAppoint{
+  border-radius: 20px;
+    background-color: #2dc997;
+    border: 1px solid white;
+    padding: 10px;
+    color: white;
+    font-size: 15px;
 }
