@@ -20,7 +20,7 @@
             <div class="form-group">
                 <input type="text" name="city" value="{% if request.args.get('cityOrMunicipality') %}{{request.args.get('cityOrMunicipality')}}{% endif %}" class="form-control" id="cityOrMunicipality" placeholder="City or Municipality" required>
             </div>
-            <button type='submit' id="btnFindLawyer" class="btn-get-started">Find a Lawyer</button>
+            <button type='submit' id="btnFindLawyer" class="btn-get-started">Find Now</button>
         </form> 
         {% if results %}
              
@@ -88,7 +88,7 @@
                                                     </div>
                                                     <div class="footer">
                                                         <div class="social-links text-center">
-                                                            <button id="preAppoint">See More</button>
+                                                            <a href="{{url_for('see_more',lawyer_email=person.lawyer.email)}}" id="preAppoint">See More</a>
                                                             <!-- <button id="preAppoint">Pre Appoint!</button> -->
                                                         </div>
                                                     </div>

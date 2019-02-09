@@ -44,7 +44,7 @@
         </form>
     </div> -->
     <div id="lawyer-signup-form">
-        <form method="POST" novalidate>
+        <form method="POST" data-toggle="validator" role="form">
             <div id="msform">
                 {% if request.args.get('err') %}
                 <div class="alert alert-danger">
@@ -67,7 +67,9 @@
                 <h3 class="fs-subtitle">Step 1</h3>
                 <input type="text" id='first_name' class="form-control" name="first_name" placeholder="First name" />
                 <input type="text" id='last_name' class="form-control" name="last_name" placeholder="Last name" />
-                <input type="email" id='email' class="form-control" name="email" placeholder="Email" />    
+                <div class="form-group">
+                <input type="email" id='email' class="form-control" name="email" placeholder="Email" data-error="Email is invalid."/> 
+                </div>   
                 <input type="text" id='phone' class="form-control" name="phone" placeholder="Phone" maxlength="11"/>   
                 <input type="text" id='rollno' class="form-control" name="rollno" placeholder="Roll Number" />
                 <input type="button" name="next" class="next action-button" value="Next" />

@@ -5,7 +5,7 @@
 <div id="findlawyer">
         <h1>Find your Lawyer!</h1>
         <h2>Let us help you find the right lawyer.</h2>
-    <form id="find-lawyer-form" method="POST">
+    <form id="find-lawyer-form" action="{{url_for('find_lawyer')}}" method="POST">
         <!-- f in id means find lawyer -->
         <div class="form-group">
             <select id="lawpractice" class="form-control" name="lawpractice">
@@ -17,13 +17,13 @@
             </select>
         </div>
         <div class="form-group">
-            <input type="text" name="cityOrMunicipality" class="form-control" id="cityOrMunicipality" placeholder="City or Municipality" required>
+            <input type="text" name="city" class="form-control" id="cityOrMunicipality" placeholder="City or Municipality" required>
         </div>
-        <a type='submit' id="btnFindLawyer" onclick="document.getElementById('find-lawyer-form').submit()" style="cursor: pointer" class="btn-get-started">Find a Lawyer</a>
+        <input type='submit' id="btnFindLawyer"  style="cursor: pointer" value="Find Now" class="btn-get-started">
     </form>                                  
 </div>
 <!-- 
-    <h4>A Lawyer?</h4>
+    <h4>A Lawyer?</h4>   onclick="if(getElementById('cityOrMunicipality').val()){document.getElementById('find-lawyer-form')}"
     <p>Getting to know you.</p>
     <small><a href="{{ url_for('lawyer_signup') }}">Become a lawyer with us.</a></small>
 

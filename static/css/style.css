@@ -1358,9 +1358,18 @@ body.mobile-nav-active #mobile-nav-toggle {
 }
 #preAppoint{
   border-radius: 20px;
-    background-color: #2dc997;
-    border: 1px solid white;
-    padding: 10px;
-    color: white;
-    font-size: 15px;
+  background-color: #2dc997;
+  border: 1px solid white;
+  padding: 10px;
+  color: white;
+  font-size: 15px;
+}
+
+#preAppoint:hover{
+  border-radius: 20px;
+  background-color: #2dc997;
+  border: 1px solid white;
+  padding: 10px;
+  color: white;
+  font-size: 17px;
 }

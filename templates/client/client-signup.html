@@ -1,8 +1,8 @@
-{% extends 'layout.html' %}
+{% extends 'empty_layout.html' %}
 
 {% block content %}
 
-    <div class="container">
+    <!-- <div class="container">
 
         {% if request.args.get('err') %}
         <div class="alert alert-danger">
@@ -40,6 +40,37 @@
             </div>
             <button id="btnClientSignUp" class="btn btn-primary">Sign up</button>
         </form>
+    </div> -->
+    <div id="lawyer-signup-form">
+        <form method="POST" novalidate>
+            <div id="msform">
+                {% if request.args.get('err') %}
+                <div class="alert alert-danger">
+                    {{ request.args.get('m') }}
+                </div>
+                {% elif request.args.get('succ') %}
+                <div class="alert alert-success">
+                    {{ request.args.get('m') }}
+                </div>
+                {% endif %}
+                <!-- fieldsets -->
+                <fieldset>
+                <h2 class="fs-title">Client Registration</h2>
+                <h3 class="fs-subtitle">Basic Information</h3>
+                <input type="text" id='first_name' class="form-control"  placeholder="First name" />
+                <input type="text" id='last_name' class="form-control"  placeholder="Last name" />
+                <input type="email" id='email' class="form-control"  placeholder="Email" />    
+                <input type="text" id='phone' class="form-control"  placeholder="Phone" maxlength="11"/>   
+                <input type="text" id='address' class="form-control"  placeholder="Address" />
+                <input type="password" id='the-password' class="form-control"  placeholder="Password" />
+                <input type="password" id='confirm-password' class="form-control"  placeholder="Confirm Password" />
+                <button id="btnClientSignUp" class="btn btn-primary">Sign up</button>
+                <br><br> <a href="{{url_for('lawyer_signin')}}" >Already have an account?</a>
+                </fieldset>           
+            </div>
+            
+        </form>
+        
     </div>
 
 {% endblock %}
