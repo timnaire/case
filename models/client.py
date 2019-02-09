@@ -146,6 +146,18 @@ class Client(ndb.Model):
             return None
         return Client.get_by_id(int(client_id))
 
+    def dict_nodate(self):
+        data = {}
+
+        data['first_name'] = self.first_name
+        data['last_name'] = self.last_name
+        data['email'] = self.email
+        data['phone'] = self.phone
+        data['address'] = self.address
+        data['profile_pic'] = self.profile_pic
+
+        return data
+
     def to_dict(self):
         data = {}
 

@@ -11,6 +11,7 @@ from models.client import Client
 from models.practice import Practice
 from models.case import Case
 from models.event import Event
+from models.notification import Notification
 from decorators import login_required_lawyer
 from functions import json_response, is_email, save_to_gcs
 
@@ -301,7 +302,10 @@ def lawyer_clicked(client_id=None):
             "notification":{
                 'title': 'Pre-Appointment', 
                 'body': client.first_name + ' ' + client.last_name + ' sends Pre-Appointment request.'
-            } 
+            },
+            "data":{
+                'client_id': client_id
+            }
         } 
 
         headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
@@ -309,6 +313,7 @@ def lawyer_clicked(client_id=None):
             'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
         )
         event = Event.save(lawyer=lawyer_id,client=client_id,event_type="Pre-Appointment")
+        notification = Notification.save(notif_to=lawyer.key.id(),notif_from=client_id,sent="1",received="0")
         if event:
             return json_response({
                 "error" : False,
@@ -429,7 +434,7 @@ def save_lawyer_token(lawyer_id=None):
         else: 
             return json_response({"error":True,"message":"FCM Token was not saved."})
 
-@app.route('/lawyer/<int:client_id>/fcm-token',methods=['POST'])
+@app.route('/client/<int:client_id>/fcm-token',methods=['POST'])
 def save_client_token(client_id=None):
     if request.method == "POST":
         req_data = request.get_json(force=True)

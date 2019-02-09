@@ -180,6 +180,17 @@ class Lawyer(ndb.Model):
             return None
         return Lawyer.get_by_id(int(lawyer_id))
 
+    def dict_nodate(self):
+        data = {}
+
+        data['first_name'] = self.first_name
+        data['last_name'] = self.last_name
+        data['email'] = self.email
+        data['phone'] = self.phone
+        data['office'] = self.office
+        data['profile_pic'] = self.profile_pic
+        return data
+
     def to_dict(self):
         data = {}
 

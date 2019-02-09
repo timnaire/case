@@ -100,21 +100,21 @@ class Case(ndb.Model):
         
         return list_lawyer
 
-    # def get_clients(self):
-    #     data = {}
-    #     data['client'] = None
-    #     if self.client:
-    #         client = self.client.get()
-    #         data['client'] = client.to_dict()
-    #     return data
+    def get_clients(self):
+        data = {}
+        data['client'] = None
+        if self.client:
+            client = self.client.get()
+            data['client'] = client.dict_nodate()
+        return data
 
-    # def get_lawyers(self):
-    #     data = {}
-    #     data['lawyer'] = None
-    #     if self.lawyer:
-    #         lawyer = self.lawyer.get()
-    #         data['lawyer'] = lawyer.to_dict()
-    #     return data
+    def get_lawyers(self):
+        data = {}
+        data['lawyer'] = None
+        if self.lawyer:
+            lawyer = self.lawyer.get()
+            data['lawyer'] = lawyer.dict_nodate()
+        return data
 
     def to_dict(self):
         data = {}
