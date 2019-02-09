@@ -429,6 +429,19 @@ def save_lawyer_token(lawyer_id=None):
         else: 
             return json_response({"error":True,"message":"FCM Token was not saved."})
 
+@app.route('/lawyer/<int:client_id>/fcm-token',methods=['POST'])
+def save_client_token(client_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'fcm_token' in req_data:
+            fcm_token = req_data['fcm_token']
+
+        token = Client.save(id=client_id,fcm_token=fcm_token)
+        if token:
+            return json_response({"error":False,"message":"FCM Token saved!"})
+        else: 
+            return json_response({"error":True,"message":"FCM Token was not saved."})
+
 # mycase route for lawyers 
 @app.route('/lawyer/<int:lawyer_id>/mycase', methods=['GET','POST'])
 # @login_required_lawyer

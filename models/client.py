@@ -11,6 +11,7 @@ class Client(ndb.Model):
     address = ndb.StringProperty()
     password = ndb.StringProperty()
     profile_pic = ndb.StringProperty()
+    fcm_token = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
 
@@ -37,6 +38,8 @@ class Client(ndb.Model):
             client.profile_pic = kwargs.get('profile_pic')
         if kwargs.get('password'):
             client.password = pbkdf2_sha256.hash(kwargs.get('password'))
+        if kwargs.get('fcm_token'):
+            client.fcm_token = kwargs.get('fcm_token')
 
         client.put()
         return client
