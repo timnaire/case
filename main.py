@@ -3,14 +3,19 @@ from flask import Flask, render_template, url_for, request, session, redirect, a
 from flask_mail import Mail, Message
 from config import SECRET_KEY
 import googlemaps
+import json
+import requests
+from requests_toolbelt.adapters import appengine 
 from models.lawyer import Lawyer
 from models.client import Client
 from models.practice import Practice
 from models.case import Case
+from models.event import Event
 from decorators import login_required_lawyer
 from functions import json_response, is_email, save_to_gcs
 
 app = Flask(__name__)
+appengine.monkeypatch()
 app.secret_key = SECRET_KEY
 gmaps = googlemaps.Client(key='AIzaSyCNHYz-iF2kippAtUQiv4hCPesfP_3G0ZE')
 app.jinja_env.trim_blocks = True
@@ -21,6 +26,7 @@ app.config['MAIL_PASSWORD'] = 'Caseadmin123'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
+app.config['FCM_APP_TOKEN'] = 'AAAApfmYrNw:APA91bFF6hkFopiyL_uvaZMX72KTYUG-5046imt9coP5JyEyw8Upj3x-4CFcbTiHsekqbBv6s4KS6QglLoO9iSb0ZqSUgNufiLzaGgw8h-2WDrt15_DNdCm0VH7kilevxDmxc2vD0BMc'
 mail = Mail(app)
 # Geocoding an address
 # geocode_result = gmaps.geocode('1600 Amphitheatre Parkway, Mountain View, CA')
@@ -284,14 +290,32 @@ def home():
 # appoint lawyer 
 @app.route('/lawyer/<int:client_id>/pre-appoint',methods=['POST'])
 def lawyer_clicked(client_id=None):
-    if request.methods == "POST":
-        lawyer_id = request.form.get('id')
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'id' in req_data:
+            lawyer_id = req_data['id']
         lawyer = Lawyer.get_by_id(int(lawyer_id))
-        event = Event.save(lawyer=lawyer_id,client=client_id,event_type="pre-appointment")
+        client = Client.get_by_id(int(client_id))
+        json_data = {
+            "to": lawyer.fcm_token, 
+            "notification":{
+                'title': 'Pre-Appointment', 
+                'body': client.first_name + ' ' + client.last_name + ' sends Pre-Appointment request.'
+            } 
+        } 
+
+        headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
+        requests.post(
+            'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
+        )
+        event = Event.save(lawyer=lawyer_id,client=client_id,event_type="Pre-Appointment")
         if event:
             return json_response({
                 "error" : False,
-                "message" : "You have now set a pre appointment with "+lawyer.first_name+" "+lawyer.last_name})
+                "message" : "You have now set a pre appointment with "+lawyer.first_name+" "+lawyer.last_name,
+                "client_name": client.first_name+ " " +client.last_name,
+                "client_phone" : client.phone,
+                "client_email" : client.email})
         else:
             return json_response({
                 "error" : True,
@@ -391,6 +415,19 @@ def get_event(lawyer_id=None):
         event_dict.append(event.to_dict())
         
     return json_response({"events" : event_dict})
+
+@app.route('/lawyer/<int:lawyer_id>/fcm-token',methods=['POST'])
+def save_lawyer_token(lawyer_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'fcm_token' in req_data:
+            fcm_token = req_data['fcm_token']
+
+        token = Lawyer.save(id=lawyer_id,fcm_token=fcm_token)
+        if token:
+            return json_response({"error":False,"message":"FCM Token saved!"})
+        else: 
+            return json_response({"error":True,"message":"FCM Token was not saved."})
 
 # mycase route for lawyers 
 @app.route('/lawyer/<int:lawyer_id>/mycase', methods=['GET','POST'])

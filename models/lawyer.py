@@ -17,6 +17,7 @@ class Lawyer(ndb.Model):
     rollno = ndb.StringProperty()
     status = ndb.StringProperty()
     firm = ndb.StringProperty()
+    fcm_token = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
 
@@ -53,6 +54,8 @@ class Lawyer(ndb.Model):
             lawyer.status = kwargs.get('status')
         if kwargs.get('firm'):
             lawyer.firm = kwargs.get('firm')
+        if kwargs.get('fcm_token'):
+            lawyer.fcm_token = kwargs.get('fcm_token')
         
         lawyer.put()
         return lawyer
