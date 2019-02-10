@@ -18,6 +18,8 @@ class Lawyer(ndb.Model):
     status = ndb.StringProperty()
     firm = ndb.StringProperty()
     fcm_token = ndb.StringProperty()
+    sex = ndb.StringProperty()
+    limit_case = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
 
@@ -56,7 +58,11 @@ class Lawyer(ndb.Model):
             lawyer.firm = kwargs.get('firm')
         if kwargs.get('fcm_token'):
             lawyer.fcm_token = kwargs.get('fcm_token')
-        
+        if kwargs.get('sex'):
+            lawyer.sex = kwargs.get('sex')
+        if kwargs.get('limit_case'):
+            lawyer.limit_case = kwargs.get('limit_case')
+
         lawyer.put()
         return lawyer
     
@@ -203,8 +209,10 @@ class Lawyer(ndb.Model):
         data['aboutme'] = self.aboutme
         data['profile_pic'] = self.profile_pic
         data['rollno'] = self.rollno
+        data['sex'] = self.sex
         data['status'] = self.status
         data['firm'] = self.firm
+        data['limit_case'] = self.limit_case
         data['created'] = self.created.isoformat() + 'Z'
         data['updated'] = self.updated.isoformat() + 'Z'
 

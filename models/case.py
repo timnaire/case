@@ -41,6 +41,20 @@ class Case(ndb.Model):
         return case
 
     @classmethod
+    def my_case(cls,lawyer_id):
+        number_of_case = 0
+        if lawyer_id:
+            lawyer = Lawyer.get_by_id(int(lawyer_id))
+            cases = cls.query(cls.lawyer == lawyer.key).fetch()
+            for case in cases:
+                number_of_case = number_of_case + 1
+        
+        if not number_of_case:
+            number_of_case = None
+
+        return number_of_case
+
+    @classmethod
     def get_all_cases(cls,*args,**kwargs):
         case = None
 
@@ -100,6 +114,17 @@ class Case(ndb.Model):
         
         return list_lawyer
 
+    def delete(self,case_id):
+        deleted = None
+
+        if case_id:
+            deleted = ndb.Key("Case", int(case_id)).delete()
+            
+        if not deleted:
+            deleted = None
+            
+        return True
+
     def get_clients(self):
         data = {}
         data['client'] = None
@@ -118,7 +143,7 @@ class Case(ndb.Model):
 
     def to_dict(self):
         data = {}
-
+        data['client_id'] = self.key.id()
         data['lawyer'] = None
         if self.lawyer:
             lawyer = self.lawyer.get()

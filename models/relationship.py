@@ -53,10 +53,10 @@ class Relationship(ndb.Model):
         if lawyer_id:
             lawyer_key = ndb.Key('Lawyer',int(lawyer_id))
             # and status="accepted"
-            clients = cls.query(cls.lawyer == lawyer_key).fetch()
+            clients = cls.query(cls.lawyer == lawyer_key , cls.status == "Accepted").fetch()
             if clients:
                 for client in clients:
-                    list_of_clients.append(client.to_dict())
+                    list_of_clients.append(client.dict_client())
         
         if not list_of_clients:
             list_of_clients = None
@@ -69,15 +69,35 @@ class Relationship(ndb.Model):
         
         if client_id:
             client_key = ndb.Key('Client',int(client_id))
-            lawyers = cls.query(cls.client == client_key).fetch()
+            lawyers = cls.query(cls.client == client_key , cls.status == "Accepted").fetch()
             if lawyers:
                 for lawyer in lawyers:
-                    list_of_lawyers.append(lawyer.to_dict())
+                    list_of_lawyers.append(lawyer.dict_lawyer())
         
         if not list_of_lawyers:
             list_of_lawyers = None
         
         return list_of_lawyers
+
+    def dict_lawyer(self):
+        data = {}
+        data['case_id'] = self.key.id()
+        data['lawyer'] = None
+        if self.lawyer:
+            lawyer = self.lawyer.get()
+            data['lawyer_id'] = lawyer.key.id()
+            data['lawyer'] = lawyer.dict_nodate()
+        return data
+
+    def dict_client(self):
+        data = {}
+        data['case_id'] = self.key.id()
+        data['client'] = None
+        if self.client:
+            client = self.client.get()
+            data['client_id'] = client.key.id()
+            data['client'] = client.dict_nodate()
+        return data
 
     def to_dict(self):
         data = {}

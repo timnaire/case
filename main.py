@@ -441,7 +441,7 @@ def add_event(lawyer_id=None):
 
 @app.route('/lawyer/<int:lawyer_id>/list-client',methods=['GET','POST'])
 def list_client(lawyer_id=None):
-    list_of_clients = Case.lawyers_client(lawyer=lawyer_id)
+    list_of_clients = Relationship.my_clients(lawyer_id=lawyer_id)
     if list_of_clients:
         return json_response({
             "error" : False,
@@ -488,6 +488,11 @@ def save_client_token(client_id=None):
         else: 
             return json_response({"error":True,"message":"FCM Token was not saved."})
 
+@app.route('/lawyer/<int:lawyer_id>/number-of-case')
+def number_of_case(lawyer_id=None):
+    mycases = Case.my_case(lawyer_id=lawyer_id)
+    return json_response({"cases": mycases})
+
 # mycase route for lawyers 
 @app.route('/lawyer/<int:lawyer_id>/mycase', methods=['GET','POST'])
 # @login_required_lawyer
@@ -501,26 +506,34 @@ def mycase(lawyer_id=None):
         if 'case_description' in req_data:
             case_description = req_data['case_description']
         
-        if case_title and client_id and case_description:
-            case = Client.get_client(client_id=client_id)
-            if case:
-                case = Case.save(lawyer=lawyer_id,case_title=case_title,client_id=client_id,case_description=case_description,status='Active')
+        mycases = Case.my_case(lawyer_id=lawyer_id)
+        lawyer = Lawyer.get_by_id(int(lawyer_id))
+        
+        if lawyer.limit_case == mycases:
+            return json_response({
+                "error":True,
+                "message": "You already reached your limit as a free user, to add more case please Subscribe!"})
+        else:
+            if case_title and client_id and case_description:
+                case = Client.get_client(client_id=client_id)
                 if case:
-                    return json_response({
-                        "error" : False,
-                        "message" : "New case added."})
+                    case = Case.save(lawyer=lawyer_id,case_title=case_title,client_id=client_id,case_description=case_description,status='Active')
+                    if case:
+                        return json_response({
+                            "error" : False,
+                            "message" : "New case added."})
+                    else:
+                        return json_response({
+                            "error" : True,
+                            "message" : "Couldn't add a case, please try again."})
                 else:
                     return json_response({
                         "error" : True,
-                        "message" : "Couldn't add a case, please try again."})
+                        "message" : "No client found with that id, please try again."})
             else:
                 return json_response({
-                    "error" : True,
-                    "message" : "No client found with that id, please try again."})
-        else:
-            return json_response({
-                'error' : True,
-                'message' : 'Please input the case name and try again.'})
+                    'error' : True,
+                    'message' : 'Please input the case name and try again.'})
     
     lawyer = Lawyer.get_by_id(int(lawyer_id))
     cases = Case.query(Case.lawyer == lawyer.key).fetch()
@@ -549,6 +562,30 @@ def getAllCase(lawyer_id=None):
             "error" : True,
             "message" : "No case found",
             "cases" : "Empty"})
+
+@app.route('/lawyer/<int:lawyer_id>/delete-case',methods=['POST'])
+def deleteCase(lawyer_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if "case_id" in req_data:
+            case_id = req_data["case_id"]
+
+        case = Case.get_by_id(int(case_id))
+        if case:
+            case = Case.delete(case_id=case_id())
+            if case:
+                return json_response({
+                    "error": False,
+                    "message" : "Case deleted!"})
+            else:
+                return json_response({
+                    "error": True,
+                    "message" : "Case was not deleted"})
+        else:
+            return json_response({
+                "error": True,
+                "message" : "Case not found"})
+    
 
 # profile picture route
 @app.route('/lawyer/<int:lawyer_id>/account-setting/profile-picture', methods=['POST'])
@@ -830,7 +867,7 @@ def lawyer_signup():
                         if get_rollno(str(rollno)):
                             roll_exist = Lawyer.rollno_exist(rollno=rollno)
                             if not roll_exist:
-                                lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,rollno=rollno,cityOrMunicipality=cityOrMunicipality,office=office,firm=firm,password=password,status="activated")
+                                lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,rollno=rollno,cityOrMunicipality=cityOrMunicipality,office=office,firm=firm,password=password,status="activated",limit_case="5")
                                 if lawyer:
                                     # pract as in practice
                                     for pract in law_practice:
@@ -847,7 +884,7 @@ def lawyer_signup():
                                     'error': True,
                                     'message': 'Account with roll number '+rollno+' already exist. Contact us if you need help.'})
                         else:
-                            lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,rollno=rollno,cityOrMunicipality=cityOrMunicipality,office=office,firm=firm,password=password,status="deactivated")
+                            lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,rollno=rollno,cityOrMunicipality=cityOrMunicipality,office=office,firm=firm,password=password,status="deactivated",limit_case="5")
                             if lawyer:
                                 # pract as in practice
                                 for pract in law_practice:

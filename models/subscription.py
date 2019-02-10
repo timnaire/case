@@ -6,6 +6,7 @@ class Subscription(ndb.Model):
     payment = ndb.KeyProperty(kind=Payment)
     date_started = ndb.DateTimeProperty()
     date_ended = ndb.DateTimeProperty()
+    status = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
 
