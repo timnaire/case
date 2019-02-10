@@ -11,7 +11,7 @@ $(document).ready(function(){
         sendInfo = { email : email, password : password }
         $.post("/client/signin", JSON.stringify(sendInfo) ,function(response){
             if(response['error'] == false){
-                alert(response['message']);
+                window.location.replace('/client/dashboard');
             }else{
                 console.log(response['message']);
             }
@@ -207,7 +207,7 @@ $(document).ready(function(){
         }
         console.log(JSON.stringify(sendInfo))
         $.post("/lawyer/"+id+"/account-setting/profile-information", JSON.stringify(sendInfo), function(response){
-            console.log(response)
+            
         } ,"json" );
     });
 

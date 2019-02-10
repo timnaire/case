@@ -20,3 +20,12 @@ def login_required_lawyer(f):
             return redirect(url_for('lawyer_signin'))
         return f(*args, **kwargs)
     return wrapper
+
+def login_required_client(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if 'client' not in session:
+            logging.debug(request.url)
+            return redirect(url_for('lawyer_signin'))
+        return f(*args, **kwargs)
+    return wrapper
