@@ -13,7 +13,7 @@ from models.case import Case
 from models.event import Event
 from models.relationship import Relationship
 from models.notification import Notification
-from decorators import login_required_lawyer
+from decorators import login_required_lawyer,login_required_client
 from functions import json_response, is_email, save_to_gcs
 
 app = Flask(__name__)
@@ -56,6 +56,7 @@ def client_signin():
             client = Client.sign_in(email=email,password=password)
             if client:
                 session['client'] = client.key.id()
+                # return render_template('home.html',title='Client',client=session['client'],law_practice=available_practice)
                 return json_response({
                     "error" : False,
                     "message" : "Successfully signed in",
@@ -75,7 +76,7 @@ def client_signin():
                 "message" : "Please check your email and password and try again."})
 
     if session.get('client') is not None:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('dashboard_client'))
 
     return render_template('lawyer/login.html',title='Sign In')
 
@@ -105,6 +106,7 @@ def client_signup():
                     if password == confirm:
                         client = Client.save(first_name=first_name,last_name=last_name,email=email,phone=phone,address=address,password=password)
                         if client:
+
                             return json_response({
                                 "error" : False,
                                 "message" : "Successfully signed up"})
@@ -276,10 +278,6 @@ available_practice = {'Constitutional Law':"Constitutional Law", 'Criminal Law':
 @app.route('/home', methods=['GET','POST'])
 def home():
     global available_practice
-    # if request.method == "POST":
-    #     law_practice = request.form.get('lawpractice')
-    #     cityOrMunicipality = request.form.get('cityOrMunicipality')
-    #     return redirect(url_for('find_lawyer',practice=law_practice,cityOrMunicipality=cityOrMunicipality))
 
     if session.get('lawyer') is not None:
         return render_template('home.html',title='Home',lawyer=session['lawyer'],law_practice=available_practice)
@@ -373,6 +371,7 @@ def find_lawyer():
     lawyers = None
     found_lawyers = []
     if request.method == "POST":        
+
         law_practice = request.form.get('lawpractice')
         cityOrMunicipality = request.form.get('city')
         if law_practice and cityOrMunicipality:
@@ -380,8 +379,13 @@ def find_lawyer():
             if found_lawyers:
 
                 lawyers = found_lawyers
-                return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers)
-                #return json_response({"found" : found_lawyers})
+                if session.get('lawyer'):
+                    return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers,lawyer=session['lawyer'])
+                elif session.get('client'):
+                    return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers,client=session['client'])
+                else:
+                    return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers)
+                # return json_response({"found" : found_lawyers})
             else:
                 return redirect(json_response({
                     'error' : True,
@@ -401,15 +405,21 @@ def find_lawyer():
     #     else:
     #         lawyers = None
     
-
-    return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers)
-
+    return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers,lawyer=session['lawyer'])
 #dashboard route for lawyers
 @app.route('/lawyer/')
 @app.route('/lawyer/dashboard')
 @login_required_lawyer
 def dashboard():
     return render_template('lawyer/lawyer-dashboard.html',title="Welcome to Dashboard",lawyer=session['lawyer'])
+
+#dashboard route for client
+@app.route('/client/')
+@app.route('/client/dashboard')
+@login_required_client
+def dashboard_client():
+    return render_template('home.html',title="Client Login",client=session['client'],law_practice=available_practice)
+
 
 @app.route('/lawyer/<int:lawyer_id>/add-event',methods=['GET','POST'])
 def add_event(lawyer_id=None):
@@ -666,6 +676,7 @@ def lawyer_update_information(lawyer_id=None):
             return json_response({
                 'error' : True,
                 'message' : "Please dont leave the fields empty."})
+       
 
 # changing email
 @app.route('/lawyer/<int:lawyer_id>/account-setting/change-email',methods=['POST'])
@@ -1080,7 +1091,12 @@ def see_more(lawyer_email):
             # return json_response({
             #         "error" : True,
             #         "message" : lawyer_details})
-            return render_template('lawyer/lawyer-seemore.html',title='Lawyer Details',results=lawyer)
+            if session.get('lawyer'):
+                return render_template('lawyer/lawyer-seemore.html',title='Lawyer Details',lawyer=session['lawyer'],results=lawyer)
+            elif session.get('client'):
+                return render_template('lawyer/lawyer-seemore.html',title='Lawyer Details',client=session['client'],results=lawyer)
+            else:
+                return render_template('lawyer/lawyer-seemore.html',title='Lawyer Details',results=lawyer)
         else:
             return json_response({
                     "error" : True,
@@ -1091,7 +1107,7 @@ def see_more(lawyer_email):
                     "error" : True,
                     "message" : "No lawyer is selected"})
 
-    return render_template('lawyer/lawyer-seemore.html',title="Lawyer Details")
+    return render_template('lawyer/lawyer-seemore.html',lawyer=session['lawyer'],title="Lawyer Details")
 
 # sign out route
 @app.route('/lawyer/signout')
@@ -1104,7 +1120,8 @@ def lawyer_signout():
 @app.route('/client/signout')
 def client_signout():
     del session['client']
-    return redirect(url_for('lawyer_signin'))
+
+    return redirect(url_for('client_signin'))
 
 @app.errorhandler(500)
 def error_500(e):

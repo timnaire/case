@@ -1346,7 +1346,10 @@ body.mobile-nav-active #mobile-nav-toggle {
   margin:0 2%;
 }
 #account-profile-container{
-  margin-top: 5%;
+  margin-top: 3%;
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
 }
 #seeMore{
   border-radius: 20px;
@@ -1372,4 +1375,46 @@ body.mobile-nav-active #mobile-nav-toggle {
   padding: 10px;
   color: white;
   font-size: 17px;
+}
+
+#registrationForm h4{
+  margin-bottom: 2px;
+}
+
+#registrationForm input[type='text']{
+  margin-bottom: 33px;
+}
+#profile-pic-seemore{
+  object-fit: cover;
+  width: 160px;
+  /* margin-right: 80px; */
+  /* margin: 0 auto; */
+  /* margin-left: -80px; */
+  /* left: 50%; */
+  z-index: 1;
+  height: 160px;
+  margin-bottom: 30px;
+  border-radius: 50%;
+  border: 2px solid #2dc997;
+}
+
+#lawyer-details h2{
+  color: #fff;
+  margin-bottom: 7px;
+  font-size: 24px;
+}
+
+#lawyer-details h3{
+  color: white;
+    font-size: 16px;
+}
+#lawyer-contents{
+  background: #c7c7c7;
+  border-radius: 0 0 20px 20px;
+  padding: 30px;
+}
+#lawyer-portrait{
+  background: #00000026;
+    padding: 40px 0 20px;
+    border-radius: 20px 20px 0 0;
 }
