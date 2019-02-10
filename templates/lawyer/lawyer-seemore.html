@@ -5,7 +5,8 @@
     
     <div class="container">
             
-            
+            <input type="text" id="clientCheck" value="{% if client %}{{client}}{% endif %}"  hidden>
+            <input type="text" id="seeLawyerId" value="{{results.key.id}}" hidden>
             <div id="lawyer-portrait">
                     <div class="lawyer-details-image">
                             <img id="profile-pic-seemore" src="{{results.profile_pic}}" alt="">
@@ -19,7 +20,7 @@
                     </div>
             </div>
             <div id="lawyer-contents">
-                <button>Pre Appoint</button>
+                <button id="preAppointLawyer">Pre Appoint</button>
                 <div id="aboutme">
                     <h1>About Me</h1>
                     <p>{{results.aboutme}}</p>

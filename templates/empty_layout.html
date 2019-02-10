@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Poppins:300,400,500,700" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+	  <link href="{{url_for('static',filename='css/themify-icons.css')}}" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dropzone.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/rotating-card.css') }}"> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animate.min.css') }}">
+    
+
+
+    {% if title %}
+        <title>Case - {{ title }}</title>
+    {% else %}
+        <title>Case</title>
+    {% endif %}
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body id="emptyBody">
+
+      
+        <header id="header">
+                <div class="container">
+            
+                  <div id="logo" class="pull-left">
+                    <!-- Uncomment below if you prefer to use a text logo -->
+                    <!--<h1><a href="#hero">Regna</a></h1>-->
+                  </div>
+            
+                  <nav id="nav-menu-container">
+                    <ul class="nav-menu">
+                      <li class="menu-active"><a href="/">Home</a></li>
+                      <li><a href="/home#about">About Us</a></li>
+                      <li><a href="/home#services">Services</a></li>
+                      <li><a href="/home#team">Team</a></li>                      
+                      <li><a href="#contact">Contact Us</a></li>
+                      {% if lawyer %}
+                      <li><a href="#">My Account</a>
+                         <ul>
+                           <li><a href="/lawyer/dashboard">My Dashboard</a></li>
+                           <li><a href="/lawyer/{{lawyer}}/mycase">Cases</a></li>
+                           <li><a href="/lawyer/{{lawyer}}/account-setting">Account Settings</a></li>
+                           <li><a href="/lawyer/signout">Log Out</a></li>
+                         </ul>
+                      </li>
+                      {% else %}                      
+                      <li><a href="/lawyer/signin">Sign In</a></li>
+                      {% endif %}
+                    </ul>
+                  </nav><!-- #nav-menu-container -->
+                </div>
+        </header>
+    
+     <main id="main">
+        <section id="heroFind">
+          
+                <div class="hero-container">                  
+                  {% block content %} {% endblock %}                  
+                </div>
+        </section>        
+    </main>
+    
+    <script src="{{ url_for('static', filename='js/jquery.bootstrap.wizard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/hoverIntent.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dropzone.js') }}"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/wow.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/wow.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/superfish.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/waypoints.min.js') }}"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/validate.js/0.12.0/validate.min.js"></script>
+    
+</body>
+</html>

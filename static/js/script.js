@@ -543,7 +543,28 @@ $(document).ready(function(){
             });
           });
 
-        
+          $('#preAppointLawyer').click(function(e){
+
+            e.preventDefault();
+            var id = $("#seeLawyerid").val();
+            var client = paseInt($('#clientCheckk').val());
+
+            sendInfo = { 
+                id : id
+            }
+
+
+            $.post("/lawyer/"+client+"/pre-appoint", JSON.stringify(sendInfo) ,function(response){
+                
+                if(response['error'] == false){
+                    alert('Appointed');
+                }
+                else if(response['error'] == true){
+                    alert("Not Appointed");
+                }                
+            }, "json")
+
+          });
 
         
 });
