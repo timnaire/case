@@ -11,6 +11,7 @@ from models.client import Client
 from models.practice import Practice
 from models.case import Case
 from models.event import Event
+from models.relationship import Relationship
 from models.notification import Notification
 from decorators import login_required_lawyer
 from functions import json_response, is_email, save_to_gcs
@@ -299,25 +300,36 @@ def lawyer_clicked(client_id=None):
         req_data = request.get_json(force=True)
         if 'id' in req_data:
             lawyer_id = req_data['id']
+        # first relationship status will be stranger for both
+        status = ""
+
+        relation = Relationship.client_exist(client_id)
         lawyer = Lawyer.get_by_id(int(lawyer_id))
         client = Client.get_by_id(int(client_id))
+        if relation:
+            relation = Relationship.save(id=relation.key.id(),lawyer=lawyer.key.id(),client=client.key.id(),status=status)
+        else:    
+            relation = Relationship.save(lawyer=lawyer.key.id(),client=client.key.id(),status=status)
+
         json_data = {
-            "to": lawyer.fcm_token, 
+            "to": lawyer.fcm_token,     
             "notification":{
                 'title': 'Pre-Appointment', 
                 'body': client.first_name + ' ' + client.last_name + ' sends Pre-Appointment request.'
             },
             "data":{
-                'client_id': client_id
+                'client_id': client_id,
+                'relation_id' : relation.id()
             }
-        } 
+        }
 
         headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
         requests.post(
             'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
         )
         event = Event.save(lawyer=lawyer_id,client=client_id,event_type="Pre-Appointment")
-        notification = Notification.save(notif_to=lawyer.key.id(),notif_from=client_id,sent="1",received="0")
+        msg = client.first_name + " " + client.last_name + " sends Pre-Appointment request."
+        notification = Notification.save(notif_to=lawyer.key,notif_from=client.key,msg=msg,sent="1",received="0")
         if event:
             return json_response({
                 "error" : False,
@@ -329,7 +341,32 @@ def lawyer_clicked(client_id=None):
             return json_response({
                 "error" : True,
                 "message" : "Pre-appointment was not made, please try again."})
+
+# pre-appoint response from lawyer mobile
+@app.route('/lawyer/<int:client_id>/pre-appoint-response',methods=['POST'])
+def pre_accepted(client_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'lawyer_id' in req_data:
+            lawyer_id = req_data['lawyer_id']
+        if 'relation_id' in req_data:
+            relation_id = req_data['relation_id']
+        if 'status' in req_data:
+            status = req_data['status']
         
+        if status == "accepted":
+            relation = Relationship.save(id=relation_id,lawyer=lawyer_id,client=client_id,status=status)
+            if relation:
+                lawyer = Lawyer.get_by_id(int(lawyer_id))
+                msg = lawyer.first_name + " " + lawyer.last_name + " accepted your Pre-Appointment request."
+                notification = Notification.save(notif_from=lawyer_id,notif_to=client_id,msg=msg,received="",sent="sent")
+        else:
+            relation = Relationship.save(id=relation_id,lawyer=lawyer_id,client=client_id,status=status)
+            if relation:
+                lawyer = Lawyer.get_by_id(int(lawyer_id))
+                msg = lawyer.first_name + " " + lawyer.last_name + " rejected your Pre-Appointment request."
+                notification = Notification.save(notif_from=lawyer_id,notif_to=client_id,msg=msg,received="",sent="sent")
+    
 # find a lawyer route
 @app.route('/lawyer/found',methods=['GET','POST'])
 def find_lawyer():
@@ -484,13 +521,16 @@ def mycase(lawyer_id=None):
             return json_response({
                 'error' : True,
                 'message' : 'Please input the case name and try again.'})
-
+    
     lawyer = Lawyer.get_by_id(int(lawyer_id))
     cases = Case.query(Case.lawyer == lawyer.key).fetch()
     case_dict = []
     for case in cases:
         case_dict.append(case.to_dict())
-    return render_template('lawyer/lawyer-mycase.html',title="My Case",lawyer=session['lawyer'],cases=case_dict)
+
+    clients = Relationship.my_clients(lawyer_id=lawyer_id)
+
+    return render_template('lawyer/lawyer-mycase.html',title="My Case",lawyer=session['lawyer'],cases=case_dict,clients=clients)
 
 @app.route('/lawyer/<int:lawyer_id>/get-case',methods=['GET','POST'])
 def getAllCase(lawyer_id=None):
