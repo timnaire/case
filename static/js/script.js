@@ -543,11 +543,14 @@ $(document).ready(function(){
             });
           });
 
+
           $('#preAppointLawyer').click(function(e){
 
             e.preventDefault();
-            var id = $("#seeLawyerid").val();
-            var client = paseInt($('#clientCheckk').val());
+            var id = $("#seeLawyerId").val();
+            var client = $('#clientCheck').val();
+            
+            alert(id);
 
             sendInfo = { 
                 id : id
@@ -560,7 +563,7 @@ $(document).ready(function(){
                     alert('Appointed');
                 }
                 else if(response['error'] == true){
-                    alert("Not Appointed");
+                    console.log(response);
                 }                
             }, "json")
 

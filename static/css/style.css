@@ -1104,7 +1104,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 }
 #lawyer-signup-form{
   margin: 0;
-  width: 35%;
+  width: 28%;
   display: none;
 }
 
@@ -1415,4 +1415,14 @@ body.mobile-nav-active #mobile-nav-toggle {
   background: #00000026;
     padding: 40px 0 20px;
     border-radius: 20px 20px 0 0;
+}
+
+#lawyerpic{
+  border-radius: 50%;
+  margin-top: 20px;
+  object-fit: cover;
+  margin-bottom: 30px;
+  width: 160px;
+  height: 160px;
+  border: 2px solid #2dc997;
 }

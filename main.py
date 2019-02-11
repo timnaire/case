@@ -284,6 +284,8 @@ def home():
 
     if session.get('lawyer') is not None:
         return render_template('home.html',title='Home',lawyer=session['lawyer'],law_practice=available_practice)
+    elif session['client']:
+        return render_template('home.html',title='Home',client=session['client'],law_practice=available_practice)    
     else:
         return render_template('home.html',title='Home',law_practice=available_practice)
 
@@ -298,6 +300,7 @@ def home():
 @app.route('/lawyer/<int:client_id>/pre-appoint',methods=['POST'])
 def lawyer_clicked(client_id=None):
     if request.method == "POST":
+        lawyer_id=None
         req_data = request.get_json(force=True)
         if 'id' in req_data:
             lawyer_id = req_data['id']
@@ -307,6 +310,7 @@ def lawyer_clicked(client_id=None):
         relation = Relationship.client_exist(client_id)
         lawyer = Lawyer.get_by_id(int(lawyer_id))
         client = Client.get_by_id(int(client_id))
+        
         if relation:
             relation = Relationship.save(id=relation.key.id(),lawyer=lawyer.key.id(),client=client.key.id(),status=status)
         else:    
@@ -962,6 +966,9 @@ def lawyer_signin():
 #sign up lawyer route
 @app.route('/lawyer/signup', methods=['GET','POST'])
 def lawyer_signup():
+    if session['client']:
+        return redirect(url_for('home'))
+
     if request.method == 'POST':
         req_data = request.get_json(force=True)
         if 'first_name' in req_data:

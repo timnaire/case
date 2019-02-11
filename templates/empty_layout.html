@@ -56,6 +56,15 @@
                            <li><a href="/lawyer/signout">Log Out</a></li>
                          </ul>
                       </li>
+                      {% elif client %}
+                      <li><a href="#">My Account</a>
+                        <ul>
+                          <li><a href="#">My Dashboard</a></li>
+                          <li><a href="#">Cases</a></li>
+                          <li><a href="#">Account Settings</a></li>
+                          <li><a href="/client/signout">Log Out</a></li>
+                        </ul>
+                     </li>
                       {% else %}                      
                       <li><a href="/lawyer/signin">Sign In</a></li>
                       {% endif %}
@@ -73,7 +82,7 @@
         </section>        
     </main>
     
-    <script src="{{ url_for('static', filename='js/jquery.bootstrap.wizard.js') }}"></script>
+    <!-- <script src="{{ url_for('static', filename='js/jquery.bootstrap.wizard.js') }}"></script> -->
     <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
     <script src="{{ url_for('static', filename='js/hoverIntent.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
