@@ -32,21 +32,57 @@ class UploadFile(ndb.Model):
 
         uploadfile.put()
         return uploadfile
-
+    
     @classmethod
-    def get_all_files(cls,*args,**kwargs):
-        case = None
+    def get_research(cls,*args,**kwargs):
+        list_files = []
 
         case_id = str(kwargs.get('case'))
         if case_id.isdigit():
             case_key = ndb.Key('Case',int(case_id))
             if case_key:
-                case = cls.query(cls.case == case_key).order(cls.created).fetch()
+                files = cls.query(cls.case == case_key, cls.file_type=="Research").order(cls.created).fetch()
+                for f in files:
+                    list_files.append(f.to_dict())
         
-        if not case:
-            case = None
+        if not list_files:
+            list_files = None
 
-        return case
+        return list_files
+
+    @classmethod
+    def get_public_docs(cls,*args,**kwargs):
+        list_files = []
+
+        case_id = str(kwargs.get('case'))
+        if case_id.isdigit():
+            case_key = ndb.Key('Case',int(case_id))
+            if case_key:
+                files = cls.query(cls.case == case_key, cls.file_type=="Public Documents").order(cls.created).fetch()
+                for f in files:
+                    list_files.append(f.to_dict())
+        
+        if not list_files:
+            list_files = None
+
+        return list_files
+
+    @classmethod
+    def get_all_files(cls,*args,**kwargs):
+        list_files = []
+
+        case_id = str(kwargs.get('case'))
+        if case_id.isdigit():
+            case_key = ndb.Key('Case',int(case_id))
+            if case_key:
+                files = cls.query(cls.case == case_key).order(cls.created).fetch()
+                for f in files:
+                    list_files.append(f.to_dict())
+        
+        if not list_files:
+            list_files = None
+
+        return list_files
         
     def to_dict(self):
         data = {}

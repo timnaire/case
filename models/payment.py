@@ -37,6 +37,18 @@ class Payment(ndb.Model):
         payment.put()
         return payment
 
+    @classmethod
+    def lawyer_subscribed(cls,lawyer_id):
+        lawyer = None
+        if lawyer_id:
+            lawyer_key = Lawyer.get_by_id(int(lawyer_id))
+            lawyer = cls.query(cls.lawyer == lawyer_key).get()
+        
+        if not lawyer:
+            lawyer = None
+        
+        return lawyer
+
     def to_dict(self):
         data = {}
         data['payment_method'] = self.payment_method

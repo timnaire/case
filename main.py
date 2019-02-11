@@ -13,6 +13,9 @@ from models.case import Case
 from models.event import Event
 from models.relationship import Relationship
 from models.notification import Notification
+from models.upload_file import UploadFile
+from models.payment import Payment
+from models.subscription import Subscription
 from decorators import login_required_lawyer,login_required_client
 from functions import json_response, is_email, save_to_gcs
 
@@ -420,6 +423,104 @@ def dashboard():
 def dashboard_client():
     return render_template('home.html',title="Client Login",client=session['client'],law_practice=available_practice)
 
+@app.route('/lawyer/<int:lawyer_id>/add-file',methods=['GET','POST'])
+def add_file(lawyer_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if "case" in req_data:
+            case = req_data['case']
+        if "case_file" in req_data:
+            case_file = req_data['case_file']
+        if "file_privacy" in req_data:
+            file_privacy = req_data["file_privacy"]
+        if "file_type" in req_data:
+            file_type = req_data["file_type"]
+        
+        if case and case_file and file_privacy and file_type:
+            upload = UploadFile.save(case=case,case_file=case_file,file_privacy=file_privacy,file_type=file_type)
+            if upload:
+                return json_response({
+                    "error" : False,
+                    "message" : "File uploaded !"})
+        else:
+            return json_response({
+                "error" : True,
+                "message" : "Please fill up all the fields and try again."})
+
+@app.route('/lawyer/<int:lawyer_id>/list-all-file',methods=["GET","POST"])
+def list_all_file(lawyer_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if "case" in req_data:
+            case = req_data['case']
+        
+        files = UploadFile.get_all_files(case=case)
+        if files:
+            return json_response({
+                "error" : False,
+                "message" : `len(files)` + " files",
+                "list_files" : files})
+        else:
+            return json_response({
+                "error" : False,
+                "message" : "No files"})
+
+@app.route('/lawyer/<int:lawyer_id>/list-research',methods=["POST"])
+def reserach_documents(lawyer_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if "case" in req_data:
+            case = req_data['case']
+        
+        files = UploadFile.get_research(case=case)
+        if files:
+            return json_response({
+                "error" : False,
+                "message" : `len(files)` + " files",
+                "list_files" : files})
+        else:
+            return json_response({
+                "error" : False,
+                "message" : "No files"})
+
+@app.route('/lawyer/<int:lawyer_id>/list-public-documents',methods=["POST"])
+def public_documents(lawyer_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if "case" in req_data:
+            case = req_data['case']
+        
+        files = UploadFile.get_public_docs(case=case)
+        if files:
+            return json_response({
+                "error" : False,
+                "message" : `len(files)` + " files",
+                "list_files" : files})
+        else:
+            return json_response({
+                "error" : False,
+                "message" : "No files"})
+
+@app.route('/lawyer/<int:lawyer_id>/subscribe',methods=["POST"])
+def lawyer_subscribe(lawyer_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if "payment_method" in req_data:
+            payment_method = req_data['payment_method']
+        if "payment_date" in req_data:
+            payment_date = req_data['payment_date']
+        
+        payment = Payment.save(lawyer=lawyer_id,payment_method=payment_method,payment_date=payment_date)
+        if payment:
+            subscribe = Subscription.save(payment=payment.key.id)
+            if subscribe:
+                return json_response({
+                    "error" : False,
+                    "message" : "Thank you for subscribing ! You can now have unlimited number of cases !"})
+            else:
+                return json_response({
+                    "error" : True,
+                    "message" : "There was an error while subscribing, please try again."})
 
 @app.route('/lawyer/<int:lawyer_id>/add-event',methods=['GET','POST'])
 def add_event(lawyer_id=None):
@@ -503,6 +604,30 @@ def number_of_case(lawyer_id=None):
     mycases = Case.my_case(lawyer_id=lawyer_id)
     return json_response({"cases": mycases})
 
+# edit case route for lawyers 
+@app.route('/lawyer/<int:lawyer_id>/edit-case', methods=['GET','POST'])
+def edit_case(lawyer_id=None):
+    if request.method == "POST":
+        if 'case_id' in req_data:
+            case_id = req_data['case_id']
+        if 'case_title' in req_data:
+            case_title = req_data['case_title']
+        if 'case_description' in req_data:
+            case_description = req_data['case_description']
+        if 'case_status' in req_data:
+            case_status = req_data['case_status']
+        
+        if case_title and case_description:
+            case = Case.save(id=case_id,case_title=case_title,case_description=case_description,case_status=case_status)
+            if case:
+                return json_response({
+                    "error" : False,
+                    "message" : "Case saved!"})
+            else:
+                return json_response({
+                    "error" : True,
+                    "message" : "Case was not saved!"})
+
 # mycase route for lawyers 
 @app.route('/lawyer/<int:lawyer_id>/mycase', methods=['GET','POST'])
 # @login_required_lawyer
@@ -516,6 +641,7 @@ def mycase(lawyer_id=None):
         if 'case_description' in req_data:
             case_description = req_data['case_description']
         
+        # payment = Payment.lawyer_subscribed(lawyer_id=lawyer_id)
         mycases = Case.my_case(lawyer_id=lawyer_id)
         lawyer = Lawyer.get_by_id(int(lawyer_id))
         
@@ -527,7 +653,7 @@ def mycase(lawyer_id=None):
             if case_title and client_id and case_description:
                 case = Client.get_client(client_id=client_id)
                 if case:
-                    case = Case.save(lawyer=lawyer_id,case_title=case_title,client_id=client_id,case_description=case_description,status='Active')
+                    case = Case.save(lawyer=lawyer_id,case_title=case_title,client_id=client_id,case_description=case_description,case_status='Ongoing')
                     if case:
                         return json_response({
                             "error" : False,
@@ -580,23 +706,16 @@ def deleteCase(lawyer_id=None):
         if "case_id" in req_data:
             case_id = req_data["case_id"]
 
-        case = Case.get_by_id(int(case_id))
+        case = Case.delete(case_id=case_id())
         if case:
-            case = Case.delete(case_id=case_id())
-            if case:
-                return json_response({
-                    "error": False,
-                    "message" : "Case deleted!"})
-            else:
-                return json_response({
-                    "error": True,
-                    "message" : "Case was not deleted"})
+            return json_response({
+                "error": False,
+                "message" : "Case deleted!"})
         else:
             return json_response({
                 "error": True,
-                "message" : "Case not found"})
+                "message" : "Case was not deleted"})
     
-
 # profile picture route
 @app.route('/lawyer/<int:lawyer_id>/account-setting/profile-picture', methods=['POST'])
 @login_required_lawyer
