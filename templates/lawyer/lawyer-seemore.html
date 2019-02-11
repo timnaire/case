@@ -13,8 +13,10 @@
                     </div>
                     <div id="lawyer-details">
                         <h2>{{results.first_name}}&nbsp;&nbsp;{{results.last_name}}</h2>
-                        {% if results.firm %}
+                        {% if results.firm != "None" %}
                         <h3>{{results.firm}} Firm</h3>    
+                        {% else %}
+                        <h3>Independent Lawyer</h3>
                         {% endif %}
                         <h3>{{results.email}}</h3> 
                     </div>

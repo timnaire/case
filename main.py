@@ -280,12 +280,12 @@ available_practice = {'Constitutional Law':"Constitutional Law", 'Criminal Law':
 @app.route('/', methods=['GET','POST'])
 @app.route('/home', methods=['GET','POST'])
 def home():
+    # del session['client']
     global available_practice
-
     if session.get('lawyer') is not None:
         return render_template('home.html',title='Home',lawyer=session['lawyer'],law_practice=available_practice)
-    elif session['client']:
-        return render_template('home.html',title='Home',client=session['client'],law_practice=available_practice)    
+    # elif session['client']:        
+    #     return render_template('home.html',title='Home',law_practice=available_practice)    
     else:
         return render_template('home.html',title='Home',law_practice=available_practice)
 
@@ -966,8 +966,10 @@ def lawyer_signin():
 #sign up lawyer route
 @app.route('/lawyer/signup', methods=['GET','POST'])
 def lawyer_signup():
-    if session['client']:
-        return redirect(url_for('home'))
+
+
+    # if session['client']:
+    #     return redirect(url_for('home'))
 
     if request.method == 'POST':
         req_data = request.get_json(force=True)

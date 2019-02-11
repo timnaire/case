@@ -1426,3 +1426,21 @@ body.mobile-nav-active #mobile-nav-toggle {
   height: 160px;
   border: 2px solid #2dc997;
 }
+
+#clientsignup-form{
+  width: 29%;
+  background: white;
+  border-radius: 20px;
+  /* margin: 68px 0 0 0; */
+  margin-top: 4%;
+  padding: 30px;
+}
+
+#clientsignup-form h2{
+  color: #2dc997;
+    margin-bottom: 10px !important;
+}
+
+#clientsignup-form input{
+  margin-bottom: 20px;
+}
