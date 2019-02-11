@@ -1125,9 +1125,9 @@ body.mobile-nav-active #mobile-nav-toggle {
 
 #msform {
   width: 100%;
-  margin: 50px auto 550px;
-  text-align: center;
-  position: relative;
+    margin: -9% auto 550px;
+    text-align: center;
+    position: relative;
 }
 #msform fieldset h2{
   color: #2dc997e0;
@@ -1136,16 +1136,14 @@ body.mobile-nav-active #mobile-nav-toggle {
 }
 #msform fieldset {
   background: white;
-  border: 0 none;
-  border-radius: 14px;
-  box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
-  padding: 47px  30px;
-  box-sizing: border-box;
-  width: 520px;
-  margin: 0 10%;
-  /*stacking fieldsets above each other*/
-  
-  position: absolute;
+    border: 0 none;
+    border-radius: 14px;
+    box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
+    padding: 47px 30px;
+    box-sizing: border-box;
+    width: 100%;
+    /* margin: 0 10%; */
+    position: absolute;
 }
 @media (max-width: 1024px) {
   #msform fieldset{
