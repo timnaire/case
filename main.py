@@ -68,7 +68,8 @@ def client_signin():
                     "last_name" : client.last_name,
                     "email" : client.email,
                     "phone" : client.phone,
-                    "address" : client.address})
+                    "address" : client.address,
+                    "profile_pic" : client.profile_pic})
             else:
                 return json_response({
                     "error" : True,
@@ -319,6 +320,7 @@ def lawyer_clicked(client_id=None):
         json_data = {
             "to": lawyer.fcm_token,     
             "notification":{
+                'click_action' : '.MainActivity',
                 'title': 'Pre-Appointment', 
                 'body': client.first_name + ' ' + client.last_name + ' sends Pre-Appointment request.'
             },
@@ -371,6 +373,45 @@ def pre_accepted(client_id=None):
                 lawyer = Lawyer.get_by_id(int(lawyer_id))
                 msg = lawyer.first_name + " " + lawyer.last_name + " rejected your Pre-Appointment request."
                 notification = Notification.save(notif_from=lawyer_id,notif_to=client_id,msg=msg,received="",sent="sent")
+
+@app.route('/lawyer/<int:lawyer_id>/pre-appoint-notification',methods=['GET','POST'])
+def number_of_case(lawyer_id=None):
+    lawyer = Lawyer.get_by_id(int(lawyer_id))
+    relations = Relationship.query(Relationship.lawyer==lawyer.key, Relationship.status == None).fetch()
+    if relations:
+        for r in relations:
+            client_key = r.client
+            lawyer_key = r.lawyer
+            relation_id = r.key.id()
+
+            lawyer = lawyer_key.get()
+            client = client_key.get()
+            relation_id = r.key.id() 
+
+            json_data = {
+                "to": lawyer.fcm_token,     
+                "notification":{
+                    'click_action' : '.MainActivity',
+                    'title': 'Pre-Appointment', 
+                    'body': client.first_name + ' ' + client.last_name + ' sends Pre-Appointment request.'
+                },
+                "data":{
+                    'client_id': client.key.id(),
+                    'relation_id' : relation_id
+                }
+            }
+
+            headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
+            requests.post(
+                'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
+            )
+        return json_response({
+            "error" : False,
+            "message" : "New notifications"})
+    else:
+        return json_response({
+            "error": True,
+            "message" : "No notification"})
     
 # find a lawyer route
 @app.route('/lawyer/found',methods=['GET','POST'])
@@ -567,6 +608,19 @@ def list_client(lawyer_id=None):
             "error" : True,
             "message" : "No clients found.",})
 
+@app.route('/client/<int:client_id>/list-lawyer',methods=['GET','POST'])
+def list_lawyer(client_id=None):
+    list_of_lawyers = Relationship.my_lawyers(client_id=client_id)
+    if list_of_lawyers:
+        return json_response({
+            "error" : False,
+            "message" : "Found clients",
+            "lawyers" : list_of_lawyers})
+    else:
+        return json_response({
+            "error" : True,
+            "message" : "No clients found.",})
+
 @app.route('/lawyer/<int:lawyer_id>/get-event',methods=['GET','POST'])
 def get_event(lawyer_id=None):
     lawyer = Lawyer.get_by_id(int(lawyer_id))
@@ -603,10 +657,10 @@ def save_client_token(client_id=None):
         else: 
             return json_response({"error":True,"message":"FCM Token was not saved."})
 
-@app.route('/lawyer/<int:lawyer_id>/number-of-case')
-def number_of_case(lawyer_id=None):
-    mycases = Case.my_case(lawyer_id=lawyer_id)
-    return json_response({"cases": mycases})
+# @app.route('/lawyer/<int:lawyer_id>/number-of-case')
+# def number_of_case(lawyer_id=None):
+#     mycases = Case.my_case(lawyer_id=lawyer_id)
+#     return json_response({"cases": mycases})
 
 # edit case route for lawyers 
 @app.route('/lawyer/<int:lawyer_id>/edit-case', methods=['GET','POST'])
@@ -649,7 +703,7 @@ def mycase(lawyer_id=None):
         mycases = Case.my_case(lawyer_id=lawyer_id)
         lawyer = Lawyer.get_by_id(int(lawyer_id))
         
-        if lawyer.limit_case == mycases:
+        if mycases > lawyer.limit_case:
             return json_response({
                 "error":True,
                 "message": "You already reached your limit as a free user, to add more case please Subscribe!"})
@@ -688,7 +742,25 @@ def mycase(lawyer_id=None):
 @app.route('/lawyer/<int:lawyer_id>/get-case',methods=['GET','POST'])
 def getAllCase(lawyer_id=None):
     lawyer = Lawyer.get_by_id(int(lawyer_id))
-    cases = Case.query(Case.lawyer == lawyer.key).fetch()
+    cases = Case.query(Case.lawyer == lawyer.key).order(-Case.created).fetch()
+    if cases != None:
+        case_dict = []
+        for case in cases:
+            case_dict.append(case.to_dict())
+        return json_response({
+            "error" : False,
+            "message" : `len(case_dict)`+" case(s) found.",
+            "cases" : case_dict})
+    else:
+        return json_response({ 
+            "error" : True,
+            "message" : "No case found",
+            "cases" : "Empty"})
+
+@app.route('/client/<int:client_id>/get-case',methods=['GET','POST'])
+def get_case_clients(client_id=None):
+    client = Client.get_by_id(int(client_id))
+    cases = Case.query(Case.client == client.key).fetch()
     if cases != None:
         case_dict = []
         for case in cases:
@@ -946,7 +1018,9 @@ def lawyer_signin():
                     'office': lawyer.office,
                     'firm': lawyer.firm,
                     'profile_pic': lawyer.profile_pic,
-                    'aboutme' : lawyer.aboutme })
+                    'aboutme' : lawyer.aboutme,
+                    'sex' : lawyer.sex,
+                    'firm' : lawyer.firm })
             else:
                 return json_response({
                     'error': True,

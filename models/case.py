@@ -114,16 +114,9 @@ class Case(ndb.Model):
         
         return list_lawyer
 
-    def delete(self,case_id):
-        deleted = None
-
-        if case_id:
-            deleted = ndb.Key("Case", int(case_id)).delete()
-            
-        if not deleted:
-            deleted = None
-            
-        return True
+    @classmethod
+    def delete(cls,case_id):
+        return ndb.Key("Case", int(case_id)).delete()
 
     def get_clients(self):
         data = {}
