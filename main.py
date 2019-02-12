@@ -435,9 +435,7 @@ def find_lawyer():
                     return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers)
                 # return json_response({"found" : found_lawyers})
             else:
-                return redirect(json_response({
-                    'error' : True,
-                    'message': "No lawyer(s) found in "+cityOrMunicipality+" with practice of "+law_practice}))
+                return redirect(url_for('find_lawyer'))
         else:
             return redirect(json_response({
                 'error' : True,
@@ -459,7 +457,9 @@ def find_lawyer():
 @app.route('/lawyer/dashboard')
 @login_required_lawyer
 def dashboard():
-    return render_template('lawyer/lawyer-dashboard.html',title="Welcome to Dashboard",lawyer=session['lawyer'])
+    lawyer = Lawyer.get_by_id(int(session['lawyer']))
+
+    return render_template('lawyer/lawyer-dashboard.html',title="Welcome to Dashboard",lawyer=session['lawyer'],results=lawyer.to_dict())
 
 #dashboard route for client
 @app.route('/client/')
