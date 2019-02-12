@@ -136,6 +136,7 @@ class Case(ndb.Model):
 
     def to_dict(self):
         data = {}
+        data['case_id'] = self.key.id()
         data['client_id'] = self.key.id()
         data['lawyer'] = None
         if self.lawyer:

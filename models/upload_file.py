@@ -24,9 +24,9 @@ class UploadFile(ndb.Model):
             uploadfile.case = case_key
         
         if kwargs.get('case_file'):
-            uploadfile.case_name = kwargs.get('case_file')
+            uploadfile.case_file = kwargs.get('case_file')
         if kwargs.get('file_privacy'):
-            uploadfile.file_privacy = kwargs.get('casfile_privacye_file')
+            uploadfile.file_privacy = kwargs.get('file_privacy')
         if kwargs.get('file_type'):
             uploadfile.file_type = kwargs.get('file_type')
 
@@ -77,12 +77,57 @@ class UploadFile(ndb.Model):
             if case_key:
                 files = cls.query(cls.case == case_key).order(cls.created).fetch()
                 for f in files:
-                    list_files.append(f.to_dict())
+                    list_files.append(f.file_dict())
         
         if not list_files:
             list_files = None
 
         return list_files
+    
+    @classmethod
+    def research(cls,*args,**kwargs):
+        list_files = []
+
+        case_id = str(kwargs.get('case'))
+        if case_id.isdigit():
+            case_key = ndb.Key('Case',int(case_id))
+            if case_key:
+                files = cls.query(cls.case == case_key, cls.file_type == "Research").order(cls.created).fetch()
+                for f in files:
+                    list_files.append(f.file_dict())
+        
+        if not list_files:
+            list_files = None
+
+        return list_files
+
+    @classmethod
+    def research(cls,*args,**kwargs):
+        list_files = []
+
+        case_id = str(kwargs.get('case'))
+        if case_id.isdigit():
+            case_key = ndb.Key('Case',int(case_id))
+            if case_key:
+                files = cls.query(cls.case == case_key, cls.file_type == "Research").order(cls.created).fetch()
+                for f in files:
+                    list_files.append(f.file_dict())
+        
+        if not list_files:
+            list_files = None
+
+        return list_files
+
+    def file_dict(self):
+        data = {}
+
+        data["file"] = self.case_file
+        data['file_privacy'] = self.file_privacy
+        data['file_type'] = self.file_type
+        data['created'] = self.created
+        data['updated'] = self.updated
+
+        return data
         
     def to_dict(self):
         data = {}

@@ -9,6 +9,12 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: Case 
+  properties: 
+  - name: lawyer 
+  - name: created 
+    direction: desc
+
 - kind: Client
   properties:
   - name: email

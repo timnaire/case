@@ -478,8 +478,11 @@ def add_file(lawyer_id=None):
             case_file = req_data['case_file']
         if "file_privacy" in req_data:
             file_privacy = req_data["file_privacy"]
-        if "file_type" in req_data:
-            file_type = req_data["file_type"]
+        
+        if file_privacy == "Public":
+            file_type = "Public Documents"
+        elif file_privacy == "Research":
+            file_type = "Research"
         
         if case and case_file and file_privacy and file_type:
             upload = UploadFile.save(case=case,case_file=case_file,file_privacy=file_privacy,file_type=file_type)
