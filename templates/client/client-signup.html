@@ -41,9 +41,9 @@
             <button id="btnClientSignUp" class="btn btn-primary">Sign up</button>
         </form>
     </div> -->
-    <div id="lawyer-signup-form">
+    <div id="clientsignup-form">
         <form method="POST" novalidate>
-            <div id="msform">
+            <div id="clientform">
                 {% if request.args.get('err') %}
                 <div class="alert alert-danger">
                     {{ request.args.get('m') }}

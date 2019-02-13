@@ -560,7 +560,7 @@ $(document).ready(function(){
             $.post("/lawyer/"+client+"/pre-appoint", JSON.stringify(sendInfo) ,function(response){
                 
                 if(response['error'] == false){
-                    alert('Appointed');
+                    alert('Appointment Requeset Sent');
                 }
                 else if(response['error'] == true){
                     console.log(response);

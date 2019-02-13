@@ -45,6 +45,22 @@ class Relationship(ndb.Model):
             relation = None
 
         return relation
+    
+    @classmethod
+    def undecided(cls, lawyer_id):
+        list_undecided = []
+        
+        if lawyer_id:
+            lawyer_key = ndb.Key('Lawyer',int(lawyer_id))
+            relations = cls.query(cls.lawyer == lawyer_key , cls.status == None).fetch()
+            if relations:
+                for relation in relations:
+                    list_undecided.append(relation.notify)
+        
+        if not list_undecided:
+            list_undecided = None
+        
+        return list_undecided
 
     @classmethod
     def my_clients(cls, lawyer_id):
@@ -63,21 +79,21 @@ class Relationship(ndb.Model):
         
         return list_of_clients
 
-    @classmethod
-    def my_lawyers(cls, client_id):
-        list_of_lawyers = []
+    # @classmethod
+    # def my_lawyers(cls, client_id):
+    #     list_of_lawyers = []
         
-        if client_id:
-            client_key = ndb.Key('Client',int(client_id))
-            lawyers = cls.query(cls.client == client_key , cls.status == "Accepted").fetch()
-            if lawyers:
-                for lawyer in lawyers:
-                    list_of_lawyers.append(lawyer.dict_lawyer())
+    #     if client_id:
+    #         client_key = ndb.Key('Client',int(client_id))
+    #         lawyers = cls.query(cls.client == client_key , cls.status == "Accepted").fetch()
+    #         if lawyers:
+    #             for lawyer in lawyers:
+    #                 list_of_lawyers.append(lawyer.dict_lawyer())
         
-        if not list_of_lawyers:
-            list_of_lawyers = None
+    #     if not list_of_lawyers:
+    #         list_of_lawyers = None
         
-        return list_of_lawyers
+    #     return list_of_lawyers
 
     def dict_lawyer(self):
         data = {}
@@ -97,6 +113,22 @@ class Relationship(ndb.Model):
             client = self.client.get()
             data['client_id'] = client.key.id()
             data['client'] = client.dict_nodate()
+        return data
+
+    def notify(self):
+        data = {}
+        data['client_id'] = None
+        if self.client:
+            client = self.client.get()
+            data['client_id'] = client.key.id()
+
+        data['lawyer_id'] = None
+        if self.lawyer:
+            lawyer = self.lawyer.get()
+            data['lawyer_id'] = lawyer.key.id()
+        
+        data['relation_id'] = self.key.id()
+
         return data
 
     def to_dict(self):

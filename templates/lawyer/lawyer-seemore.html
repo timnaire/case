@@ -1,32 +1,88 @@
-{% extends 'empty_layout.html' %}
+{% extends 'empty_layout_2.html' %}
 
 {% block content %}
 
-    
-    <div class="container">
-            
-            <input type="text" id="clientCheck" value="{% if client %}{{client}}{% endif %}"  hidden>
-            <input type="text" id="seeLawyerId" value="{{results.key.id()}}" hidden>
-            <div id="lawyer-portrait">
-                    <div class="lawyer-details-image">
-                            <img id="profile-pic-seemore" src="{{results.profile_pic}}" alt="">
-                    </div>
-                    <div id="lawyer-details">
-                        <h2>{{results.first_name}}&nbsp;&nbsp;{{results.last_name}}</h2>
-                        {% if results.firm %}
-                        <h3>{{results.firm}} Firm</h3>    
-                        {% endif %}
-                        <h3>{{results.email}}</h3> 
-                    </div>
-            </div>
-            <div id="lawyer-contents">
-                <button id="preAppointLawyer">Pre Appoint</button>
-                <div id="aboutme">
-                    <h1>About Me</h1>
-                    <p>{{results.aboutme}}</p>
-                </div>
-                    <textarea name="" id="" cols="30" rows="10">{{results}}</textarea>
-            </div>
+
+<div class="container">
+
+    <div id="lawyer-portrait">
+        <input type="text" id="clientCheck" value="{% if client %}{{client}}{% endif %}" hidden>
+        <input type="text" id="seeLawyerId" value="{{results.key.id()}}" hidden>
+        <div id="backButton">
+            <button onclick="history.back(-1)"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp; Back</button>
+        </div>
+        <div class="lawyer-details-image">
+            <img id="profile-pic-seemore" src="{{results.profile_pic}}" alt="">
+        </div>
+        <div id="lawyer-details">
+            <h2><strong>{{results.first_name}}&nbsp;&nbsp;{{results.last_name}}</strong></h2>
+
+            <h3>{{results.email}}</h3>
+            <h3>{{results.office}}</h3>
+
+            <!-- {% if results.firm != "None" %}
+            <h3>{{results.firm}} Firm</h3>
+            {% else %}
+            <h3>Independent Lawyer</h3>
+            {% endif %} -->
+
+        </div>
+
     </div>
-    
+    <div id="lawyer-contents">
+        
+
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#profile">Personal Profile</a></li>
+            <li><a data-toggle="tab" href="#practice">Practice Details</a></li>
+            <li><a data-toggle="tab" href="#comments">Client Feedback</a></li>            
+            <div id="div-for-preappoint">
+                    <button id="preAppointLawyer">Pre Appoint</button>
+            </div>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="profile">
+                <div class="profile-info">
+                    <table >
+                        <tr>
+                            <td class="text-left"><label>Law Firm:</label></td>
+                            <td class="text-left"> {% if results.firm != "None" %}
+                                {{results.firm}} Firm
+                                {% else %}
+                                None
+                                {% endif %} </td>
+                        </tr>
+                        <tr>
+                            <td class="text-left"><label>Law School:</label></td>
+                            <td class="text-left">University of Cebu - Main Campus</td>
+                        </tr>
+                        <tr>
+                            <td class="text-left"><label>Recognized Since: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label></td>
+                            <td class="text-left">2005</td>
+                        </tr>
+                        <tr>
+                            <td class="text-left"><label>Phone:</label></td>
+                            <td class="text-left">(232) 123- 231-231</td>
+                        </tr>
+                        <tr>
+                            <td class="text-left"><label>Languages:</label></td>
+                            <td class="text-left">English and Filipino</td>
+                        </tr>
+                        <tr>
+                            <td class="text-left"><label>Location:</label></td>
+                            <td class="text-left">Sanciangko Street, Cebu City</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane active" id="practice">
+                <h1> welcome to practice</h1>
+            </div>
+            <div class="tab-pane active" id="comments">
+                    <h1> welcome to comments</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

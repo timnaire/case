@@ -7,6 +7,17 @@
 /*--------------------------------------------------------------
 # General
 --------------------------------------------------------------*/
+button:focus{
+  outline: none !important;
+}
+
+button{
+  color: white;
+    border: 1px solid #ffffff47;
+    background: none ;
+    padding: 10px;
+    border-radius: 20px;
+}
 *{
   margin: 0;
   padding: 0;
@@ -69,6 +80,12 @@ h1, h2, h3, h4, h5, h6 {
   .back-to-top {
     bottom: 15px;
   }
+}
+
+@media (min-width: 1100px){
+.container {
+    width: 1034px;
+}
 }
 
 .back-to-top:focus {
@@ -1364,6 +1381,7 @@ body.mobile-nav-active #mobile-nav-toggle {
   padding: 10px;
   color: white;
   font-size: 15px;
+  
 }
 
 #preAppoint:hover{
@@ -1407,12 +1425,13 @@ body.mobile-nav-active #mobile-nav-toggle {
     font-size: 16px;
 }
 #lawyer-contents{
-  background: #c7c7c7;
+  background: white;
   border-radius: 0 0 20px 20px;
   padding: 30px;
 }
 #lawyer-portrait{
   background: #00000026;
+  margin-top: 10%;
     padding: 40px 0 20px;
     border-radius: 20px 20px 0 0;
 }
@@ -1425,4 +1444,61 @@ body.mobile-nav-active #mobile-nav-toggle {
   width: 160px;
   height: 160px;
   border: 2px solid #2dc997;
+}
+
+#clientsignup-form{
+  width: 29%;
+  background: white;
+  border-radius: 20px;
+  /* margin: 68px 0 0 0; */
+  margin-top: 4%;
+  padding: 30px;
+}
+
+#clientsignup-form h2{
+  color: #2dc997;
+    margin-bottom: 10px !important;
+}
+
+#clientsignup-form input{
+  margin-bottom: 20px;
+}
+#backButton {
+  position: absolute;
+}
+
+#backButton button{
+  position: relative;
+    /* float: left; */
+    color: white;
+    border: 1px solid #ffffff47;
+    background: #0d171452 ;
+    left: 45px;
+    transition: .2s;
+    padding: 10px;
+    border-radius: 20px;
+}
+#backButton button:hover{
+  position: relative;
+    /* float: left; */
+    color: #2dc997;
+    border: 1px solid #ffffff47;
+    background: white ;
+    left: 45px;
+    padding: 10px;
+    border-radius: 20px;
+}
+#div-for-preappoint{
+  float: right;
+}
+#preAppointLawyer{
+  color: white;
+    border: 1px solid #ffffff47;
+    background: #2dc997;
+    padding: 10px;
+    border-radius: 20px;
+    margin: 0 0 20px 0;
+}
+#noResults{
+  margin: 21% 0 0 0;
 }
