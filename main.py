@@ -706,6 +706,7 @@ def save_client_token(client_id=None):
 @app.route('/lawyer/<int:lawyer_id>/edit-case', methods=['GET','POST'])
 def edit_case(lawyer_id=None):
     if request.method == "POST":
+        req_data = request.get_json(force=True)
         if 'case_id' in req_data:
             case_id = req_data['case_id']
         if 'case_title' in req_data:
