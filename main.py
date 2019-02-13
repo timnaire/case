@@ -360,16 +360,51 @@ def pre_accepted(client_id=None):
             relation_id = req_data['relation_id']
         if 'status' in req_data:
             status = req_data['status']
+
+        lawyer = Lawyer.get_by_id(int(lawyer_id))
+        client = Client.get_by_id(int(client_id))
         
         if status == "accepted":
             relation = Relationship.save(id=relation_id,lawyer=lawyer_id,client=client_id,status=status)
             if relation:
+                json_data = {
+                    "to": client.fcm_token,     
+                    "notification":{
+                        'click_action' : '.MainActivity',
+                        'title': 'Pre-Appointment', 
+                        'body': lawyer.first_name + ' ' + lawyer.last_name + ' accpeted your pre-appointment request.'
+                    },
+                    "data":{
+                        'client_id': client.key.id(),
+                        'relation_id' : relation_id
+                    }
+                }
+                headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
+                requests.post(
+                    'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
+                )
                 lawyer = Lawyer.get_by_id(int(lawyer_id))
                 msg = lawyer.first_name + " " + lawyer.last_name + " accepted your Pre-Appointment request."
                 notification = Notification.save(notif_from=lawyer_id,notif_to=client_id,msg=msg,received="",sent="sent")
         else:
             relation = Relationship.save(id=relation_id,lawyer=lawyer_id,client=client_id,status=status)
             if relation:
+                json_data = {
+                    "to": client.fcm_token,     
+                    "notification":{
+                        'click_action' : '.MainActivity',
+                        'title': 'Pre-Appointment', 
+                        'body': lawyer.first_name + ' ' + lawyer.last_name + ' rejected your pre-appointment request.'
+                    },
+                    "data":{
+                        'client_id': client.key.id(),
+                        'relation_id' : relation_id
+                    }
+                }
+                headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
+                requests.post(
+                    'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
+                )
                 lawyer = Lawyer.get_by_id(int(lawyer_id))
                 msg = lawyer.first_name + " " + lawyer.last_name + " rejected your Pre-Appointment request."
                 notification = Notification.save(notif_from=lawyer_id,notif_to=client_id,msg=msg,received="",sent="sent")
