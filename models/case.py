@@ -114,10 +114,6 @@ class Case(ndb.Model):
         
         return list_lawyer
 
-    @classmethod
-    def delete(cls,case_id):
-        return ndb.Key("Case", int(case_id)).delete()
-
     def get_clients(self):
         data = {}
         data['client'] = None
@@ -149,7 +145,7 @@ class Case(ndb.Model):
             data['client'] = client.to_dict()
         
         data['case_title'] = self.case_title
-        data['case_description'] = self.case_title
+        data['case_description'] = self.case_description
         data['case_status'] = self.case_status
         data['created'] = self.created.isoformat()
         data['updated'] = self.updated.isoformat()

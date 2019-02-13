@@ -474,18 +474,20 @@ def add_file(lawyer_id=None):
         req_data = request.get_json(force=True)
         if "case" in req_data:
             case = req_data['case']
+        if "file_name" in req_data:
+            file_name = req_data["file_name"]
         if "case_file" in req_data:
             case_file = req_data['case_file']
         if "file_privacy" in req_data:
             file_privacy = req_data["file_privacy"]
         
         if file_privacy == "Public":
-            file_type = "Public Documents"
+            file_type = "Public Document"
         elif file_privacy == "Research":
             file_type = "Research"
         
         if case and case_file and file_privacy and file_type:
-            upload = UploadFile.save(case=case,case_file=case_file,file_privacy=file_privacy,file_type=file_type)
+            upload = UploadFile.save(case=case,case_file=case_file,file_name=file_name,file_privacy=file_privacy,file_type=file_type)
             if upload:
                 return json_response({
                     "error" : False,
@@ -510,7 +512,7 @@ def list_all_file(lawyer_id=None):
                 "list_files" : files})
         else:
             return json_response({
-                "error" : False,
+                "error" : True,
                 "message" : "No files"})
 
 @app.route('/lawyer/<int:lawyer_id>/list-research',methods=["POST"])
@@ -528,7 +530,7 @@ def reserach_documents(lawyer_id=None):
                 "list_files" : files})
         else:
             return json_response({
-                "error" : False,
+                "error" : True,
                 "message" : "No files"})
 
 @app.route('/lawyer/<int:lawyer_id>/list-public-documents',methods=["POST"])
@@ -546,7 +548,7 @@ def public_documents(lawyer_id=None):
                 "list_files" : files})
         else:
             return json_response({
-                "error" : False,
+                "error" : True,
                 "message" : "No files"})
 
 @app.route('/lawyer/<int:lawyer_id>/subscribe',methods=["POST"])
@@ -683,11 +685,11 @@ def edit_case(lawyer_id=None):
             if case:
                 return json_response({
                     "error" : False,
-                    "message" : "Case saved!"})
+                    "message" : "Case updated!"})
             else:
                 return json_response({
                     "error" : True,
-                    "message" : "Case was not saved!"})
+                    "message" : "Case was not updated!"})
 
 # mycase route for lawyers 
 @app.route('/lawyer/<int:lawyer_id>/mycase', methods=['GET','POST'])
@@ -714,7 +716,7 @@ def mycase(lawyer_id=None):
             if case_title and client_id and case_description:
                 case = Client.get_client(client_id=client_id)
                 if case:
-                    case = Case.save(lawyer=lawyer_id,case_title=case_title,client_id=client_id,case_description=case_description,case_status='Ongoing')
+                    case = Case.save(lawyer=lawyer_id,case_title=case_title,client_id=client_id,case_description=case_description,case_status='Case Open')
                     if case:
                         return json_response({
                             "error" : False,
@@ -785,8 +787,9 @@ def deleteCase(lawyer_id=None):
         if "case_id" in req_data:
             case_id = req_data["case_id"]
 
-        case = Case.delete(case_id=case_id())
+        case = Case.get_by_id(int(case_id))
         if case:
+            case.key.delete()
             return json_response({
                 "error": False,
                 "message" : "Case deleted!"})
