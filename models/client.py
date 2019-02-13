@@ -12,6 +12,7 @@ class Client(ndb.Model):
     password = ndb.StringProperty()
     profile_pic = ndb.StringProperty()
     fcm_token = ndb.StringProperty()
+    sex = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
 
@@ -34,6 +35,8 @@ class Client(ndb.Model):
             client.phone = kwargs.get('phone')
         if kwargs.get('address'):
             client.address = kwargs.get('address')
+        if kwargs.get('sex'):
+            client.sex = kwargs.get('sex')
         if kwargs.get('profile_pic'):
             client.profile_pic = kwargs.get('profile_pic')
         if kwargs.get('password'):
