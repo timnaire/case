@@ -1,17 +1,14 @@
 $(document).ready(function(){
     var sendInfo = {}
 
-    $('#card-result-container').fadeIn(1000);
-
-
     $('#btnClientSignin').click(function(e){
         e.preventDefault()
-        var email = $('#client_email').val();
-        var password = $('#client_password').val();
+        var email = $('#email').val();
+        var password = $('#password').val();
         sendInfo = { email : email, password : password }
         $.post("/client/signin", JSON.stringify(sendInfo) ,function(response){
             if(response['error'] == false){
-                window.location.replace('/client/dashboard');
+                alert(response['message']);
             }else{
                 console.log(response['message']);
             }
@@ -25,7 +22,7 @@ $(document).ready(function(){
         var email = $('#email').val();
         var phone = $('#phone').val();
         var address = $('#address').val();
-        var password = $('#the-password').val();
+        var password = $('#password').val();
         var confirm = $('#confirm-password').val();
         sendInfo = {
             first_name : first_name,
@@ -41,15 +38,11 @@ $(document).ready(function(){
             dataType: 'json',
             data: JSON.stringify(sendInfo),
             type: 'POST',
+            beforeSend : function(response){
+                console.log('animation here') // put animation
+            },
             success: function (response) {
-                var succ = 1;
-                var err = 1;
-                var m = response['message']
-                if(response['error'] == false){
-                    window.location.replace('/client/signup?succ='+succ+"&m="+m);                
-                }else if(response['error'] == true){
-                    window.location.replace('/client/signup?err='+err+"&m="+m);
-                }
+                console.log(response) // display success response from the server
             }
         });
     });
@@ -59,11 +52,11 @@ $(document).ready(function(){
     $('#btnAddCase').click(function(e){
         e.preventDefault();
         var id = $('#lawyer_id').val();
-        var case_title = $('#add-case').val();
+        var case_name = $('#add-case').val();
         var client_id = $('#client-id').val();
         var case_description = $('#case-description').val()
         sendInfo = { 
-            case_title : case_title,
+            case_name : case_name,
             client_id : client_id,
             case_description : case_description
         }
@@ -72,88 +65,67 @@ $(document).ready(function(){
         }, "json")
     });
 
-    // $('#btnFindLawyer').click(function(e){
-
-    //     console.log("findlawyerclicked");
-    //     var form_data = new FormData();
-    //     var law_practice = $('#lawpractice');
-    //     var cityOrMunicipalitycity = $('#cityOrMunicipality');
-    //     form_data.append('law_practice', law_practice);
-    //     form_data.append('cityOrMunicipality', cityOrMunicipality);
-
-    //     $.post("/lawyer/found", form_data ,function(response){
-    //         if(response['error'] == false){
-    //             window.location.replace("/lawyer/found/practice="+law_practice+"&cityOrMunicipality="+cityOrMunicipalitycity);
-    //         }
-    //     }, "json")
-    // });
-    
     // find a lawyer button
-
-    // $('#btnFindLawyer').click(function(e){
-    //     e.preventDefault();
-    //     var law_practice = $('#practice').val();
-    //     var cityOrMunicipality = $('#cityOrMunicipality').val();
-    //     sendInfo = {
-    //         law_practice : law_practice,
-    //         cityOrMunicipality : cityOrMunicipality
-    //     }
-    //     // console.log(JSON.stringify(sendInfo))
-    //     $.post("/lawyer/find", JSON.stringify(sendInfo), function(response){
-    //         var content = $();
-    //         if(response['error'] == false){
-    //             var lawyers = response['lawyers']
-    //             // looping through all found layers and displaying the info
-    //             for(var key in lawyers){
-    //                 if(lawyers.hasOwnProperty(key)){
-    //                     // setting the default info for about me
-    //                     if(lawyers[key].lawyer.aboutme == null){
-    //                         lawyers[key].lawyer.aboutme = "No overview found";
-    //                     }
-    //                     // setting default image if there is no image foundd
-    //                     if(lawyers[key].lawyer.profile_pic == null){
-    //                         lawyers[key].lawyer.profile_pic = "../static/images/default_lawyer_pic.png";
-    //                     }
-    //                     // var stateObj = { practice : law_practice, cityOrMunicipality : cityOrMunicipality }
-    //                     // window.history.pushState( stateObj, 'Find Lawyer', '/law-pactice='+law_practice+'&city-or-municipality='+cityOrMunicipality);
-    //                     content = content.add(`
-    //                                 <div class="col-md-2">&nbsp;</div>
-    //                                     <div class="col-md-8">
-    //                                         <div class="row space-16">&nbsp;</div>
-    //                                         <div class="row">
-    //                                             <div class="col-sm-4">
-    //                                                 <div class="thumbnail">
-    //                                                     <div class="caption text-center" onclick="location.href='localhost:8080/#'">
-    //                                                         <div class="position-relative">
-    //                                                             <img src="${lawyers[key].lawyer.profile_pic}" alt="profile" style="width:160px;height:160px;" />
-    //                                                         </div>
-    //                                                         <h4 id="thumbnail-label"><a href="#" target="_blank">${lawyers[key].lawyer.first_name} ${lawyers[key].lawyer.last_name}</a></h4>
-    //                                                         <p><i class="glyphicon glyphicon-envelope  light-red lighter bigger-120"></i>&nbsp;${lawyers[key].lawyer.email}</p>
-    //                                                         <div class="thumbnail-description smaller">${lawyers[key].lawyer.aboutme}</div>
-    //                                                     </div>
-    //                                                     <div class="caption card-footer text-center">
-    //                                                         <a href=" class="btn btn-primary btn-block" href="#">View More</a>
-    //                                                     </div>
-    //                                                 </div>
-    //                                             </div>
-    //                                         </div>
-    //                                     <div class="col-md-2">&nbsp;</div>
-    //                                 </div>
-    //                             `);
-    //                 }
-    //             }
-    //             // displaying to the found-lawyer div in home.html
-    //             $('#found-lawyer').html(content)
+    $('#btnFindLawyer').click(function(e){
+        e.preventDefault();
+        var law_practice = $('#practice').val();
+        var cityOrMunicipality = $('#cityOrMunicipality').val();
+        sendInfo = {
+            law_practice : law_practice,
+            cityOrMunicipality : cityOrMunicipality
+        }
+        // console.log(JSON.stringify(sendInfo))
+        $.post("/lawyer/find", JSON.stringify(sendInfo), function(response){
+            var content = $();
+            if(response['error'] == false){
+                var lawyers = response['lawyers']
+                // looping through all found layers and displaying the info
+                for(var key in lawyers){
+                    if(lawyers.hasOwnProperty(key)){
+                        // setting the default info for about me
+                        if(lawyers[key].lawyer.aboutme == null){
+                            lawyers[key].lawyer.aboutme = "No overview found";
+                        }
+                        // setting default image if there is no image foundd
+                        if(lawyers[key].lawyer.profile_pic == null){
+                            lawyers[key].lawyer.profile_pic = "../static/images/default_lawyer_pic.png";
+                        }
+                        // var stateObj = { practice : law_practice, cityOrMunicipality : cityOrMunicipality }
+                        // window.history.pushState( stateObj, 'Find Lawyer', '/law-pactice='+law_practice+'&city-or-municipality='+cityOrMunicipality);
+                        content = content.add(`
+                                    <div class="col-md-2">&nbsp;</div>
+                                        <div class="col-md-8">
+                                            <div class="row space-16">&nbsp;</div>
+                                            <div class="row">
+                                                <div class="col-sm-4">
+                                                    <div class="thumbnail">
+                                                        <div class="caption text-center" onclick="location.href='localhost:8080/#'">
+                                                            <div class="position-relative">
+                                                                <img src="${lawyers[key].lawyer.profile_pic}" alt="profile" style="width:160px;height:160px;" />
+                                                            </div>
+                                                            <h4 id="thumbnail-label"><a href="#" target="_blank">${lawyers[key].lawyer.first_name} ${lawyers[key].lawyer.last_name}</a></h4>
+                                                            <p><i class="glyphicon glyphicon-envelope  light-red lighter bigger-120"></i>&nbsp;${lawyers[key].lawyer.email}</p>
+                                                            <div class="thumbnail-description smaller">${lawyers[key].lawyer.aboutme}</div>
+                                                        </div>
+                                                        <div class="caption card-footer text-center">
+                                                            <a class="btn btn-primary btn-block" href="#">View More</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <div class="col-md-2">&nbsp;</div>
+                                    </div>
+                                `);
+                    }
+                }
+                // displaying to the found-lawyer div in home.html
+                $('#found-lawyer').html(content)
                 
-    //         } else if(response['error'] == true){
-    //             console.log(response['message']);
-    //         }
-    //     } , "json" );
-    // });
-
-    // $("#btnFindLawyer").click(function(e){
-    //     e.preventDefault();
-    // });
+            } else if(response['error'] == true){
+                console.log(response['message']);
+            }
+        } , "json" );
+    });
 
     // profile picture update
     $('#btnLawyerSavePicture').click(function(e){
@@ -188,7 +160,6 @@ $(document).ready(function(){
         var phone = $('#uphone').val().trim();
         var cityOrMunicipality= $('#ucityOrMunicipality').val().trim();
         var office = $('#uoffice').val().trim();
-        var firm = $("#ufirm").val() == undefined ? '' : $("#ufirm").val().trim();
         var aboutme = $('#uaboutme').val().trim();
         var practice = [];
         $.each($("input[class='practice']:checked"), function(){            
@@ -201,13 +172,11 @@ $(document).ready(function(){
             phone : phone,
             cityOrMunicipality : cityOrMunicipality,
             office : office,
-            firm : firm,
             aboutme : aboutme,
             law_practice : practice
         }
-        console.log(JSON.stringify(sendInfo))
         $.post("/lawyer/"+id+"/account-setting/profile-information", JSON.stringify(sendInfo), function(response){
-            
+            console.log(response)
         } ,"json" );
     });
 
@@ -244,7 +213,6 @@ $(document).ready(function(){
     });
 
     // lawyer sign in
-
     $('#btnLawyerSignin').click(function(e){
         var email = $('#lawyer_email').val();
         var password = $('#lawyer_password').val();
@@ -276,31 +244,22 @@ $(document).ready(function(){
         var last_name = $('#last_name').val().trim();
         var email = $('#email').val().trim();
         var phone = $('#phone').val().trim();
-        var rollno = $('#rollno').val().trim();
         var cityOrMunicipality = $('#cityOrMunicipality').val().trim();
         var office = $('#office').val().trim();
-        var firm = $('#firm').val().trim();
-        var password = $('#the-password').val();
-        var confirm = $('#confirm-password').val();
         // var law_practice = $('#law_practice').val();
         var practice = [];
         $.each($("input[class='practice']:checked"), function(){            
             practice.push($(this).val());
         });
-        var password = $('#the-password').val();
-        var confirm = $('#confirm-password').val();
+        
         sendInfo = {
             first_name : first_name,
             last_name : last_name,
             email : email,
             phone : phone,
-            rollno : rollno,
             cityOrMunicipality : cityOrMunicipality,
             office : office,
-            firm : firm,
-            law_practice : practice,
-            password : password,
-            confirm : confirm
+            law_practice : practice
         }
 
         $.post("/lawyer/signup",JSON.stringify(sendInfo),function(response){
@@ -308,84 +267,92 @@ $(document).ready(function(){
             var err = 1;
             var m = response['message']
             if(response['error'] == false){
-                window.location.replace('/lawyer/signup?succ='+succ+"&m="+m);                
+                window.location.replace('/lawyer/signup?succ='+succ+"&m="+m);
             }else if(response['error'] == true){
                 window.location.replace('/lawyer/signup?err='+err+"&m="+m);
             }
         });
-
-        
     });
 
-    // reset password for client
-    $('#btnResetPassClient').click(function(e){
-        e.preventDefault();
-        var token = $("#token").val();
-        var password = $('#password').val();
-        var confirm = $('#confirm-password').val();
-        sendInfo = { password : password , confirm : confirm }
-        $.post('/client/reset-password/'+token, JSON.stringify(sendInfo), function(response){
-            var succ = 1;
-            var err = 1;
-            var m = response['message'];
-            if(response['error'] == false){
-                window.location.replace('/client/reset-password/'+token+'?succ='+succ+"&m="+m);
-            } else {
-                window.location.replace('/client/reset-password/'+token+'?err='+err+"&m="+m);
-            }
-        });
-    })
-
-    $("#btnForgotPassClient").click(function(e){
-        var email = $('#email').val();
-        sendInfo = { email : email }
-        $.post('/client/reset-password', JSON.stringify(sendInfo), function(response){
-            var succ = 1;
-            var err = 1;
-            var m = response['message'];
-            if(response['error'] == false){
-                window.location.replace('/client/reset-password?succ='+succ+"&m="+m);
-            } else {
-                window.location.replace('/client/reset-password?err='+err+"&m="+m);
-            }
-        });
-        e.preventDefault()
-    });
-
-    // reset password for lawyer
-    $('#btnResetPassLawyer').click(function(e){
+    $('#btnResetPassword').click(function(e){
         e.preventDefault();
         var token = $("#token").val();
         var password = $('#password').val();
         var confirm = $('#confirm-password').val();
         sendInfo = { password : password , confirm : confirm }
         $.post('/lawyer/reset-password/'+token, JSON.stringify(sendInfo), function(response){
-            var succ = 1;
-            var err = 1;
-            var m = response['message'];
-            if(response['error'] == false){
-                window.location.replace('/lawyer/reset-password/'+token+'?succ='+succ+"&m="+m);
-            } else {
-                window.location.replace('/lawyer/reset-password/'+token+'?err='+err+"&m="+m);
-            }
+            console.log(response)
         });
     })
 
-    $("#btnForgotPassLawyer").click(function(e){
+    $("#btnForgotPass").click(function(e){
         var email = $('#email').val();
         sendInfo = { email : email }
         $.post('/lawyer/reset-password', JSON.stringify(sendInfo), function(response){
-            var succ = 1;
-            var err = 1;
-            var m = response['message'];
-            if(response['error'] == false){
-                window.location.replace('/lawyer/reset-password?succ='+succ+"&m="+m);
-            } else {
-                window.location.replace('/lawyer/reset-password?err='+err+"&m="+m);
-            }
+            console.log(response)
         });
         e.preventDefault()
     });
+    // FOR THE ACCOUNT SETTINGS CLIENT
+
+    $('#btnClientSavePicture').click(function(e){
+        e.preventDefault();
+        var id = $(".client_id").val();
+        var file_data = $('#image').prop('files')[0];
+        var form_data = new FormData();
+        form_data.append('image', file_data);
+        $.ajax({
+            url: "/client/"+id+"/account-setting/profile-picture", // point to server-side controller method
+            dataType: 'json', // what to expect back from the server
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: form_data,
+            type: 'post',
+            success: function (response) {
+                console.log(response) // display success response from the server
+            },
+            error: function (response) {
+                console.log(response) // display error response from the server
+            }
+        });
+    });
+
+    $('#btnClientSaveEmail').click(function(e){
+        e.preventDefault();
+        var id = $(".client_id").val();
+        var current = $('#current_email').val().trim();
+        var new_email = $('#new_email').val().trim();
+        var password = $('#e_current_password').val().trim();
+        sendInfo = {
+            current : current,
+            new_email : new_email,
+            password : password
+        }
+        $.post("/client/"+id+"/account-setting/change-email", JSON.stringify(sendInfo) ,function(response){
+            console.log(response)
+        })
+    });
+
+    $('#btnClientSaveInfo').click(function(e){
+        e.preventDefault();
+        var id = $(".client_id").val();
+        var first_name = $('#ufirst_name').val().trim();
+        var last_name = $('#ulast_name').val().trim();
+        var phone = $('#uphone').val().trim();
+        var address= $('#uAddress').val().trim();
+
+        sendInfo = {
+            first_name : first_name,
+            last_name : last_name,
+            phone : phone,
+            address : address,
+        }
+        $.post("/client/"+id+"/account-setting/profile-information", JSON.stringify(sendInfo), function(response){
+            console.log(response)
+        } ,"json" );
+    });
+
 
     // if(image){
         //     getBase64(image).then(
@@ -451,123 +418,4 @@ $(document).ready(function(){
         source: city
         });
     } );
-
-    //
-    //      THIS IS FOR THE SIGN UP LAWYER
-    //
-        var current_fs, next_fs, previous_fs; //fieldsets
-        var left, opacity, scale; //fieldset properties which we will animate
-        var animating; //flag to prevent quick multi-click glitches
-        $('#msform').fadeIn('slow');
-        $(".next").click(function() {
-            if (animating) return false;
-            animating = true;
-        
-            current_fs = $(this).parent();
-            next_fs = $(this).parent().next();
-        
-            //activate next step on progressbar using the index of next_fs
-            $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
-        
-            //show the next fieldset
-            next_fs.show();
-            //hide the current fieldset with style
-            current_fs.animate({
-              opacity: 0
-            }, {
-              step: function(now, mx) {
-                //as the opacity of current_fs reduces to 0 - stored in "now"
-                //1. scale current_fs down to 80%
-                scale = 1 - (1 - now) * 0.2;
-                //2. bring next_fs from the right(50%)
-                left = (now * 50) + "%";
-                //3. increase opacity of next_fs to 1 as it moves in
-                opacity = 1 - now;
-                current_fs.css({
-                  'transform': 'scale(' + scale + ')'
-                });
-                next_fs.css({
-                  'left': left,
-                  'opacity': opacity
-                });
-              },
-              duration: 800,
-              complete: function() {
-                current_fs.hide();
-                animating = false;
-              },
-              //this comes from the custom easing plugin
-              easing: 'easeInOutBack'
-            });
-          });
-        
-          $(".previous").click(function() {
-            if (animating) return false;
-            animating = true;
-        
-            current_fs = $(this).parent();
-            previous_fs = $(this).parent().prev();
-        
-            //de-activate current step on progressbar
-            $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
-        
-            //show the previous fieldset
-            previous_fs.show();
-            //hide the current fieldset with style
-            current_fs.animate({
-              opacity: 0
-            }, {
-              step: function(now, mx) {
-                //as the opacity of current_fs reduces to 0 - stored in "now"
-                //1. scale previous_fs from 80% to 100%
-                scale = 0.8 + (1 - now) * 0.2;
-                //2. take current_fs to the right(50%) - from 0%
-                left = ((1 - now) * 50) + "%";
-                //3. increase opacity of previous_fs to 1 as it moves in
-                opacity = 1 - now;
-                current_fs.css({
-                  'left': left
-                });
-                previous_fs.css({
-                  'transform': 'scale(' + scale + ')',
-                  'opacity': opacity
-                });
-              },
-              duration: 800,
-              complete: function() {
-                current_fs.hide();
-                animating = false;
-              },
-              //this comes from the custom easing plugin
-              easing: 'easeInOutBack'
-            });
-          });
-
-
-          $('#preAppointLawyer').click(function(e){
-
-            e.preventDefault();
-            var id = $("#seeLawyerId").val();
-            var client = $('#clientCheck').val();
-            
-            alert(id);
-
-            sendInfo = { 
-                id : id
-            }
-
-
-            $.post("/lawyer/"+client+"/pre-appoint", JSON.stringify(sendInfo) ,function(response){
-                
-                if(response['error'] == false){
-                    alert('Appointment Requeset Sent');
-                }
-                else if(response['error'] == true){
-                    console.log(response);
-                }                
-            }, "json")
-
-          });
-
-        
 });

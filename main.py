@@ -84,6 +84,39 @@ def client_signin():
 
     return render_template('lawyer/login.html',title='Sign In')
 
+@app.route('/client/<int:client_id>/account-setting/profile-picture', methods=['POST'])
+@login_required_client
+def client_update_picture(client_id=None):
+    if request.method == "POST":
+        f = request.files.get('image')
+        if f and f.filename != '':
+            profile_pic = save_to_gcs(f).get("serving_url")
+            client = Client.save(id=client_id, profile_pic=profile_pic)
+            if client:
+                return json_response({
+                    'error' : False,
+                    'message' : "Profile picture has been saved!"})
+            else:
+                return json_response({
+                    'error' : True,
+                    'message' : "Profile picture was not saved!"})
+    
+@app.route('/client/<int:client_id>/account-setting',methods=['GET','POST'])
+@login_required_client
+def client_account_setting(client_id=None):
+    # get the lawyer details in a dictionary format
+    global available_practice
+    if client_id:
+        client_dict = Client.get_by_id(int(client_id))
+        if client_dict:
+            client_dict = client_dict.to_dict()
+        else:
+            abort(404)
+    client = Client.get_by_id(int(client_id))
+
+    return render_template("client/client-account-setting.html",title="Account Setting",client=session.get('client'),client_info=client_dict)
+ 
+
 @app.route('/client/signup',methods=['GET','POST'])
 def client_signup():
     if request.method == "POST":
@@ -285,13 +318,8 @@ def home():
     global available_practice
     if session.get('lawyer') is not None:
         return render_template('home.html',title='Home',lawyer=session['lawyer'],law_practice=available_practice)
-<<<<<<< HEAD
-    # elif session['client']:
-    #     return render_template('home.html',title='Home',client=session['client'],law_practice=available_practice)    
-=======
-    # elif session['client']:        
-    #     return render_template('home.html',title='Home',law_practice=available_practice)    
->>>>>>> 0a8167068cce52daea98b1e2abf67dce07c317e8
+    elif session.get('client'):        
+        return render_template('home.html',title='Home',law_practice=available_practice,client=session['client'])    
     else:
         return render_template('home.html',title='Home',law_practice=available_practice)
 
@@ -490,8 +518,12 @@ def find_lawyer():
     #         lawyers = found_lawyers
     #     else:
     #         lawyers = None
-    
-    return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers,lawyer=session['lawyer'])
+    if session.get('lawyer'):
+        return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers,lawyer=session['lawyer'])
+    elif session.get('client'):
+        return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers,client=session['client'])
+    else:
+        return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers)
 #dashboard route for lawyers
 @app.route('/lawyer/')
 @app.route('/lawyer/dashboard')
@@ -1087,13 +1119,10 @@ def lawyer_signin():
 #sign up lawyer route
 @app.route('/lawyer/signup', methods=['GET','POST'])
 def lawyer_signup():
-<<<<<<< HEAD
-=======
 
 
->>>>>>> 0a8167068cce52daea98b1e2abf67dce07c317e8
-    # if session['client']:
-    #     return redirect(url_for('home'))
+    if session.get('client'):
+        return redirect(url_for('home'))
 
     if request.method == 'POST':
         req_data = request.get_json(force=True)
@@ -1372,7 +1401,6 @@ def lawyer_signout():
 @app.route('/client/signout')
 def client_signout():
     del session['client']
-
     return redirect(url_for('client_signin'))
 
 @app.errorhandler(500)

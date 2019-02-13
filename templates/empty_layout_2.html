@@ -61,7 +61,7 @@
                         <ul>
                           <li><a href="#">My Dashboard</a></li>
                           <li><a href="#">Cases</a></li>
-                          <li><a href="#">Account Settings</a></li>
+                          <li><a href="/client/{{client}}/account-setting">Account Settings</a></li>
                           <li><a href="/client/signout">Log Out</a></li>
                         </ul>
                      </li>
@@ -88,7 +88,7 @@
     
      <!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
     
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
     
     
     
@@ -97,6 +97,7 @@
     
     <!-- <script src="{{ url_for('static', filename='js/hoverIntent.js') }}"></script>  -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <!-- <script src="{{ url_for('static', filename='js/main.js') }}"></script> -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script src="{{ url_for('static', filename='js/superfish.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/waypoints.min.js') }}"></script>
