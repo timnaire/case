@@ -1274,6 +1274,8 @@ def lawyer_signup():
             cityOrMunicipality = req_data['cityOrMunicipality']    
         if 'office' in req_data:
             office = req_data['office']
+        if 'sex' in req_data:
+            sex = req_data['sex']
         if 'firm' in req_data:
             firm = req_data['firm']
         else:
@@ -1286,7 +1288,7 @@ def lawyer_signup():
             confirm = req_data['confirm']
 
         #all fields required
-        if first_name and last_name and email and phone and rollno and cityOrMunicipality and office and law_practice and password and confirm:
+        if first_name and last_name and email and phone and rollno and sex and cityOrMunicipality and office and law_practice and password and confirm:
             #valid email address
             if is_email(email):
                 lawyer = Lawyer.check_email(email=email)
@@ -1295,7 +1297,7 @@ def lawyer_signup():
                         if get_rollno(str(rollno)):
                             roll_exist = Lawyer.rollno_exist(rollno=rollno)
                             if not roll_exist:
-                                lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,rollno=rollno,cityOrMunicipality=cityOrMunicipality,office=office,firm=firm,password=password,status="activated",limit_case="5")
+                                lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,rollno=rollno,sex=sex,cityOrMunicipality=cityOrMunicipality,office=office,firm=firm,password=password,status="activated",limit_case="5")
                                 if lawyer:
                                     # pract as in practice
                                     for pract in law_practice:
