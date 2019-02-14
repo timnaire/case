@@ -8,9 +8,9 @@ class Event(ndb.Model):
     event_title = ndb.StringProperty()
     event_location = ndb.StringProperty()
     event_details = ndb.StringProperty()
-    event_duration = ndb.StringProperty()
+    event_date = ndb.StringProperty()
+    event_time = ndb.StringProperty()
     event_type = ndb.StringProperty()
-    date = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
 
@@ -34,20 +34,54 @@ class Event(ndb.Model):
             event.client = client_key 
         
         if kwargs.get('event_title'):
-            event.event_content = kwargs.get('event_title')
+            event.event_title = kwargs.get('event_title')
         if kwargs.get('event_location'):
-            event.event_content = kwargs.get('event_location')
+            event.event_location = kwargs.get('event_location')
         if kwargs.get('event_details'):
-            event.event_content = kwargs.get('event_details')
+            event.event_details = kwargs.get('event_details')
         if kwargs.get('event_type'):
             event.event_type = kwargs.get('event_type')
-        if kwargs.get('event_duration'):
-            event.event_duration = kwargs.get('event_duration')
-        if kwargs.get('date'):
-            event.date = kwargs.get('date')
+        if kwargs.get('event_time'):
+            event.event_time = kwargs.get('event_time')
+        if kwargs.get('event_date'):
+            event.event_date = kwargs.get('event_date')
 
         event.put()
         return event
+
+    def dict_lawyer(self):
+        data = {}
+
+        data['lawyer'] = None
+        if self.lawyer:
+            lawyer = self.lawyer.get()
+            data['lawyer'] = lawyer.to_dict()
+
+        data['event_time'] = self.event_time
+        data['event_title'] = self.event_title
+        data['event_details'] = self.event_details
+        data['event_location'] = self.event_location
+        data['event_type'] = self.event_type
+        data['event_date'] = self.event_date
+
+        return data
+
+    def dict_client(self):
+        data = {}
+
+        data['client'] = None
+        if self.client:
+            client = self.client.get()
+            data['client'] = client.to_dict()
+
+        data['event_time'] = self.event_time
+        data['event_title'] = self.event_title
+        data['event_details'] = self.event_details
+        data['event_location'] = self.event_location
+        data['event_type'] = self.event_type
+        data['event_date'] = self.event_date
+
+        return data
         
     def to_dict(self):
         data = {}
@@ -62,10 +96,11 @@ class Event(ndb.Model):
             client = self.client.get()
             data['client'] = client.to_dict()
         
-        data['event_duration'] = self.event_duration
+        data['event_time'] = self.event_time
         data['event_title'] = self.event_title
         data['event_details'] = self.event_details
         data['event_location'] = self.event_location
-        data['date'] = self.date
+        data['event_type'] = self.event_type
+        data['event_date'] = self.event_date
         
         return data

@@ -127,6 +127,8 @@ def client_signup():
             last_name = req_data['last_name']
         if 'email' in req_data:
             email = req_data['email']
+        if 'sex' in req_data:
+            sex = req_data['sex']
         if 'phone' in req_data:
             phone = req_data['phone']
         if 'address' in req_data:
@@ -136,12 +138,12 @@ def client_signup():
         if 'confirm' in req_data:
             confirm = req_data['confirm']
         
-        if first_name and last_name and email and phone and address and password:
+        if first_name and last_name and email and sex and phone and address and password:
             if is_email(email=email):
                 client = Client.check_email(email)
                 if not client:
                     if password == confirm:
-                        client = Client.save(first_name=first_name,last_name=last_name,email=email,phone=phone,address=address,password=password)
+                        client = Client.save(first_name=first_name,last_name=last_name,email=email,sex=sex,phone=phone,address=address,password=password)
                         if client:
 
                             return json_response({
@@ -201,9 +203,11 @@ def client_update_information(client_id=None):
             phone = req_data['phone']
         if 'address' in req_data:
             address = req_data['address']
+        if 'sex' in req_data:
+            sex = req_data['sex']
 
-        if first_name and last_name and phone and address:
-            client = Client.save(id=client_id,first_name=first_name,last_name=last_name,phone=phone,address=address)
+        if first_name and last_name and sex and phone and address:
+            client = Client.save(id=client_id,first_name=first_name,last_name=last_name,phone=phone,address=address,sex=sex)
             if client:
                 return json_response({
                     'error' : False,
@@ -397,6 +401,7 @@ def pre_accepted(client_id=None):
         lawyer = Lawyer.get_by_id(int(lawyer_id))
         client = Client.get_by_id(int(client_id))
         
+        # if lawyer accepts the pre appointment, send notification to the client mobile app.
         if status == "accepted":
             relation = Relationship.save(id=relation_id,lawyer=lawyer_id,client=client_id,status=status)
             if relation:
@@ -408,7 +413,7 @@ def pre_accepted(client_id=None):
                         'body': lawyer.first_name + ' ' + lawyer.last_name + ' accpeted your pre-appointment request.'
                     },
                     "data":{
-                        'client_id': client.key.id(),
+                        'lawyer_id': lawyer.key.id(),
                         'relation_id' : relation_id
                     }
                 }
@@ -430,7 +435,7 @@ def pre_accepted(client_id=None):
                         'body': lawyer.first_name + ' ' + lawyer.last_name + ' rejected your pre-appointment request.'
                     },
                     "data":{
-                        'client_id': client.key.id(),
+                        'lawyer_id': lawyer_id.key.id(),
                         'relation_id' : relation_id
                     }
                 }
@@ -442,10 +447,13 @@ def pre_accepted(client_id=None):
                 msg = lawyer.first_name + " " + lawyer.last_name + " rejected your Pre-Appointment request."
                 notification = Notification.save(notif_from=lawyer_id,notif_to=client_id,msg=msg,received="",sent="sent")
 
+# auto notify lawyer to unresponded client pre appointment request
 @app.route('/lawyer/<int:lawyer_id>/pre-appoint-notification',methods=['GET','POST'])
 def number_of_case(lawyer_id=None):
     lawyer = Lawyer.get_by_id(int(lawyer_id))
     relations = Relationship.query(Relationship.lawyer==lawyer.key, Relationship.status == None).fetch()
+    # loops through lawyers in relationship with client who didn't response to the pre-appointment and create a script that will auto
+    # sends notification again when the lawyer launch the mobile app.
     if relations:
         for r in relations:
             client_key = r.client
@@ -540,6 +548,7 @@ def dashboard():
 def dashboard_client():
     return render_template('home.html',title="Client Login",client=session['client'],law_practice=available_practice)
 
+# route for lawyer add file
 @app.route('/lawyer/<int:lawyer_id>/add-file',methods=['GET','POST'])
 def add_file(lawyer_id=None):
     if request.method == "POST":
@@ -555,7 +564,7 @@ def add_file(lawyer_id=None):
         
         if file_privacy == "Public":
             file_type = "Public Document"
-        elif file_privacy == "Research":
+        elif file_privacy == "Private":
             file_type = "Research"
         
         if case and case_file and file_privacy and file_type:
@@ -569,6 +578,7 @@ def add_file(lawyer_id=None):
                 "error" : True,
                 "message" : "Please fill up all the fields and try again."})
 
+# route for lawyer api getting all documents
 @app.route('/lawyer/<int:lawyer_id>/list-all-file',methods=["GET","POST"])
 def list_all_file(lawyer_id=None):
     if request.method == "POST":
@@ -587,6 +597,7 @@ def list_all_file(lawyer_id=None):
                 "error" : True,
                 "message" : "No files"})
 
+# route for lawyer api getting the research documents
 @app.route('/lawyer/<int:lawyer_id>/list-research',methods=["POST"])
 def reserach_documents(lawyer_id=None):
     if request.method == "POST":
@@ -605,6 +616,7 @@ def reserach_documents(lawyer_id=None):
                 "error" : True,
                 "message" : "No files"})
 
+# route for lawyer api getting the public documents
 @app.route('/lawyer/<int:lawyer_id>/list-public-documents',methods=["POST"])
 def public_documents(lawyer_id=None):
     if request.method == "POST":
@@ -623,6 +635,7 @@ def public_documents(lawyer_id=None):
                 "error" : True,
                 "message" : "No files"})
 
+# route for lawyer who subscribe
 @app.route('/lawyer/<int:lawyer_id>/subscribe',methods=["POST"])
 def lawyer_subscribe(lawyer_id=None):
     if request.method == "POST":
@@ -644,21 +657,101 @@ def lawyer_subscribe(lawyer_id=None):
                     "error" : True,
                     "message" : "There was an error while subscribing, please try again."})
 
+# route for client event create
+@app.route('/client/<int:client_id>/add-event',methods=['GET','POST'])
+def add_event_client(client_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'lawyer_id' in req_data:
+            lawyer_id = req_data['lawyer_id']
+        if 'event_title' in req_data:
+            event_title = req_data['event_title']
+        if 'event_location' in req_data:
+            event_location = req_data['event_location']
+        if 'event_details' in req_data:
+            event_details = req_data['event_details']
+        if 'event_date' in req_data:
+            event_date = req_data['event_date']
+        if 'event_time' in req_data:
+            event_time = req_data['event_time'] 
+        if 'event_type' in req_data:
+            event_type = req_data['event_type']
+
+        if client_id and event_title and event_location and event_details and event_date and event_time and event_type:
+            event = Event.save(lawyer=lawyer_id, client=client_id,event_title=event_title,event_location=event_location,event_details=event_details,event_date=event_date,event_time=event_time,event_type=event_type)
+            client = Client.get_by_id(int(client_id))
+            lawyer = Lawyer.get_by_id(int(lawyer_id))
+            # sends mobile notification to the client if the lawyer creates an event 
+            json_data = {
+                "to": lawyer.fcm_token,     
+                "notification":{
+                    'click_action' : '.MainActivity',
+                    'title': event_title, 
+                    'body': event_details
+                },
+                "data":{
+                    'client_id': client.key.id(),
+                    'relation_id' : relation_id
+                }
+            }
+            headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
+            requests.post(
+                'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
+            )
+            if event:
+                return json_response({
+                    "error" : False,
+                    "message" : "Event created !"})
+            else:
+                return json_response({
+                    "error" : True,
+                    "message" : "Couldn't create event, please try again."})
+        else:
+            return json_response({
+                "error" : True,
+                "message" : "Please fill up all the fields and try again."})
+
+# route for lawyer event create
 @app.route('/lawyer/<int:lawyer_id>/add-event',methods=['GET','POST'])
 def add_event(lawyer_id=None):
     if request.method == "POST":
         req_data = request.get_json(force=True)
         if 'client_id' in req_data:
             client_id = req_data['client_id']
-        if 'event_content' in req_data:
-            event_content = req_data['event_data']
+        if 'event_title' in req_data:
+            event_title = req_data['event_title']
+        if 'event_location' in req_data:
+            event_location = req_data['event_location']
+        if 'event_details' in req_data:
+            event_details = req_data['event_details']
+        if 'event_date' in req_data:
+            event_date = req_data['event_date']
+        if 'event_time' in req_data:
+            event_time = req_data['event_time'] 
         if 'event_type' in req_data:
             event_type = req_data['event_type']
-        if 'date' in req_data:
-            date = req_data['date']
 
-        if client_id and event_content and event_type and date:
-            event = Event.save(lawyer=lawyer_id, client=client_id,event_content=event_content,event_type=event_type,date=date)
+        if client_id and event_title and event_location and event_details and event_date and event_time and event_type:
+            event = Event.save(lawyer=lawyer_id, client=client_id,event_title=event_title,event_location=event_location,event_details=event_details,event_date=event_date,event_time=event_time,event_type=event_type)
+            client = Client.get_by_id(int(client_id))
+            lawyer = Lawyer.get_by_id(int(lawyer_id))
+            # sends mobile notification to the client if the lawyer creates an event 
+            json_data = {
+                "to": client.fcm_token,     
+                "notification":{
+                    'click_action' : '.MainActivity',
+                    'title': event_title, 
+                    'body': event_details
+                },
+                "data":{
+                    'lawyer_id': lawyer.key.id(),
+                    'relation_id' : relation_id
+                }
+            }
+            headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
+            requests.post(
+                'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
+            )
             if event:
                 return json_response({
                     "error" : False,
@@ -698,16 +791,35 @@ def list_lawyer(client_id=None):
             "error" : True,
             "message" : "No clients found.",})
 
+# route for lawyer, getting the event
 @app.route('/lawyer/<int:lawyer_id>/get-event',methods=['GET','POST'])
-def get_event(lawyer_id=None):
+def get_event_lawyer(lawyer_id=None):
     lawyer = Lawyer.get_by_id(int(lawyer_id))
     events = Event.query(Event.lawyer == lawyer.key).fetch()
     event_dict = []
     for event in events:
         event_dict.append(event.to_dict())
         
-    return json_response({"events" : event_dict})
+    if event_dict:
+        return json_response({"error":False,"message": `len(event_dict)`+" events","events" : event_dict})
+    else:
+        return json_response({"error":True,"message": "No event(s) found"})
 
+# route for lawyer, getting the event
+@app.route('/client/<int:client_id>/get-event',methods=['GET','POST'])
+def get_event_client(client_id=None):
+    client = Client.get_by_id(int(client_id))
+    events = Event.query(Event.client == client.key).fetch()
+    event_dict = []
+    for event in events:
+        event_dict.append(event.to_dict())
+        
+    if event_dict:
+        return json_response({"error":False,"message": `len(event_dict)`+" events","events" : event_dict})
+    else:
+        return json_response({"error":True,"message": "No event(s) found"})
+
+# token for lawyer needed to identify which device should be notified
 @app.route('/lawyer/<int:lawyer_id>/fcm-token',methods=['POST'])
 def save_lawyer_token(lawyer_id=None):
     if request.method == "POST":
@@ -721,6 +833,7 @@ def save_lawyer_token(lawyer_id=None):
         else: 
             return json_response({"error":True,"message":"FCM Token was not saved."})
 
+# token for client needed to identify which device should be notified
 @app.route('/client/<int:client_id>/fcm-token',methods=['POST'])
 def save_client_token(client_id=None):
     if request.method == "POST":
@@ -733,11 +846,6 @@ def save_client_token(client_id=None):
             return json_response({"error":False,"message":"FCM Token saved!"})
         else: 
             return json_response({"error":True,"message":"FCM Token was not saved."})
-
-# @app.route('/lawyer/<int:lawyer_id>/number-of-case')
-# def number_of_case(lawyer_id=None):
-#     mycases = Case.my_case(lawyer_id=lawyer_id)
-#     return json_response({"cases": mycases})
 
 # edit case route for lawyers 
 @app.route('/lawyer/<int:lawyer_id>/edit-case', methods=['GET','POST'])
@@ -817,6 +925,7 @@ def mycase(lawyer_id=None):
 
     return render_template('lawyer/lawyer-mycase.html',title="My Case",lawyer=session['lawyer'],cases=case_dict,clients=clients)
 
+# route for lawyer listing all case for lawyer
 @app.route('/lawyer/<int:lawyer_id>/get-case',methods=['GET','POST'])
 def getAllCase(lawyer_id=None):
     lawyer = Lawyer.get_by_id(int(lawyer_id))
@@ -835,6 +944,7 @@ def getAllCase(lawyer_id=None):
             "message" : "No case found",
             "cases" : "Empty"})
 
+# route for client listing all case for client
 @app.route('/client/<int:client_id>/get-case',methods=['GET','POST'])
 def get_case_clients(client_id=None):
     client = Client.get_by_id(int(client_id))
@@ -853,6 +963,7 @@ def get_case_clients(client_id=None):
             "message" : "No case found",
             "cases" : "Empty"})
 
+# route for lawyer deleting case 
 @app.route('/lawyer/<int:lawyer_id>/delete-case',methods=['POST'])
 def deleteCase(lawyer_id=None):
     if request.method == "POST":
