@@ -766,7 +766,7 @@ def get_event_lawyer(lawyer_id=None):
     if event_dict:
         return json_response({"error":False,"message": `len(event_dict)`+" events","events" : event_dict})
     else:
-        return json_response({"error":False,"message": "No event(s) found"})
+        return json_response({"error":True,"message": "No event(s) found"})
 
 # route for lawyer, getting the event
 @app.route('/client/<int:client_id>/get-event',methods=['GET','POST'])
@@ -780,7 +780,7 @@ def get_event_client(client_id=None):
     if event_dict:
         return json_response({"error":False,"message": `len(event_dict)`+" events","events" : event_dict})
     else:
-        return json_response({"error":False,"message": "No event(s) found"})
+        return json_response({"error":True,"message": "No event(s) found"})
 
 # token for lawyer needed to identify which device should be notified
 @app.route('/lawyer/<int:lawyer_id>/fcm-token',methods=['POST'])
