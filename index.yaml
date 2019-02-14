@@ -9,40 +9,21 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-- kind: Case 
+- kind: Relationship 
+  properties:
+  - name: lawyer 
+  - name: status 
+  - name: created 
+    direction: desc
+
+- kind: Event 
   properties: 
   - name: lawyer 
   - name: created 
     direction: desc
 
-- kind: Client
-  properties:
-  - name: email
-  - name: password
-
-- kind: Lawyer
-  properties:
-  - name: cityOrMunicipality
-  - name: password
-
-- kind: Lawyer
-  properties:
-  - name: email
-  - name: password
-
-- kind: Lawyer
-  properties:
-  - name: email
-  - name: status
-  - name: password
-
-- kind: UploadFile
-  properties:
-  - name: case
-  - name: created
-
-- kind: UploadFile
-  properties:
-  - name: case
-  - name: file_type
-  - name: created
+- kind: Event 
+  properties: 
+  - name: client 
+  - name: created 
+    direction: desc
