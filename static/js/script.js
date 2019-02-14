@@ -3,27 +3,35 @@ $(document).ready(function(){
 
     $('#btnClientSignin').click(function(e){
         e.preventDefault()
-        var email = $('#email').val();
-        var password = $('#password').val();
+        var email = $('#client_login_email').val();
+        var password = $('#client_login_password').val();
         sendInfo = { email : email, password : password }
+        if(email && password){
+            alert(email);
+        }
+        else{
+            alert("no email and password");
+        }
+
         $.post("/client/signin", JSON.stringify(sendInfo) ,function(response){
             if(response['error'] == false){
-                alert(response['message']);
-            }else{
-                console.log(response['message']);
+                window.location.replace('/client/dashboard');
+            }else if (response['error'] == true){
+                window.location.replace('/lawyer/signin?err='+err+"&m="+m+"&email"+email)
             }
         }, "json")
     });
     
     $('#btnClientSignUp').click(function(e){
         e.preventDefault();
-        var first_name = $('#first_name').val();
-        var last_name = $('#last_name').val();
-        var email = $('#email').val();
-        var phone = $('#phone').val();
-        var address = $('#address').val();
-        var password = $('#password').val();
-        var confirm = $('#confirm-password').val();
+        var first_name = $('#csu_first_name').val();
+        var last_name = $('#csu_last_name').val();
+        var email = $('#csu_email').val();
+        var phone = $('#csu_phone').val();
+        var address = $('#csu_address').val();
+        var password = $('#csu_the-password').val();
+        var confirm = $('#csu_confirm-password').val();
+        alert(password);
         sendInfo = {
             first_name : first_name,
             last_name : last_name,
@@ -33,16 +41,14 @@ $(document).ready(function(){
             password : password,
             confirm : confirm
         }
-        $.ajax({
-            url: "/client/signup", // point to server-side controller method
-            dataType: 'json',
-            data: JSON.stringify(sendInfo),
-            type: 'POST',
-            beforeSend : function(response){
-                console.log('animation here') // put animation
-            },
-            success: function (response) {
-                console.log(response) // display success response from the server
+        $.post("/client/signup",JSON.stringify(sendInfo),function(response){
+            var succ = 1;
+            var err = 1;
+            var m = response['message']
+            if(response['error'] == false){
+                window.location.replace('/client/signup?succ='+succ+"&m="+m);
+            }else if(response['error'] == true){
+                window.location.replace('/client/signup?err='+err+"&m="+m);
             }
         });
     });
@@ -68,14 +74,16 @@ $(document).ready(function(){
     // find a lawyer button
     $('#btnFindLawyer').click(function(e){
         e.preventDefault();
-        var law_practice = $('#practice').val();
+        var law_practice = $('#lawpractice').val();
         var cityOrMunicipality = $('#cityOrMunicipality').val();
         sendInfo = {
             law_practice : law_practice,
             cityOrMunicipality : cityOrMunicipality
         }
+
+        console.log(sendInfo);
         // console.log(JSON.stringify(sendInfo))
-        $.post("/lawyer/find", JSON.stringify(sendInfo), function(response){
+        $.post("/lawyer/found", JSON.stringify(sendInfo), function(response){
             var content = $();
             if(response['error'] == false){
                 var lawyers = response['lawyers']
@@ -321,9 +329,9 @@ $(document).ready(function(){
     $('#btnClientSaveEmail').click(function(e){
         e.preventDefault();
         var id = $(".client_id").val();
-        var current = $('#current_email').val().trim();
-        var new_email = $('#new_email').val().trim();
-        var password = $('#e_current_password').val().trim();
+        var current = $('#uc_current_email').val().trim();
+        var new_email = $('#uc_new_email').val().trim();
+        var password = $('#uc_e_current_password').val().trim();
         sendInfo = {
             current : current,
             new_email : new_email,
@@ -334,13 +342,29 @@ $(document).ready(function(){
         })
     });
 
+    $('#btnClientSavePassword').click(function(e){
+        e.preventDefault();
+        var id = $(".client_id").val();
+        var current_pass = $('#uc_current_password').val();
+        var new_pass = $('#uc_new_password').val();
+        var confirm_pass = $('#uc_confirm_password').val();
+        sendInfo = {
+            current : current_pass,
+            newpass : new_pass,
+            confirm : confirm_pass
+        }
+        $.post("/client/"+id+"/account-setting/change-password", JSON.stringify(sendInfo) ,function(response){
+            console.log(response['error'])
+        })
+    });
+
     $('#btnClientSaveInfo').click(function(e){
         e.preventDefault();
         var id = $(".client_id").val();
-        var first_name = $('#ufirst_name').val().trim();
-        var last_name = $('#ulast_name').val().trim();
-        var phone = $('#uphone').val().trim();
-        var address= $('#uAddress').val().trim();
+        var first_name = $('#uc_first_name').val().trim();
+        var last_name = $('#uc_last_name').val().trim();
+        var phone = $('#uc_phone').val().trim();
+        var address= $('#uc_Address').val().trim();
 
         sendInfo = {
             first_name : first_name,
@@ -349,7 +373,11 @@ $(document).ready(function(){
             address : address,
         }
         $.post("/client/"+id+"/account-setting/profile-information", JSON.stringify(sendInfo), function(response){
-            console.log(response)
+            if(response['error'] == false){
+                window.location.replace('/client/client-account-setting?succ='+succ+"&m="+m);
+            }else if(response['error'] == true){
+                window.location.replace('/client/client-account-setting?err='+err+"&m="+m);
+            }
         } ,"json" );
     });
 
@@ -418,4 +446,11 @@ $(document).ready(function(){
         source: city
         });
     } );
+
+    $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+        $("#success-alert").slideUp(500);
+    });
+    $("#danger-alert").fadeTo(2000, 500).slideUp(500, function(){
+        $("#danger-alert").slideUp(500);
+    });
 });
