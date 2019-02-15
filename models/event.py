@@ -11,6 +11,7 @@ class Event(ndb.Model):
     event_date = ndb.StringProperty()
     event_time = ndb.StringProperty()
     event_type = ndb.StringProperty()
+    event_owner = ndb.KeyProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
 
@@ -45,6 +46,9 @@ class Event(ndb.Model):
             event.event_time = kwargs.get('event_time')
         if kwargs.get('event_date'):
             event.event_date = kwargs.get('event_date')
+
+        if kwargs.get('event_owner'):
+            event.event_owner = kwargs.get('event_owner')
 
         event.put()
         return event
@@ -96,11 +100,11 @@ class Event(ndb.Model):
             client = self.client.get()
             data['client'] = client.to_dict()
         
-        data['event_time'] = self.event_time
         data['event_title'] = self.event_title
-        data['event_details'] = self.event_details
         data['event_location'] = self.event_location
-        data['event_type'] = self.event_type
+        data['event_details'] = self.event_details
         data['event_date'] = self.event_date
+        data['event_time'] = self.event_time
+        data['event_type'] = self.event_type
         
         return data

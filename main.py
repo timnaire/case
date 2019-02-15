@@ -687,9 +687,11 @@ def add_event_client(client_id=None):
             event_time = req_data['event_time'] 
         if 'event_type' in req_data:
             event_type = req_data['event_type']
+        if 'event_owner' in req_data:
+            event_owner = req_data['event_owner']
 
         if client_id and event_title and event_location and event_details and event_date and event_time and event_type:
-            event = Event.save(lawyer=lawyer_id, client=client_id,event_title=event_title,event_location=event_location,event_details=event_details,event_date=event_date,event_time=event_time,event_type=event_type)
+            event = Event.save(lawyer=lawyer_id, client=client_id,event_title=event_title,event_location=event_location,event_details=event_details,event_date=event_date,event_time=event_time,event_type=event_type,event_owner=event_owner)
             client = Client.get_by_id(int(client_id))
             lawyer = Lawyer.get_by_id(int(lawyer_id))
             # sends mobile notification to the client if the lawyer creates an event 
@@ -723,7 +725,7 @@ def add_event_client(client_id=None):
 
 # route for lawyer event create
 @app.route('/lawyer/<int:lawyer_id>/add-event',methods=['GET','POST'])
-def add_event(lawyer_id=None):
+def add_event_lawyer(lawyer_id=None):
     if request.method == "POST":
         req_data = request.get_json(force=True)
         if 'client_id' in req_data:
@@ -740,9 +742,11 @@ def add_event(lawyer_id=None):
             event_time = req_data['event_time'] 
         if 'event_type' in req_data:
             event_type = req_data['event_type']
+        if 'event_owner' in req_data:
+            event_owner = req_data['event_owner']
 
         if client_id and event_title and event_location and event_details and event_date and event_time and event_type:
-            event = Event.save(lawyer=lawyer_id, client=client_id,event_title=event_title,event_location=event_location,event_details=event_details,event_date=event_date,event_time=event_time,event_type=event_type)
+            event = Event.save(lawyer=lawyer_id, client=client_id,event_title=event_title,event_location=event_location,event_details=event_details,event_date=event_date,event_time=event_time,event_type=event_type,event_owner=event_owner)
             client = Client.get_by_id(int(client_id))
             lawyer = Lawyer.get_by_id(int(lawyer_id))
             # sends mobile notification to the client if the lawyer creates an event 
@@ -773,6 +777,30 @@ def add_event(lawyer_id=None):
             return json_response({
                 "error" : True,
                 "message" : "Please fill up all the fields and try again."})
+
+# route for lawyer event create
+@app.route('/edit-event',methods=['GET','POST'])
+def edit_event():
+    if request.method == "POST":
+        req_data = request.get_by_id(force=True)
+        if "event_id" in req_data:
+            event_id = req_data
+        if "event_owner" in req_data:
+            event_owner = req_data
+        event = Event.query(Event.key.id == event_id, Event.event_owner == event_owner).get()
+        if event:
+            return json_response({
+                "error" : False,
+                "event_title" : event.event_title,
+                "event_location" : event.event_location,
+                "event_details" : event.event_details,
+                "event_date" : event.event_date,
+                "event_time" : event.event_time,
+                "event_type" : event.event_type})
+        else:
+            return json_response({
+                "error" : True,
+                "message" : "Event was not updated."})
 
 @app.route('/lawyer/<int:lawyer_id>/list-client',methods=['GET','POST'])
 def list_client(lawyer_id=None):
@@ -830,17 +858,31 @@ def get_event_client(client_id=None):
 
 # route for lawyer, getting the event
 @app.route('/client/<int:client_id>/delete-event',methods=['GET','POST'])
-def get_event_client(client_id=None):
-    client = Client.get_by_id(int(client_id))
-    events = Event.query(Event.client == client.key).order(-Event.created).fetch()
-    event_dict = []
-    for event in events:
-        event_dict.append(event.to_dict())
-        
-    if event_dict:
-        return json_response({"error":False,"message": `len(event_dict)`+" events","events" : event_dict})
-    else:
-        return json_response({"error":True,"message": "No event(s) found"})
+def delete_event_client(client_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'event_id' in req_data:
+            event_id = req_data['event_id']
+        event = Event.get_by_id(int(event_id))
+        if event:
+            event.key.delete()
+            return json_response({"error":False,"message": "Event deleted !"})
+        else:
+                return json_response({"error":True,"message": "Event was not deleted"})
+
+# route for lawyer, getting the event
+@app.route('/lawyer/<int:lawyer_id>/delete-event',methods=['GET','POST'])
+def delete_event_lawyer(lawyer_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'event_id' in req_data:
+            event_id = req_data['event_id']
+        event = Event.get_by_id(int(event_id))
+        if event:
+            event.key.delete()
+            return json_response({"error":False,"message": "Event deleted !"})
+        else:
+                return json_response({"error":True,"message": "Event was not deleted"})
 
 # token for lawyer needed to identify which device should be notified
 @app.route('/lawyer/<int:lawyer_id>/fcm-token',methods=['POST'])
