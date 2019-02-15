@@ -95,21 +95,21 @@ class Relationship(ndb.Model):
         return list_of_requests
             
 
-    # @classmethod
-    # def my_lawyers(cls, client_id):
-    #     list_of_lawyers = []
+    @classmethod
+    def my_lawyers(cls, client_id):
+        list_of_lawyers = []
         
-    #     if client_id:
-    #         client_key = ndb.Key('Client',int(client_id))
-    #         lawyers = cls.query(cls.client == client_key , cls.status == "Accepted").fetch()
-    #         if lawyers:
-    #             for lawyer in lawyers:
-    #                 list_of_lawyers.append(lawyer.dict_lawyer())
+        if client_id:
+            client_key = ndb.Key('Client',int(client_id))
+            lawyers = cls.query(cls.client == client_key , cls.status == "Accepted").fetch()
+            if lawyers:
+                for lawyer in lawyers:
+                    list_of_lawyers.append(lawyer.dict_lawyer())
         
-    #     if not list_of_lawyers:
-    #         list_of_lawyers = None
+        if not list_of_lawyers:
+            list_of_lawyers = None
         
-    #     return list_of_lawyers
+        return list_of_lawyers
 
     def dict_lawyer(self):
         data = {}

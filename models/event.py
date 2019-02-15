@@ -85,7 +85,7 @@ class Event(ndb.Model):
         
     def to_dict(self):
         data = {}
-
+        data['event_id'] = self.key.id()
         data['lawyer'] = None
         if self.lawyer:
             lawyer = self.lawyer.get()
