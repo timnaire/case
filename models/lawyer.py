@@ -76,6 +76,15 @@ class Lawyer(ndb.Model):
             lawyers = None
         return lawyers
     
+    # @classmethod
+    # def deactivate(cls, lawyer):
+    #     lawyers = None
+    #     if lawyer_id:
+    #         Lawyer.save()
+    #     if not lawyers:
+    #         lawyers = None
+    #     return lawyers
+    
     @classmethod
     def sign_in(cls, email, password):
         lawyer = None

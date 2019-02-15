@@ -1,10 +1,50 @@
 {% extends 'empty_layout.html' %}
 
 {% block content %}
-<i class="fa fa-cloud"></i>
     <div class="container">
-        <div class="lawyer-dashboard">
-            <textarea name="" id="" cols="30" rows="10">{{results}}</textarea>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="text-center">
+                        {% if results.profile_pic %}
+                        <img src="{{ results.profile_pic }}" width='160px' height='160px' class="img-thumbnail" id='lawyerpic' />
+                        {% else %}
+                        <img src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="avatar img-circle img-thumbnail" alt="avatar">
+                        {% endif %}
+                        <h3>{{results.first_name}}&nbsp;&nbsp;{{results.last_name}}</h3>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">Menu</div>
+                    <div class="panel-body">
+                        <li class="list-group-item"><a data-toggle="tab" href="#pre-appoint-tab">Pre-Appointments</a></li>
+                        <li class="list-group-item"><a data-toggle="tab" href="#client-req-tab">Client Requests</a></li>
+                    </div>
+                </div>    
+            </div>
+            <div class="col-sm-9">
+                <textarea name="" id="" cols="30" rows="10">{{result}}</textarea>
+                <div class="tab-content" >
+                            <div class="tab-pane active" id="pre-appoint-tab">
+                                    <div class="pre-appointment-div   pre-scrollable">
+                                        <div class="pa-notif-div">
+                                            <div class="row">
+                                                    <div class="col-sm-8">
+                                                            <p>Diza, Tamayo</p>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                            <button class="button-on-white">Accept</button>
+                                                            <button class="button-on-white-danger">Reject</button>
+                                                    </div>
+                                            </div>     
+                                        </div>
+                                    </div>
+                            </div>
+                            <div class="tab-pane" id="client-req-tab">
+                                    <div class="pre-appointment-div   pre-scrollable">
+                                        <h1>SDFJSDFLJLKJ</h1>
+                                    </div>
+                            </div>
+                
+            </div>
         </div>
     </div>
 {% endblock %}

@@ -1502,3 +1502,58 @@ body.mobile-nav-active #mobile-nav-toggle {
 #noResults{
   margin: 21% 0 0 0;
 }
+
+.danger-button-mine{
+  color: #ff0000;
+    border: 3px solid #ff4d4d;
+    margin-top: 20px;
+}
+#myCases{
+  background: #0000002e;
+    border-radius: 20px 20px 0 0;
+    padding: 30px 20px 20px 20px;
+}
+#myCases h2{
+  color: #e6e6e6;
+    text-align: left;
+    margin-bottom: 0;
+}
+#myCases hr{
+  margin-top: 20px;
+  margin-bottom: 20px;
+  /* color: #5b5353; */
+  border: 0;
+  border-top: 1px solid #36b08a;
+}
+.myCases-contents{
+  background: white;
+    border-radius: 0 0 20px 20px;
+    padding: 20px 10px;
+  height: 450px;
+}
+.pre-scrollable{
+  max-height: 450px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+.button-on-white{
+  color: #35b28b;
+    border: 1px solid #36b08a;
+    background: none;
+    padding: 10px;
+    border-radius: 20px;
+}
+.button-on-white-danger{
+  color: #f3f3f3;
+    border: 1px solid #f48f8f;
+    background: #d24d4d;
+    padding: 10px;
+    border-radius: 20px;
+}
+.pa-notif-div{
+  background: white;
+    /* border-top-color: gray; */
+    /* border-radius: 10px; */
+    border: 1px solid #80808017;
+    padding: 15px 0 15px;
+}

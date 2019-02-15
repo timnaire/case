@@ -78,6 +78,22 @@ class Relationship(ndb.Model):
             list_of_clients = None
         
         return list_of_clients
+    @classmethod
+    def pa_unaccepted_request(cls, lawyer_id):
+        list_of_requests = []
+
+        if lawyer_id:
+            lawyer_key = ndb.Key('Lawyer',int(lawyer_id))
+            requests = cls.query(cls.lawyer == lawyer_key, cls.status == None).fetch()
+            if requests:
+                for req in requests:
+                    if req.status == None:
+                        list_of_requests.append(req.dict_client())
+        if not list_of_requests:
+            list_of_requests = None
+        
+        return list_of_requests
+            
 
     # @classmethod
     # def my_lawyers(cls, client_id):

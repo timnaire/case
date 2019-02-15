@@ -533,13 +533,18 @@ def find_lawyer():
     else:
         return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers)
 #dashboard route for lawyers
-@app.route('/lawyer/')
-@app.route('/lawyer/dashboard')
+@app.route('/lawyer/<int:lawyer_id>/dashboard')
 @login_required_lawyer
-def dashboard():
-    lawyer = Lawyer.get_by_id(int(session['lawyer']))
+def dashboard(lawyer_id=None):
 
-    return render_template('lawyer/lawyer-dashboard.html',title="Welcome to Dashboard",lawyer=session['lawyer'],results=lawyer.to_dict())
+    if lawyer_id:
+        relation = Relationship.pa_unaccepted_request(lawyer_id)
+    else:
+        return redirect(json_response({
+                'error' : True,
+                'message' : "Not Int"}))
+
+    return render_template('lawyer/lawyer-dashboard.html',title="Welcome to Dashboard",lawyer=session['lawyer'],results=relation)
 
 #dashboard route for client
 @app.route('/client/')
@@ -873,9 +878,9 @@ def edit_case(lawyer_id=None):
                     "message" : "Case was not updated!"})
 
 # mycase route for lawyers 
-@app.route('/lawyer/<int:lawyer_id>/mycase', methods=['GET','POST'])
-# @login_required_lawyer
+@app.route('/lawyer/<int:lawyer_id>/newcase', methods=['GET','POST'])
 def mycase(lawyer_id=None):
+    global available_practice
     if request.method == "POST":
         req_data = request.get_json(force=True)
         if 'case_title' in req_data:
@@ -923,26 +928,21 @@ def mycase(lawyer_id=None):
 
     clients = Relationship.my_clients(lawyer_id=lawyer_id)
 
-    return render_template('lawyer/lawyer-mycase.html',title="My Case",lawyer=session['lawyer'],cases=case_dict,clients=clients)
+    return render_template('lawyer/lawyer-createCase.html',title="My Case",lawyer=session['lawyer'],cases=case_dict,clients=clients,available_practice=available_practice)
 
 # route for lawyer listing all case for lawyer
-@app.route('/lawyer/<int:lawyer_id>/get-case',methods=['GET','POST'])
+@app.route('/lawyer/<int:lawyer_id>/mycases',methods=['GET','POST'])
 def getAllCase(lawyer_id=None):
+    global available_practice
     lawyer = Lawyer.get_by_id(int(lawyer_id))
     cases = Case.query(Case.lawyer == lawyer.key).order(-Case.created).fetch()
     if cases != None:
         case_dict = []
         for case in cases:
             case_dict.append(case.to_dict())
-        return json_response({
-            "error" : False,
-            "message" : `len(case_dict)`+" case(s) found.",
-            "cases" : case_dict})
     else:
-        return json_response({ 
-            "error" : True,
-            "message" : "No case found",
-            "cases" : "Empty"})
+        case_dict="Empty"
+    return render_template('lawyer/lawyer-mycases.html',lawyer=session['lawyer'],cases=case_dict,title="My Cases",available_practice=available_practice)
 
 # route for client listing all case for client
 @app.route('/client/<int:client_id>/get-case',methods=['GET','POST'])
@@ -1500,6 +1500,35 @@ def see_more(lawyer_email):
                     "message" : "No lawyer is selected"})
 
     return render_template('lawyer/lawyer-seemore.html',lawyer=session['lawyer'],title="Lawyer Details")
+
+@app.route('/lawyer/<int:lawyer_id>/deactivate')
+@login_required_lawyer
+def lawyer_deactivate(lawyer_id=None):
+    
+    if lawyer_id:
+        lawyer = Lawyer.get_by_id(int(lawyer_id))
+        if lawyer:
+            deactivated = Lawyer.save(id=lawyer_id,status="deactivated")
+            
+            if deactivated:
+
+                return render_template('login.html')
+            
+            else:
+                return json_response({
+                    "error" : True,
+                    "message" : "Lawyer not deactivated"})
+
+        else:
+            return json_response({
+                    "error" : True,
+                    "message" : "Lawyer not Recognized"})
+    else:
+        return json_response({
+                    "error" : True,
+                    "message" : "Lawyer Id not transferred"})
+
+
 
 # sign out route
 @app.route('/lawyer/signout')

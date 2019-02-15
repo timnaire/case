@@ -1,0 +1,107 @@
+{% extends 'empty_layout.html' %}
+
+{% block content %}
+    <!-- <div class="container">
+
+        <div class="form-group">
+            <select class="form-control" id="case">
+                <option selected="true" disabled="disabled">Select Case</option>
+                {% for case in cases %}
+                <option class="case" value="{{ case.case_title }}"> {{ case.case_title }} </option>>
+                {% endfor %}
+            </select>
+        </div>
+
+        <br />
+        
+        <form method="POST">
+            <input type="hidden" id="lawyer_id" value="{{ lawyer }}">
+
+            <div class="form-group">
+                <input type="text" id="add-case" class="form-control" placeholder="Case name">
+            </div>
+
+            <div class="form-group">
+                <select id="lawpractice" class="form-control" name="lawpractice">
+                    <option selected="true" disabled="disabled" >Select Client</option>
+                    {% if clients %}
+                    {% for client in clients %}
+                        <option value="{{ client.email }}" > {{client.first_name}} {{ client.last_name }}
+                    </option>
+                    {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <textarea id="case-description" class="form-control" rows="3" placeholder="Case Description"></textarea>
+            </div>
+            
+                <button class="btn btn-primary" id="btnAddCase" >Add Case</button>
+        </form>
+
+        <br />
+    </div> -->
+
+    <div class="container">
+        <div class="container">
+            <div id="myCases">
+                <div style="height: 50px;">
+                    <h2 style="float: left;">My Cases</h2>  
+                    <a href=""><button style="float:right;">New Case <small><span class="fa fa-plus"></span></small></button></a>
+                </div>
+            </div>
+            <div class="myCases-contents" class="list-group pre-scrollable" >
+                {% if cases %}
+                <a href="#" class="list-group-item list-group-item-action ">
+                    <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">List group item heading</h5>
+                    <small class="text-muted">3 days ago</small>
+                    </div>
+                    <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+                    <small class="text-muted">Donec id elit non mi porta.</small>
+                </a>
+                {% else %}
+                    NO CASES
+                {% endif %}
+            </div>
+            <!-- <div class="myCases-contents" id="createCase">
+                    
+                    
+                    <input type="hidden" id="lawyer_id" value="{{ lawyer }}">
+                    
+                    <div class="form-group">
+                        <input type="text" id="add-case" class="form-control" placeholder="Case name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <select id="lawpractice" class="form-control" name="lawpractice">
+                            <option selected="true" disabled="disabled" >Select Client</option>
+                                        {% if clients %}
+                                        {% for client in clients %}
+                                            <option value="{{ client.email }}" > {{client.first_name}} {{ client.last_name }}
+                                        </option>
+                                 {% endfor %}
+                             {% endif %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                            <select id="lawpractice" class="form-control" name="lawpractice">
+                                <option selected="true" disabled="disabled" >Select a Legal Issue</option>
+                                {% for key, value in available_practice.items()|sort %}
+                                    <option value="{{key}}" > {{value}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    
+                    <div class="form-group">
+                         <textarea id="case-description" class="form-control" rows="3" placeholder="Case Description"></textarea>
+                     </div>
+                                
+                    <button class="button-on-white" id="btnAddCase" >Add Case</button>
+                    
+            </div> -->
+        </div>
+    </div>
+{% endblock %}
