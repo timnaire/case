@@ -48,19 +48,34 @@
             <div id="myCases">
                 <div style="height: 50px;">
                     <h2 style="float: left;">My Cases</h2>  
-                    <a href=""><button style="float:right;">New Case <small><span class="fa fa-plus"></span></small></button></a>
+                    <a href="{{url_for('addcase',lawyer_id=lawyer)}}"><button style="float:right;">New Case <small><span class="fa fa-plus"></span></small></button></a>
                 </div>
             </div>
             <div class="myCases-contents" class="list-group pre-scrollable" >
+                <!-- <textarea name="" id="" cols="30" rows="10">{{cases}}</textarea> -->
                 {% if cases %}
-                <a href="#" class="list-group-item list-group-item-action ">
-                    <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">List group item heading</h5>
-                    <small class="text-muted">3 days ago</small>
-                    </div>
-                    <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-                    <small class="text-muted">Donec id elit non mi porta.</small>
-                </a>
+                    {% for case in cases %}
+                        <a href="#" class="list-group-item list-group-item-action ">
+                            <div class="row">
+                                <div class="col-sm-9" id="div-info-case">
+                                    <div class="d-flex w-100 justify-content-between">
+                                    <h2>{{case.case_title}}</h2>
+                                    <small class="text-muted">3 days ago</small>
+                                    </div>
+                                    <h5>{{case.client.first_name}} &nbsp; {{case.client.last_name}}</h5>
+                                    <p class="mb-1">{{case.case_description}}</p>
+                                    <small class="text-muted">This is the Case information division.</small>
+                                </div>
+                                <div class="col-sm-3">
+                                    {% if case.case_status == 'Case Open' %}
+                                        <span class="label label-success">Active Case</span>
+                                    {% else %}
+                                        <span class="label label-danger">Closed Case</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
                 {% else %}
                     NO CASES
                 {% endif %}

@@ -1,4 +1,4 @@
-{% extends 'empty_layout.html' %}
+{% extends 'empty_layout_2.html' %}
 
 {% block content %}
     <div class="container">
@@ -15,28 +15,47 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">Menu</div>
                     <div class="panel-body">
-                        <li class="list-group-item"><a data-toggle="tab" href="#pre-appoint-tab">Pre-Appointments</a></li>
+                        <li class="list-group-item active"><a data-toggle="tab" href="#pre-appoint-tab">Pre-Appointments</a></li>
                         <li class="list-group-item"><a data-toggle="tab" href="#client-req-tab">Client Requests</a></li>
                     </div>
                 </div>    
             </div>
             <div class="col-sm-9">
-                <textarea name="" id="" cols="30" rows="10">{{result}}</textarea>
                 <div class="tab-content" >
                             <div class="tab-pane active" id="pre-appoint-tab">
+
+                                <!-- <textarea name="" id="" cols="30" rows="10">{{relationship}}</textarea>                                 -->
                                     <div class="pre-appointment-div   pre-scrollable">
-                                        <div class="pa-notif-div">
+                                    {% if relationship %}
+                                        {% for person in relationship %}
+                                        <div class="pa-notif-div" id="{{person.client_id}}">
+                                            <input type="text" id="PA-request-client-id" value="{{person.client_id}}" hidden>
+                                            <input type="text" id="PA-request-lawyer-id" value="{{ lawyer }}" hidden>
+                                            <input type="text" id="PA-request-relation-id" value="{{person.relation_id}}" hidden>
+                                            
+                                           
                                             <div class="row">
-                                                    <div class="col-sm-8">
-                                                            <p>Diza, Tamayo</p>
+                                                    <div class="col-sm-8" class="pre-appoint-capsule">
+                                                            <div class="pre-appoint-capsule-img">
+                                                                    <img src="{{person.client.profile_pic}}">
+                                                            </div>
+                                                            <div class="pre-appoint-capsule-info">
+                                                                <span class="label label-info">Pre Appointment</span>
+                                                                <p>You recieved a pre appointment request from <strong>{{person.client.first_name}}&nbsp;{{person.client.last_name}}</strong></p>
+                                                            </div>
                                                     </div>
                                                     <div class="col-sm-4">
-                                                            <button class="button-on-white">Accept</button>
-                                                            <button class="button-on-white-danger">Reject</button>
+                                                            <button class="button-on-white" id="PA-client-accept">Accept</button>
+                                                            <button class="button-on-white-danger" id="PA-client-decline">Reject</button>
                                                     </div>
                                             </div>     
                                         </div>
+                                        {% endfor%}
+                                    {% else %}
+                                        <p>No Request Found</p>
+                                    {% endif %}
                                     </div>
+                                
                             </div>
                             <div class="tab-pane" id="client-req-tab">
                                     <div class="pre-appointment-div   pre-scrollable">

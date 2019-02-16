@@ -57,16 +57,22 @@ $(document).ready(function(){
     $('#btnAddCase').click(function(e){
         e.preventDefault();
         var id = $('#lawyer_id').val();
-        var case_name = $('#add-case').val();
+        var case_title = $('#add-case').val();
         var client_id = $('#client-id').val();
-        var case_description = $('#case-description').val()
+        var case_description = $('#case-description').val();
+        alert(client_id);
         sendInfo = { 
-            case_name : case_name,
+            case_title : case_title,
             client_id : client_id,
             case_description : case_description
         }
-        $.post("/lawyer/"+id+"/mycase", JSON.stringify(sendInfo) ,function(response){
-            console.log(response);
+        $.post("/lawyer/"+id+"/newcase", JSON.stringify(sendInfo) ,function(response){
+            if(response['error'] == false){
+                alert('Case has been added!');
+            }
+            else if(response['error'] == true){
+                alert('Creating case failed!');
+            }
         }, "json")
     });
 
@@ -236,7 +242,6 @@ $(document).ready(function(){
     $('#btnLawyerSignin').click(function(e){
         var email = $('#lawyer_email').val();
         var password = $('#lawyer_password').val();
-        
         sendInfo = {
             email : email,
             password : password
@@ -247,7 +252,7 @@ $(document).ready(function(){
             var m = response['message'];
             var email = response['email'];
             if(response['error'] == false){
-                
+                window.location.replace('/lawyer/'+response['lawyer']+'/dashboard');
             }
             else if(response['error'] == true){
                 window.location.replace('/lawyer/signin?err='+err+"&m="+m+"&email="+email)
@@ -293,6 +298,45 @@ $(document).ready(function(){
             }
         });
     });
+
+    $('#PA-client-accept').click(function(e){
+        e.preventDefault();
+        var client_id = $("#PA-request-client-id").val();
+        var lawyer_id = $('#PA-request-lawyer-id').val();
+        var relation_id = $('#PA-request-relation-id').val();
+        var status = "accepted";
+        alert(relation_id);
+        sendInfo = { lawyer_id : lawyer_id ,
+                     relation_id  : relation_id,
+                     status : status   }
+        $('#'+client_id).fadeOut();
+        $.post('/lawyer/'+client_id+'/pre-appoint-response', JSON.stringify(sendInfo), function(response){
+            if(response['error'] == false){
+                
+            }else if(response['error'] == true){
+                console.log(response);
+            }
+        });
+    })
+    $('#PA-client-decline').click(function(e){
+        e.preventDefault();
+        var client_id = $("#PA-request-client-id").val();
+        var lawyer_id = $('#PA-request-lawyer-id').val();
+        var relation_id = $('#PA-request-relation-id').val();
+        var status = "declined";
+        alert(relation_id);
+        sendInfo = { lawyer_id : lawyer_id ,
+                     relation_id  : relation_id,
+                     status : status   }
+        $('#'+client_id).fadeOut();
+        $.post('/lawyer/'+client_id+'/pre-appoint-response', JSON.stringify(sendInfo), function(response){
+            if(response['error'] == false){
+                
+            }else if(response['error'] == true){
+                console.log(response);
+            }
+        });
+    })
 
     $('#btnResetPassword').click(function(e){
         e.preventDefault();

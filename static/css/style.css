@@ -1530,6 +1530,8 @@ body.mobile-nav-active #mobile-nav-toggle {
     border-radius: 0 0 20px 20px;
     padding: 20px 10px;
   height: 450px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .pre-scrollable{
   max-height: 450px;
@@ -1556,4 +1558,42 @@ body.mobile-nav-active #mobile-nav-toggle {
     /* border-radius: 10px; */
     border: 1px solid #80808017;
     padding: 15px 0 15px;
+}
+
+.pre-appoint-capsule-info{
+  text-align: left;
+  margin: 0 0 0 100px;
+}
+.pre-appoint-capsule-info p{
+  margin: 4px 0 0 0;
+}
+.pre-appoint-capsule-img img{
+  float: left;
+  border-radius: 50%;
+  border-radius: 50%;
+  /* margin-top: 20px; */
+  object-fit: cover;
+  /* margin-bottom: 30px; */
+  width: 70px;
+  height: 70px;
+  border: 2px solid #2dc997;
+  margin: 0 0 0 20px;
+}
+
+.pre-appointment-div {
+  background: white;
+    height: 449px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+#div-info-case{
+  text-align: left;
+}
+
+#div-info-case h2{
+  color: gray;
+  margin: 0;
+  text-align: left;
+  border-bottom: 1px solid #36b08a17;
+  padding: 10px 0 10px 20px;
 }
