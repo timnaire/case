@@ -67,6 +67,10 @@ class Event(ndb.Model):
         data['event_location'] = self.event_location
         data['event_type'] = self.event_type
         data['event_date'] = self.event_date
+        
+        if self.event_owner:
+            evento = event_owner.get()
+            data['event_owner'] = evento.key.id()
 
         return data
 
@@ -84,6 +88,10 @@ class Event(ndb.Model):
         data['event_location'] = self.event_location
         data['event_type'] = self.event_type
         data['event_date'] = self.event_date
+
+        if self.event_owner:
+            evento = event_owner.get()
+            data['event_owner'] = evento.key.id()
 
         return data
         
@@ -106,5 +114,9 @@ class Event(ndb.Model):
         data['event_date'] = self.event_date
         data['event_time'] = self.event_time
         data['event_type'] = self.event_type
+
+        if self.event_owner:
+            evento = self.event_owner.get()
+            data['event_owner'] = evento.key.id()
         
         return data

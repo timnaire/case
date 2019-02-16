@@ -7,6 +7,7 @@ class UploadFile(ndb.Model):
     file_name = ndb.StringProperty()
     file_privacy = ndb.StringProperty()
     file_type= ndb.StringProperty()
+    uploaded_by = ndb.KeyProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
 
@@ -32,6 +33,10 @@ class UploadFile(ndb.Model):
             uploadfile.file_privacy = kwargs.get('file_privacy')
         if kwargs.get('file_type'):
             uploadfile.file_type = kwargs.get('file_type')
+        
+        if kwargs.get('uploaded_by'):
+            uploadfile.uploaded_by = kwargs.get('uploaded_by')
+            
 
         uploadfile.put()
         return uploadfile
@@ -89,12 +94,16 @@ class UploadFile(ndb.Model):
 
     def file_dict(self):
         data = {}
-
+        data["file_id"] = self.key.id()
         data["case_file"] = self.case_file
         data['file_name'] = self.file_name
         data['file_privacy'] = self.file_privacy
         data['file_type'] = self.file_type
-  
+
+        if self.uploaded_by:
+            uploadid = self.uploaded_by.get()
+            data['uploaded_by'] = uploadid.key.id()
+
         return data
         
     def to_dict(self):
@@ -109,4 +118,9 @@ class UploadFile(ndb.Model):
         data['case_file'] = self.case_file
         data['file_privacy'] = self.file_privacy
         data['file_type'] = self.file_type
+
+        if self.uploaded_by:
+            uploadid = self.uploaded_by.get()
+            data['uploaded_by'] = uploadid.key.id()
+            
         return data
