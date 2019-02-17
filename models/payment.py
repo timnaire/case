@@ -5,8 +5,9 @@ from models.client import Client
 class Payment(ndb.Model):
     lawyer = ndb.KeyProperty(kind=Lawyer)
     client = ndb.KeyProperty(kind=Client)
+    payment_id = ndb.StringProperty()
     payment_method = ndb.StringProperty()
-    payment_date = ndb.StringProperty()
+    payment_amount = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
 
@@ -29,10 +30,12 @@ class Payment(ndb.Model):
             client_key = ndb.Key('Client', int(client_id))
             payment.client = client_key 
         
+        if kwargs.get('payment_id'):
+            payment.payment_id = kwargs.get('payment_id')
         if kwargs.get('payment_method'):
             payment.payment_method = kwargs.get('payment_method')
-        if kwargs.get('payment_date'):
-            payment.payment_date = kwargs.get('payment_date')
+        if kwargs.get('payment_amount'):
+            payment.payment_amount = kwargs.get('payment_amount')
 
         payment.put()
         return payment
@@ -51,8 +54,9 @@ class Payment(ndb.Model):
 
     def to_dict(self):
         data = {}
+        data['payment_id'] = self.payment_id
         data['payment_method'] = self.payment_method
-        data['payment_date'] = self.payment_date
+        data['payment_amount'] = self.payment_amount
         data['created'] = self.created.isoformat() + 'Z'
         data['updated'] = self.updated.isoformat() + 'Z'
 
