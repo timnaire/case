@@ -931,7 +931,7 @@ def update_event_client(client_id=None):
                 "message" : "Please fill up all the fields and try again."})
 
 # route for lawyer event update
-@app.route('/lawyer/<int:lawyer_id>/add-event',methods=['GET','POST'])
+@app.route('/lawyer/<int:lawyer_id>/update-event',methods=['GET','POST'])
 def update_event_lawyer(lawyer_id=None):
     if request.method == "POST":
         req_data = request.get_json(force=True)
@@ -1208,7 +1208,26 @@ def getAllCase(lawyer_id=None):
 @app.route('/client/<int:client_id>/get-case',methods=['GET','POST'])
 def get_case_clients(client_id=None):
     client = Client.get_by_id(int(client_id))
-    cases = Case.query(Case.client == client.key).fetch()
+    cases = Case.query(Case.client == client.key).order(-Case.created).fetch()
+    if cases != None:
+        case_dict = []
+        for case in cases:
+            case_dict.append(case.to_dict())
+        return json_response({
+            "error" : False,
+            "message" : `len(case_dict)`+" case(s) found.",
+            "cases" : case_dict})
+    else:
+        return json_response({ 
+            "error" : True,
+            "message" : "No case found",
+            "cases" : "Empty"})
+
+# route for client listing all case for client
+@app.route('/lawyer/<int:lawyer_id>/get-case',methods=['GET','POST'])
+def get_case_lawyers(lawyer_id=None):
+    lawyer = Lawyer.get_by_id(int(lawyer_id))
+    cases = Case.query(Case.lawyer == lawyer.key).order(-Case.created).fetch()
     if cases != None:
         case_dict = []
         for case in cases:
