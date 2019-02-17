@@ -10,7 +10,7 @@
             <div class="hero-viewcase-container">                  
                     <div class="container">
                             <div id="viewcase-header">
-                             <h1>{{case[0].case_title}}</h1>
+                             <h1 class="wow fadeInDown">{{case[0].case_title}}</h1>
                             </div>
                             <div class="row">
                                 <div class="col-sm-6 " id="viewcase-lawyerPortrait">
@@ -43,16 +43,31 @@
 
                 <ul class="nav nav-tabs">
                         <li class="active"><a data-toggle="tab" href="#home">Homepage</a></li>
-                        <li><a data-toggle="tab" href="#email">Payment</a></li>
-                        <li><a data-toggle="tab" href="#password">Calendar</a></li>
-                        <li><a data-toggle="tab" href="#deactivateLawyer">Case Details</a></li>
+                        <li><a data-toggle="tab" href="#payment">Payment</a></li>
+                        <li><a data-toggle="tab" href="#documents">Documents</a></li>
+                        <li><a data-toggle="tab" href="#caseDetails">Case Details</a></li>
                         
                         {% if lawyer %}
                         <div style="float:right;">
-                           <a href="{{url_for('edit_case',case_id=case[0].case_id,client=client,lawyer_id=lawyer)}}"><button class="normal-button-mine">Edit Case &nbsp;<span class="glyphicon glyphicon-cog"></span></button>
+                           <a href="{{url_for('edit_case',case_id=case[0].case_id,client=client,lawyer_id=lawyer)}}"><button class="normal-button-mine">Edit Case &nbsp;<span class="glyphicon glyphicon-cog"></span></button></a>
                         </div>
                         {% endif %}
                 </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="home">
+                        <div id="vc-event-container" class="d-flex justify-content-center">
+                            <div class="form-group">
+                                <input type="text" placeholder="Enter Event Title" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <textarea class="form-control" name="" id="" cols="30" rows="10">asdfasdfasdfasdfasdfasdfasdfasdfadfs</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="documents">
+                        <h2>hello</h2>
+                    </div>
+                </div>
         </div>
       </section><!-- #about -->
 {% endblock %}

@@ -1188,6 +1188,7 @@ def addcase(lawyer_id=None):
 
     clients = Relationship.my_clients(lawyer_id=lawyer_id)
 
+
     return render_template('lawyer/lawyer-createCase.html',title="My Case",lawyer=session['lawyer'],cases=case_dict,clients=clients,available_practice=available_practice)
 
 # route for lawyer listing all case for lawyer
@@ -1515,6 +1516,8 @@ def lawyer_signup():
 
     if request.method == 'POST':
         req_data = request.get_json(force=True)
+
+        firm = None
         if 'first_name' in req_data:
             first_name = req_data['first_name']
         if 'last_name' in req_data:
@@ -1531,6 +1534,8 @@ def lawyer_signup():
             office = req_data['office']
         if 'firm' in req_data:
             firm = req_data['firm']
+        if 'sex' in req_data:
+            firm = req_data['sex']
         if 'law_practice' in req_data:
             law_practice = req_data['law_practice']
         if 'password' in req_data:
@@ -1539,7 +1544,7 @@ def lawyer_signup():
             confirm = req_data['confirm']
 
         #all fields required
-        if first_name and last_name and email and phone and rollno and cityOrMunicipality and office and law_practice and password and confirm:
+        if first_name and sex and last_name and email and phone and rollno and cityOrMunicipality and office and law_practice and password and confirm:
             #valid email address
             if is_email(email):
                 lawyer = Lawyer.check_email(email=email)

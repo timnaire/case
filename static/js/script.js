@@ -1,5 +1,7 @@
 $(document).ready(function(){
     var sendInfo = {}
+    // Initiate the wowjs
+  new WOW().init();
 
     $('#login-container-div').show(1000);
   $('#lawyer-signup-form').fadeIn(1000);
@@ -267,6 +269,7 @@ $(document).ready(function(){
         e.preventDefault();
         var first_name = $('#first_name').val().trim();
         var last_name = $('#last_name').val().trim();
+        var sex = $('#sex').val().trim();
         var email = $('#email').val().trim();
         var phone = $('#phone').val().trim();
         var cityOrMunicipality = $('#cityOrMunicipality').val().trim();
@@ -278,6 +281,7 @@ $(document).ready(function(){
         });
         
         sendInfo = {
+            sex : sex,
             first_name : first_name,
             last_name : last_name,
             email : email,

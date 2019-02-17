@@ -1,110 +1,153 @@
-{% extends 'empty_layout.html' %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Lawyer Signup</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="author" content="colorlib.com">
 
-{% block content %}
+		<!-- MATERIAL DESIGN ICONIC FONT -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='fonts/material-design-iconic-font.css') }}">
+		<!-- STYLE CSS -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/l-g.css') }}">
+	</head>
+	<body>
+		<div class="wrapper">
+            <form action="" id="wizard">
+        		<!-- SECTION 1 -->
+                <h2></h2>
+                <section>
+                    <div class="inner">
+						<div class="image-holder">
+							<img src="{{url_for('static',filename='img/lawyer-pic1.jpg')}}" class="reg-image" alt="">
+						</div>
+						<div class="form-content" >
+							<div class="form-header">
+								<h3>Registration</h3>
+							</div>
+							<p>Please fill with your details</p>
+							<div class="form-row">
+								<div class="form-holder">
+									<input type="text" id="first_name" placeholder="First Name" class="form-control" required>
+								</div>
+								<div class="form-holder">
+									<input type="text" id="last_name" placeholder="Last Name" class="form-control" required>
+								</div>
+							</div>
+							<div class="form-row">
+								<div class="form-holder">
+									<input type="text" id="email" placeholder="Your Email" class="form-control" required>
+								</div>
+								<div class="form-holder">
+									<input type="text" id="phone" placeholder="Phone Number" class="form-control" required>
+								</div>
+							</div>
+							<div class="form-row">
+								<div class="form-holder">
+									<input type="number" id='rollno' class="form-control" name="rollno" placeholder="Roll Number" required>
+								</div>
+								<div class="form-holder" id='sex' style="align-self: flex-end; transform: translateY(4px);">
+									<div class="checkbox-tick">
+										<label class="male">
+											<input type="radio" name="gender" value="male" checked> Male<br>
+											<span class="checkmark"></span>
+										</label>
+										<label class="female">
+											<input type="radio" name="gender" value="female"> Female<br>
+											<span class="checkmark"></span>
+										</label>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+                </section>
 
-<!-- error and success message info -->
+				<!-- SECTION 2 -->
+                <h2></h2>
+                <section>
+                    <div class="inner">
+						<div class="image-holder">
+							<img src="{{url_for('static',filename='img/lawyer-pic2.jpg')}}" class="reg-image" alt="">
+						</div>
+						<div class="form-content">
+							<div class="form-header">
+								<h3>Registration</h3>
+							</div>
+							<p>Please fill with additional info</p>
+							<div class="form-row">
+								<div class="form-holder w-100">
+									<input type="text" id="office" placeholder="Office Address" class="form-control">
+								</div>
+							</div>
+							<div class="form-row">
+								<div class="form-holder">
+									<input type="text" id="cityOrMunicipality" placeholder="City" class="form-control">
+								</div>
+								<div class="form-holder">
+									<input type="text" id='firm' placeholder="Firm (Optional)" class="form-control">
+								</div>
+							</div>
+                            <div class="form-row">
+                                    <div class="form-holder">
+                                        <input type="password" id="the-password" placeholder="Password" class="form-control">
+                                    </div>
+                                    <div class="form-holder">
+                                        <input type="password" id='confirm-password' placeholder="Confirm Password" class="form-control">
+                                    </div>
+                                </div>
+						</div>
+					</div>
+                </section>
 
-    <!-- <div id="signup-container"> 
-        <div id="lawyerphoto">
-            <img src="" alt="">
-        </div>
-        <div id="lawyer-signup-form">
-            <form method="POST" id="lawyer-signup-form-form" data-toggle="validator" role="form">
-                <h4>A Lawyer?</h4>
-                <p>Getting to know you.</p>
-                <div class="form-group">
-                    <label for="first_name" class="control-label">First Name</label>
-                    <input type="text" id='first_name' class="form-control" name="first_name" placeholder="First name" />     
-                </div>
-                <div class="form-group">
-                    <label for="last_name" class="control-label">Last Name</label>
-                    <input type="text" id='last_name' class="form-control" name="last_name" placeholder="Last name" />
-                </div>
-                <div class="form-group">
-                    <input type="email" id='email' class="form-control" name="email" placeholder="Email" />                            
-                </div>
-                <div class="form-group">
-                    <input type="text" id='phone' class="form-control" name="phone" placeholder="Phone" maxlength="11"/>
-                </div>
-                <div class="form-group">
-                    <input type="text" id='cityOrMunicipality' class="form-control" name="cityOrMunicipality" placeholder="City Or Municipality" />
-                </div>
-                <div class="form-group">
-                    <input type="text" id='office' class="form-control" name="office" placeholder="Office Address" />
-                </div>
-                <div class="checkbox">
-                    {% for key, value in law_practice.items() | sort %}
-                    <label>
-                        <input type="checkbox" class="practice" value="{{ key }}"> {{ value }}
-                    </label>
-                    {% endfor %}
-                </div>
-                <button id='btnLawyerSignup' class="btn btn-primary btn-block">Sign Up</button>
-            </div>
-        </form>
-    </div> -->
-    <div id="lawyer-signup-form">
-        <form method="POST" data-toggle="validator" role="form">
-            <div id="msform">
-                {% if request.args.get('err') %}
-                <div class="alert alert-danger">
-                    {{ request.args.get('m') }}
-                </div>
-                {% elif request.args.get('succ') %}
-                <div class="alert alert-success">
-                    {{ request.args.get('m') }}
-                </div>
-                {% endif %}
-                <!-- progressbar -->
-                <ul id="progressbar">
-                <li class="active">Basic Information</li>
-                <li>Contact Details</li>
-                <li>Law Practice</li>
-                </ul>
-                <!-- fieldsets -->
-                <fieldset>
-                <h2 class="fs-title">Personal Details</h2>
-                <h3 class="fs-subtitle">Step 1</h3>
-                <input type="text" id='first_name' class="form-control" name="first_name" placeholder="First name" />
-                <input type="text" id='last_name' class="form-control" name="last_name" placeholder="Last name" />
-                <div class="form-group">
-                <input type="email" id='email' class="form-control" name="email" placeholder="Email" data-error="Email is invalid."/> 
-                </div>   
-                <input type="text" id='phone' class="form-control" name="phone" placeholder="Phone" maxlength="11"/>   
-                <input type="text" id='rollno' class="form-control" name="rollno" placeholder="Roll Number" />
-                <input type="button" name="next" class="next action-button" value="Next" />
-                <br><br> <a href="{{url_for('lawyer_signin')}}" >Already have an account?</a>
-                </fieldset>
-                <fieldset>
-                <h2 class="fs-title">Contact</h2>
-                <h3 class="fs-subtitle">Step 2</h3>
-                <input type="text" id='cityOrMunicipality' class="form-control" name="cityOrMunicipality" placeholder="City Or Municipality" />
-                <input type="text" id='office' class="form-control" name="office" placeholder="Office Address" />
-                <input type="text" id='firm' class="form-control" name="firm" placeholder="Firm name (Optional)" />
-                <input type="password" id='the-password' class="form-control" name="password" placeholder="Password" />
-                <input type="password" id='confirm-password' class="form-control" name="confirm-password" placeholder="Confirm Password" />
-                <input type="button" name="previous" class="previous action-button" value="Previous" />
-                <input type="button" name="next" class="next action-button" value="Next" />
-                </fieldset>
-                <fieldset>
-                <h2 class="fs-title">Law Practice</h2>
-                <h3 class="fs-subtitle">We will never sell it</h3>
-                <div class="checkbox">
-                        {% for key, value in law_practice.items() | sort %}
-                        <div class="checkbox">
-                            <label>                            
-                                <input  type="checkbox" class="practice" value="{{ key }}"> {{ value }}
-                            </label>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    
-                <input type="button" name="previous" class="previous action-button" value="Previous" />
-                <input type="submit" id="btnLawyerSignup" name="submit" class="submit action-button" value="Submit" />               
-                </fieldset>                
-            </div>
-            
-        </form>
+                <!-- SECTION 3 -->
+                <h2></h2>
+                <section>
+                    <div class="inner">
+						<div class="image-holder">
+							<img src="{{url_for('static',filename='img/lawyer-pic3.jpg')}}" class="reg-image" alt="">
+						</div>
+						<div class="form-content">
+							<div class="form-header">
+								<h3>Registration</h3>
+							</div>
+							<p>Select your law practice!</p>
+							<div class="form-row">
+								<div class="form-holder w-100">
+                                        <div class="checkbox">
+                                                {% for key, value in law_practice.items() | sort %}
+                                                <div class="checkbox">
+                                                    <label>                            
+                                                        <input  type="checkbox" class="practice" value="{{ key }}"> {{ value }}
+                                                    </label>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+								</div>
+							</div>
+							<div class="checkbox-circle mt-24">
+								<label>
+									<input type="checkbox" checked>  Please accept <a href="#">terms and conditions ?</a>
+									<span class="checkmark"></span>
+								</label>
+							</div>
+						</div>
+					</div>
+                </section>
+            </form>
+		</div>
+
+		<!-- JQUERY -->
+		<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+
+        <!-- JQUERY STEP -->
+        <script src="{{ url_for('static', filename='js/jquery.steps.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/lawyer-registration.js') }}"></script>
         
-    </div>
-{% endblock %}
+		<!-- Template created and distributed by Colorlib -->
+</body>
+</html>
+
+
+
