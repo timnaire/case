@@ -22,6 +22,9 @@ class Subscription(ndb.Model):
             payment_key = ndb.Key('Payment',int(payment_id))
             subscription.payment = payment_key
 
+        if kwargs.get('status'):
+            payment.status = kwargs.get('status')
+
         subscription.put()
         return subscription
 

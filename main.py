@@ -748,28 +748,6 @@ def public_documents(lawyer_id=None):
                 "error" : True,
                 "message" : "No files"})
 
-# route for lawyer who subscribe
-@app.route('/lawyer/<int:lawyer_id>/subscribe',methods=["POST"])
-def lawyer_subscribe(lawyer_id=None):
-    if request.method == "POST":
-        req_data = request.get_json(force=True)
-        if "payment_method" in req_data:
-            payment_method = req_data['payment_method']
-        if "payment_date" in req_data:
-            payment_date = req_data['payment_date']
-        
-        payment = Payment.save(lawyer=lawyer_id,payment_method=payment_method,payment_date=payment_date)
-        if payment:
-            subscribe = Subscription.save(payment=payment.key.id)
-            if subscribe:
-                return json_response({
-                    "error" : False,
-                    "message" : "Thank you for subscribing ! You can now have unlimited number of cases !"})
-            else:
-                return json_response({
-                    "error" : True,
-                    "message" : "There was an error while subscribing, please try again."})
-
 # route for client event create
 @app.route('/client/<int:client_id>/add-event',methods=['GET','POST'])
 def add_event_client(client_id=None):
@@ -1260,6 +1238,57 @@ def deleteCase(lawyer_id=None):
             return json_response({
                 "error": True,
                 "message" : "Case was not deleted"})
+
+# route for mobile client payment ~~~~~~~
+@app.route('/client/<int:client_id>/payment')
+def client_payment(client_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        # payment id receive after paying using paypal, consider it as receipt
+        if 'payment_id' in req_data:
+            payment_id = req_data['payment_id']
+        if 'payment_method' in req_data:
+            payment_method = req_data['payment_method']
+        if 'payment_amount' in req_data:
+            payment_amount = req_data['payment_amount']
+
+        if payment_id and payment_method and payment_amount:
+            payment = Payment.save(client=client_id,payment_id=payment_id,payment_method=payment_method,payment_amount=payment_amount)
+            if payment:
+                return json_response({
+                    "error" : False,
+                    "message" : "Payment Success!"})
+            else:
+                return json_response({
+                    "error" : True,
+                    "message" : "Unsuccessful payment, please try again."})
+
+# route for mobile lawyer subscription ~~~~~~~
+@app.route('/lawyer/<int:lawyer_id>/subscribe')
+def lawyer_subscribe(lawyer_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        # payment id receive after paying using paypal, consider it as receipt
+        if 'payment_id' in req_data:
+            payment_id = req_data['payment_id']
+        if 'payment_method' in req_data:
+            payment_method = req_data['payment_method']
+        if 'payment_amount' in req_data:
+            payment_amount = req_data['payment_amount']
+
+        if payment_id and payment_method and payment_amount:
+            payment = Payment.save(lawyer=lawyer_id,payment_id=payment_id,payment_method=payment_method,payment_amount=payment_amount)
+            if payment:
+                subscribe = Subscription.save(payment=payment_id,status="subscribe")
+                if subscribe:
+                    return json_response({
+                        "error" : False,
+                        "message" : "Thank you for subscribing"})
+                else:
+                    return json_response({
+                        "error" : True,
+                        "message" : "Subscription failed, please try again."})
+
     
 # profile picture route
 @app.route('/lawyer/<int:lawyer_id>/account-setting/profile-picture', methods=['POST'])
