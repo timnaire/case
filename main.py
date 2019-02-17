@@ -402,7 +402,7 @@ def pre_accepted(client_id=None):
         client = Client.get_by_id(int(client_id))
         
         # if lawyer accepts the pre appointment, send notification to the client mobile app.
-        if status == "accepted":
+        if status == "Accepted":
             relation = Relationship.save(id=relation_id,lawyer=lawyer_id,client=client_id,status=status)
             if relation:
                 json_data = {
@@ -553,6 +553,29 @@ def dashboard(lawyer_id=None):
 @login_required_client
 def dashboard_client():
     return render_template('home.html',title="Client Login",client=session['client'],law_practice=available_practice)
+
+# route for lawyer add file
+@app.route('/lawyer/view-case',methods=['GET','POST'])
+def viewCase(lawyer_id=None,client_id=None):
+        
+    client_id = request.args.get('client_id')
+    case_id = request.args.get('case_id')
+    lawyer_id = request.args.get('lawyer_id')
+
+    case = Case.get_by_id(int(case_id))
+    case_dict = []
+    if case:
+        case_dict.append(case.to_dict())
+
+    if session.get('client') is not None:
+        return render_template('case/lawyer-viewCase.html',title="View Case", case_id=case_id, case= case_dict,client=session['client'])
+    elif session.get('lawyer'):
+        return render_template('case/lawyer-viewCase.html',title="View Case", case_id=case_id, case= case_dict,lawyer=session['lawyer'])
+    else:
+        return json_response({
+                "error" : True,
+                "message" : "Not Signed in"})
+
 
 # route for lawyer add file
 @app.route('/lawyer/<int:lawyer_id>/add-file',methods=['GET','POST'])
@@ -1086,29 +1109,34 @@ def save_client_token(client_id=None):
             return json_response({"error":True,"message":"FCM Token was not saved."})
 
 # edit case route for lawyers 
-# @app.route('/lawyer/<int:lawyer_id>/edit-case', methods=['GET','POST'])
-# def edit_case(lawyer_id=None):
-#     if request.method == "POST":
-#         req_data = request.get_json(force=True)
-#         if 'case_id' in req_data:
-#             case_id = req_data['case_id']
-#         if 'case_title' in req_data:
-#             case_title = req_data['case_title']
-#         if 'case_description' in req_data:
-#             case_description = req_data['case_description']
-#         if 'case_status' in req_data:
-#             case_status = req_data['case_status']
+@app.route('/lawyer/<int:lawyer_id>/edit-case', methods=['GET','POST'])
+def edit_case(lawyer_id=None):
+    case_id=request.args.get('case_id')
+    if request.method == "POST":
+        req_data = request.get_json(force=True)        
+        if 'case_id' in req_data:
+            case_id = req_data['case_id']
+        if 'case_title' in req_data:
+            case_title = req_data['case_title']
+        if 'case_description' in req_data:
+            case_description = req_data['case_description']
+        if 'case_status' in req_data:
+            case_status = req_data['case_status']
         
-#         if case_title and case_description:
-#             case = Case.save(id=case_id,case_title=case_title,case_description=case_description,case_status=case_status)
-#             if case:
-#                 return json_response({
-#                     "error" : False,
-#                     "message" : "Case updated!"})
-#             else:
-#                 return json_response({
-#                     "error" : True,
-#                     "message" : "Case was not updated!"})
+        if case_title and case_description:
+            case = Case.save(id=case_id,case_title=case_title,case_description=case_description,case_status=case_status)
+            if case:
+                return json_response({
+                    "error" : False,
+                    "message" : "Case updated!"})
+            else:
+                return json_response({
+                    "error" : True,
+                    "message" : "Case was not updated!"})
+
+    return render_template('lawyer/lawyer-editCase.html',lawyer=session['lawyer'],case_id=case_id)
+
+   
 
 # mycase route for lawyers 
 @app.route('/lawyer/<int:lawyer_id>/newcase', methods=['GET','POST'])
@@ -1185,15 +1213,14 @@ def get_case_clients(client_id=None):
         case_dict = []
         for case in cases:
             case_dict.append(case.to_dict())
-        return json_response({
-            "error" : False,
-            "message" : `len(case_dict)`+" case(s) found.",
-            "cases" : case_dict})
+        return render_template('lawyer/lawyer-mycases.html',client=session['client'],cases=case_dict,title="My Cases",available_practice=available_practice)
     else:
         return json_response({ 
             "error" : True,
             "message" : "No case found",
             "cases" : "Empty"})
+    
+    return render_template('lawyer/lawyer-mycases.html',client=session['client'],cases=case_dict,title="My Cases")
 
 # route for lawyer deleting case 
 @app.route('/lawyer/<int:lawyer_id>/delete-case',methods=['POST'])

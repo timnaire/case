@@ -1,64 +1,58 @@
-{% extends 'empty_layout.html' %}
+{% extends 'layout-view.html' %}
 
 {% block content %}
 
-    <div class="container">
-        <div class="container">
-            <div id="myCases">
-                <div style="height: 50px;">
-                    <h2 style="float: left;">Create New Case</h2>  
-                </div>
-            </div>
-            <!-- <div class="myCases-contents" class="list-group pre-scrollable">
-                {% if cases %}
-                <a href="#" class="list-group-item list-group-item-action ">
-                    <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">List group item heading</h5>
-                    <small class="text-muted">3 days ago</small>
-                    </div>
-                    <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-                    <small class="text-muted">Donec id elit non mi porta.</small>
-                </a>
-                {% else %}
-                    NO CASES
-                {% endif %}
-            </div> -->
-            <div class="myCases-contents" id="createCase">
-                    
-                    <!-- <textarea name="" id="" cols="30" rows="10">{{clients}}</textarea> -->
-                    <input type="hidden" id="lawyer_id" value="{{ lawyer }}">
-                    
-                    <div class="form-group">
-                        <input type="text" id="add-case" class="form-control" placeholder="Enter Case Name">
-                    </div>
-                    <div class="form-group">
-                        <select id="client-id" class="form-control" name="lawpractice">
-                            <option selected="true" disabled="disabled" >Select Client</option>
-                                {% if clients %}
-                                        {% for person in clients %}
-                                            <option value="{{ person.client_id }}" > {{person.client.first_name}} {{ person.client.last_name }}
-                                        </option>
-                                 {% endfor %}
-                             {% endif %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                            <select id="lawpractice" class="form-control" name="lawpractice">
-                                <option selected="true" disabled="disabled" >Select a Legal Issue</option>
-                                {% for key, value in available_practice.items()|sort %}
-                                    <option value="{{key}}" > {{value}}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    
-                    <div class="form-group">
-                         <textarea id="case-description" class="form-control" rows="3" placeholder="Case Description"></textarea>
-                     </div>
-                                
-                    <button class="button-on-white" id="btnAddCase" >Add Case</button>
-                    
-            </div>
+    
+
+
+
+    <section id="hero-viewcase">
+            <div class="hero-viewcase-container">                  
+                    <div class="container">
+                            <div id="viewcase-header">
+                             <h1>{{case[0].case_title}}</h1>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6 " id="viewcase-lawyerPortrait">
+                                    
+                                    <img src="{{case[0].lawyer.profile_pic}}" alt="" class="wow fadeInLeft">
+                                    <h2 class="wow fadeInLeft">Atty. {{case[0].lawyer.first_name}} &nbsp;&nbsp;{{case[0].lawyer.last_name}}</h2>
+                                    <h5  class="wow fadeInLeft">Lawyer</h5>
+                                </div>
+                                <div class="col-sm-6 " id="viewcase-clientPortrait">
+                                        <img src="{{case[0].client.profile_pic}}" class="wow fadeInRight" alt="">
+                                    <h2 class="wow fadeInRight"data-wow-delay=".10s">{{case[0].client.first_name}} &nbsp;&nbsp;{{case[0].client.last_name}}</h2>
+                                    <h5  class="wow fadeInRight">Client</h5>
+                                </div>
+                            </div>
+                         </div> 
         </div>
-    </div>
+    </section>
+
+    <!--==========================
+  About Us Section
+============================-->
+<section id="about-viewcase">
+        <div class="container">
+            <!-- <input type="text" id="vc-client_id" value="{{client}}" hidden />
+            <input type="text" id="vc-lawyer_id" value="{{lawyer}}" hidden />
+            <input type="text" id="vc-case_id" value="{{case[0].case_id}}" hidden />
+            <input type="text" id="vc-case_title" value="{{case[0].case_title}}" hidden />
+            <input type="text" id="vc-case_desc" value="{{case[0].case_description}}" hidden />
+            <input type="text" id="vc-case_stat" value="{{case[0].case_status}}" hidden /> -->
+
+                <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#home">Homepage</a></li>
+                        <li><a data-toggle="tab" href="#email">Payment</a></li>
+                        <li><a data-toggle="tab" href="#password">Calendar</a></li>
+                        <li><a data-toggle="tab" href="#deactivateLawyer">Case Details</a></li>
+                        
+                        {% if lawyer %}
+                        <div style="float:right;">
+                           <a href="{{url_for('edit_case',case_id=case[0].case_id,client=client,lawyer_id=lawyer)}}"><button class="normal-button-mine">Edit Case &nbsp;<span class="glyphicon glyphicon-cog"></span></button>
+                        </div>
+                        {% endif %}
+                </ul>
+        </div>
+      </section><!-- #about -->
 {% endblock %}

@@ -69,7 +69,7 @@ class Relationship(ndb.Model):
         if lawyer_id:
             lawyer_key = ndb.Key('Lawyer',int(lawyer_id))
             # and status="accepted"
-            clients = cls.query(cls.lawyer == lawyer_key , cls.status == "accepted").fetch()
+            clients = cls.query(cls.lawyer == lawyer_key , cls.status == "Accepted").fetch()
             if clients:
                 for client in clients:
                     list_of_clients.append(client.dict_client())

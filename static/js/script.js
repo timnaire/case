@@ -304,7 +304,7 @@ $(document).ready(function(){
         var client_id = $("#PA-request-client-id").val();
         var lawyer_id = $('#PA-request-lawyer-id').val();
         var relation_id = $('#PA-request-relation-id').val();
-        var status = "accepted";
+        var status = "Accepted";
         alert(relation_id);
         sendInfo = { lawyer_id : lawyer_id ,
                      relation_id  : relation_id,
@@ -413,6 +413,29 @@ $(document).ready(function(){
             console.log(response['error'])
         })
     });
+    $('#btnEditCase').click(function(e){
+        e.preventDefault();
+        var lawyer_id = $('#lawyer_id').val();
+        var case_title=$("#case-title").val().trim();
+        var case_id=$("#case_id").val();
+        var case_status=$('#status').val();
+        var case_description=$('#case-description').val().trim();
+        alert(lawyer_id);
+        sendInfo = {
+            case_title : case_title,
+            case_id : case_id,
+            case_status : case_status,
+            case_description : case_description
+        }
+        alert(sendInfo['case_title']);
+        $.post("/lawyer/"+lawyer_id+"/edit-case", JSON.stringify(sendInfo) ,function(response){
+            if(response['error'] == false){
+                alert('Case Updated');
+            }else if(response['error'] == true){
+                alert('Case failed to Update');
+            }
+        })
+    });
 
     $('#btnClientSaveInfo').click(function(e){
         e.preventDefault();
@@ -443,23 +466,24 @@ $(document).ready(function(){
         var id = $("#seeLawyerId").val();
         var client = $('#clientCheck').val();
         
-        alert(id);
 
         sendInfo = { 
             id : id
         }
-
-
-        $.post("/lawyer/"+client+"/pre-appoint", JSON.stringify(sendInfo) ,function(response){
-            
-            if(response['error'] == false){
-                alert('Appointment Requeset Sent');
-            }
-            else if(response['error'] == true){
-                console.log(response);
-            }                
-        }, "json")
-
+        if(client){
+            $.post("/lawyer/"+client+"/pre-appoint", JSON.stringify(sendInfo) ,function(response){
+                
+                if(response['error'] == false){
+                    alert('Appointment Requeset Sent');
+                }
+                else if(response['error'] == true){
+                    console.log(response);
+                }                
+            }, "json")
+        }
+        else{
+            window.location.replace('/client/signin');
+        }
       });
     // if(image){
         //     getBase64(image).then(

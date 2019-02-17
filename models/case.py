@@ -94,7 +94,22 @@ class Case(ndb.Model):
             list_clients = None
         
         return list_clients
-    
+
+    # @classmethod
+    # def view_case(cls, lawyer_id , client_id, case_id):
+    #     case = []
+
+    #     if lawyer_id and client_id:
+    #         lawyer_key = ndb.Key('Lawyer',int(lawyer_id))
+            
+    #         client_key = ndb.Key('Client',int(client_id))
+            
+
+    #     else:
+    #         case = None
+
+    #     return case
+
     @classmethod
     def clients_lawyer(cls, *args, **kwargs):
         list_lawyer = []
