@@ -15,6 +15,7 @@ from models.relationship import Relationship
 from models.notification import Notification
 from models.upload_file import UploadFile
 from models.payment import Payment
+from models.feedback import Feedback
 from models.subscription import Subscription
 from decorators import login_required_lawyer,login_required_client
 from functions import json_response, is_email, save_to_gcs
@@ -1360,7 +1361,55 @@ def lawyer_subscribe(lawyer_id=None):
             return json_response({
                 "error" : True,
                 "message" : "Unsuccessful payment, please try again."})
+
+# save client's feedback to lawyer
+@app.route('/client/<int:client_id>/lawyer/feedback')
+def save_feedback(client_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'lawyer_id' in req_data:
+            lawyer_id = req_data['lawyer_id']
+        if 'rating' in req_data:
+            rating = req_data['rating']
+        if 'feedback' in req_data:
+            feedback = req_data['feedback']
         
+        feedback = Feedback.save(lawyer=lawyer_id,client=client_id,rating=rating,feedback=feedback)
+        if feedback:
+            return json_response({
+                "error" : False,
+                "message" : "Feedback saved!"})
+        else:
+            return json_response({
+                "error" : True,
+                "message" : "Feedback was not saved."})
+
+# get all feedback info
+@app.route('/lawyer/total-feedback')
+def feedback_info(client_id=None):
+    counter = 0
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'lawyer_id' in req_data:
+            lawyer_id = req_data['lawyer_id']
+        
+        lawyer = Lawyer.get_by_id(int(lawyer_id))
+        fb_dict = []
+        feedbacks = Feedback.query(Feedback.lawyer == lawyer.key).order(-Feedback.created).fetch()
+        if feedbacks:
+            for f in feedbacks:
+                fb_dict.append(f.to_dict())
+                counter = counter + 1
+        
+            return json_response({
+                "error" : False,
+                "message" : "list of feedback",
+                "feedback" : fb_dict,
+                "total" : counter})
+        else:
+            return json_response({
+                "error" : False,
+                "message" : "no feedback found"})
     
 # profile picture route
 @app.route('/lawyer/<int:lawyer_id>/account-setting/profile-picture', methods=['POST'])

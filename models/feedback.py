@@ -5,7 +5,7 @@ from models.client import Client
 class Feedback(ndb.Model):
     lawyer = ndb.KeyProperty(kind=Lawyer)
     client = ndb.KeyProperty(kind=Client)
-    rate = ndb.StringProperty()
+    rating = ndb.StringProperty()
     feedback = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
@@ -29,8 +29,8 @@ class Feedback(ndb.Model):
             client_key = ndb.Key('Client',int(client_id))
             feedback.client = client_key
 
-        if kwargs.get('rate'):
-            feedback.rate = kwargs.get('rate')
+        if kwargs.get('rating'):
+            feedback.rating = kwargs.get('rating')
         if kwargs.get('feedback'):
             feedback.feedback = kwargs.get('feedback')
 
