@@ -1151,7 +1151,7 @@ def addcase(lawyer_id=None):
         # payment = Payment.lawyer_subscribed(lawyer_id=lawyer_id)
         mycases = Case.my_case(lawyer_id=lawyer_id)
         lawyer = Lawyer.get_by_id(int(lawyer_id))
-        if mycases > lawyer.limit_case:
+        if mycases > int(lawyer.limit_case):
             return json_response({
                 "error":True,
                 "message": "You already reached your limit as a free user, to add more case please Subscribe!"})
@@ -1620,7 +1620,7 @@ def lawyer_signup():
         if 'firm' in req_data:
             firm = req_data['firm']
         if 'sex' in req_data:
-            firm = req_data['sex']
+            sex = req_data['sex']
         if 'law_practice' in req_data:
             law_practice = req_data['law_practice']
         if 'password' in req_data:
@@ -1638,7 +1638,7 @@ def lawyer_signup():
                         if get_rollno(str(rollno)):
                             roll_exist = Lawyer.rollno_exist(rollno=rollno)
                             if not roll_exist:
-                                lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,rollno=rollno,cityOrMunicipality=cityOrMunicipality,office=office,firm=firm,password=password,status="activated",limit_case="5")
+                                lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,rollno=rollno,sex=sex,cityOrMunicipality=cityOrMunicipality,office=office,firm=firm,password=password,status="activated",limit_case="5")
                                 if lawyer:
                                     # pract as in practice
                                     for pract in law_practice:
