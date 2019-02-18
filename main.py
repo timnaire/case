@@ -804,8 +804,7 @@ def add_event_client(client_id=None):
                     'body': event_details
                 },
                 "data":{
-                    'client_id': client.key.id(),
-                    'relation_id' : relation_id
+                    'client_id': client.key.id()
                 }
             }
             headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
@@ -862,8 +861,7 @@ def add_event_lawyer(lawyer_id=None):
                     'body': event_details
                 },
                 "data":{
-                    'lawyer_id': lawyer.key.id(),
-                    'relation_id' : relation_id
+                    'lawyer_id': lawyer.key.id()
                 }
             }
             headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
@@ -883,7 +881,7 @@ def add_event_lawyer(lawyer_id=None):
                 "error" : True,
                 "message" : "Please fill up all the fields and try again."})
 
-# route for lawyer event create
+# route for client event update
 @app.route('/client/<int:client_id>/update-event',methods=['GET','POST'])
 def update_event_client(client_id=None):
     if request.method == "POST":
@@ -971,7 +969,7 @@ def update_event_lawyer(lawyer_id=None):
                 "error" : True,
                 "message" : "Please fill up all the fields and try again."})
 
-# route for lawyer event create
+# route for lawyer event update
 @app.route('/edit-event',methods=['GET','POST'])
 def edit_event():
     if request.method == "POST":
