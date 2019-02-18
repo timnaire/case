@@ -30,7 +30,11 @@ class Subscription(ndb.Model):
 
     def to_dict(self):
         data = {}
-
+        data['payment'] = None
+        if self.payment:
+            payment = self.payment.get()
+            data['payment'] = payment.to_dict()
+            
         data['created'] = self.created.isoformat() + 'Z'
         data['updated'] = self.updated.isoformat() + 'Z'
 

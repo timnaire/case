@@ -68,6 +68,7 @@ def client_signin():
                     "last_name" : client.last_name,
                     "email" : client.email,
                     "phone" : client.phone,
+                    "sex" : client.sex,
                     "address" : client.address,
                     "profile_pic" : client.profile_pic})
             else:
@@ -371,10 +372,9 @@ def lawyer_clicked(client_id=None):
         requests.post(
             'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
         )
-        event = Event.save(lawyer=lawyer_id,client=client_id,event_type="Pre-Appointment")
         msg = client.first_name + " " + client.last_name + " sends Pre-Appointment request."
         notification = Notification.save(notif_to=lawyer.key,notif_from=client.key,msg=msg,sent="1",received="0")
-        if event:
+        if notification:
             return json_response({
                 "error" : False,
                 "message" : "You have now set a pre appointment with "+lawyer.first_name+" "+lawyer.last_name,
@@ -435,7 +435,7 @@ def pre_accepted(client_id=None):
                         'body': lawyer.first_name + ' ' + lawyer.last_name + ' declined your Pre-Appointment request.'
                     },
                     "data":{
-                        'lawyer_id': lawyer_id.key.id(),
+                        'lawyer_id': lawyer.key.id(),
                         'relation_id' : relation_id
                     }
                 }
@@ -756,6 +756,25 @@ def public_documents(lawyer_id=None):
                 "error" : True,
                 "message" : "No files"})
 
+# route for client api getting the public documents
+@app.route('/client/<int:client_id>/list-public-documents',methods=["POST"])
+def public_documents_clients(client_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if "case" in req_data:
+            case = req_data['case']
+        
+        files = UploadFile.get_public_docs(case=case)
+        if files:
+            return json_response({
+                "error" : False,
+                "message" : `len(files)` + " files",
+                "list_files" : files})
+        else:
+            return json_response({
+                "error" : True,
+                "message" : "No files"})
+
 # route for client event create
 @app.route('/client/<int:client_id>/add-event',methods=['GET','POST'])
 def add_event_client(client_id=None):
@@ -870,7 +889,7 @@ def add_event_lawyer(lawyer_id=None):
                 "error" : True,
                 "message" : "Please fill up all the fields and try again."})
 
-# route for lawyer event create
+# route for client event update
 @app.route('/client/<int:client_id>/update-event',methods=['GET','POST'])
 def update_event_client(client_id=None):
     if request.method == "POST":
@@ -958,7 +977,7 @@ def update_event_lawyer(lawyer_id=None):
                 "error" : True,
                 "message" : "Please fill up all the fields and try again."})
 
-# route for lawyer event create
+# route for lawyer event update
 @app.route('/edit-event',methods=['GET','POST'])
 def edit_event():
     if request.method == "POST":
@@ -1001,12 +1020,12 @@ def list_lawyer(client_id=None):
     if list_of_lawyers:
         return json_response({
             "error" : False,
-            "message" : "Found clients",
+            "message" : "Found lawyers",
             "lawyers" : list_of_lawyers})
     else:
         return json_response({
             "error" : True,
-            "message" : "No clients found.",})
+            "message" : "No lawyers found.",})
 
 # route for lawyer, getting the event
 @app.route('/lawyer/<int:lawyer_id>/get-event',methods=['GET','POST'])
@@ -1138,7 +1157,7 @@ def addcase(lawyer_id=None):
         # payment = Payment.lawyer_subscribed(lawyer_id=lawyer_id)
         mycases = Case.my_case(lawyer_id=lawyer_id)
         lawyer = Lawyer.get_by_id(int(lawyer_id))
-        if mycases > lawyer.limit_case:
+        if mycases > int(lawyer.limit_case):
             return json_response({
                 "error":True,
                 "message": "You already reached your limit as a free user, to add more case please Subscribe!"})
@@ -1223,7 +1242,7 @@ def get_case_clients(client_id=None):
             "message" : "No case found",
             "cases" : "Empty"})
 
-# route for client listing all case for client
+# route for lawyer listing all case for client
 @app.route('/lawyer/<int:lawyer_id>/get-case',methods=['GET','POST'])
 def get_case_lawyers(lawyer_id=None):
     lawyer = Lawyer.get_by_id(int(lawyer_id))
@@ -1232,7 +1251,28 @@ def get_case_lawyers(lawyer_id=None):
         case_dict = []
         for case in cases:
             case_dict.append(case.to_dict())
-        return render_template('lawyer/lawyer-mycases.html',client=session['client'],cases=case_dict,title="My Cases",available_practice=available_practice)
+        return render_template('lawyer/lawyer-mycases   .html',client=session['client'],cases=case_dict,title="My Cases",available_practice=available_practice)
+    else:
+        return json_response({ 
+            "error" : True,
+            "message" : "No case found",
+            "cases" : "Empty"})
+    
+    return render_template('lawyer/lawyer-mycases.html',client=session['client'],cases=case_dict,title="My Cases")
+
+# route for lawyer listing all case for client
+@app.route('/lawyer/<int:lawyer_id>/mobile/get-case',methods=['GET','POST'])
+def get_case_mlawyers(lawyer_id=None):
+    lawyer = Lawyer.get_by_id(int(lawyer_id))
+    cases = Case.query(Case.lawyer == lawyer.key).order(-Case.created).fetch()
+    if cases != None:
+        case_dict = []
+        for case in cases:
+            case_dict.append(case.to_dict())
+        return json_response({
+            "error" : False,
+            "message" : `len(case_dict)`+" case(s) found.",
+            "cases" : case_dict})
     else:
         return json_response({ 
             "error" : True,
@@ -1266,6 +1306,8 @@ def client_payment(client_id=None):
     if request.method == "POST":
         req_data = request.get_json(force=True)
         # payment id receive after paying using paypal, consider it as receipt
+        if 'lawyer_id' in req_data:
+            lawyer_id = req_data['lawyer_id']
         if 'payment_id' in req_data:
             payment_id = req_data['payment_id']
         if 'payment_method' in req_data:
@@ -1273,17 +1315,16 @@ def client_payment(client_id=None):
         if 'payment_amount' in req_data:
             payment_amount = req_data['payment_amount']
 
-        if payment_id and payment_method and payment_amount:
-            payment = Payment.save(client=client_id,payment_id=payment_id,payment_method=payment_method,payment_amount=payment_amount)
-            if payment:
-                return json_response({
-                    "error" : False,
-                    "message" : "Payment Success!"})
-            else:
-                return json_response({
-                    "error" : True,
-                    "message" : "Unsuccessful payment, please try again."})
-
+        payment = Payment.save(lawyer=lawyer_id,client=client_id,payment_id=payment_id,payment_method=payment_method,payment_amount=payment_amount)
+        if payment:
+            return json_response({
+                "error" : False,
+                "message" : "Payment Success!"})
+        else:
+            return json_response({
+                "error" : True,
+                "message" : "Unsuccessful payment, please try again."})
+        
 # route for mobile lawyer subscription ~~~~~~~
 @app.route('/lawyer/<int:lawyer_id>/subscribe')
 def lawyer_subscribe(lawyer_id=None):
@@ -1297,19 +1338,22 @@ def lawyer_subscribe(lawyer_id=None):
         if 'payment_amount' in req_data:
             payment_amount = req_data['payment_amount']
 
-        if payment_id and payment_method and payment_amount:
-            payment = Payment.save(lawyer=lawyer_id,payment_id=payment_id,payment_method=payment_method,payment_amount=payment_amount)
-            if payment:
-                subscribe = Subscription.save(payment=payment_id,status="subscribe")
-                if subscribe:
-                    return json_response({
-                        "error" : False,
+        payment = Payment.save(lawyer=lawyer_id,payment_id=payment_id,payment_method=payment_method,payment_amount=payment_amount)
+        if payment:
+            subscribe = Subscription.save(payment=payment.key.id(),status="subscribed")
+            if subscribe:
+                return json_response({
+                    "error" : False,
                         "message" : "Thank you for subscribing"})
-                else:
-                    return json_response({
-                        "error" : True,
-                        "message" : "Subscription failed, please try again."})
-
+            else:
+                return json_response({
+                    "error" : True,
+                    "message" : "Subscription failed, please try again."})
+        else:
+            return json_response(
+                {"error" : True,
+                "message" : "Unsuccessful payment, please try again."})
+        
     
 # profile picture route
 @app.route('/lawyer/<int:lawyer_id>/account-setting/profile-picture', methods=['POST'])
@@ -1366,11 +1410,13 @@ def lawyer_update_information(lawyer_id=None):
             firm = req_data['firm']
         if 'aboutme' in req_data:
             aboutme = req_data['aboutme']
+        if 'sex' in req_data:
+            sex = req_data['sex']
         if 'law_practice' in req_data:
             law_practice = req_data['law_practice']
 
         if first_name and last_name and phone and cityOrMunicipality and office and law_practice:
-            lawyer = Lawyer.save(id=lawyer_id,first_name=first_name,last_name=last_name,phone=phone,cityOrMunicipality=cityOrMunicipality,office=office,firm=firm,aboutme=aboutme)
+            lawyer = Lawyer.save(id=lawyer_id,first_name=first_name,last_name=last_name,sex=sex,phone=phone,cityOrMunicipality=cityOrMunicipality,office=office,firm=firm,aboutme=aboutme)
             if lawyer:
                 lawyer = Lawyer.get_by_id(int(lawyer_id))
                 practices = Practice.query(Practice.lawyer == lawyer.key).fetch()
@@ -1585,7 +1631,7 @@ def lawyer_signup():
         if 'firm' in req_data:
             firm = req_data['firm']
         if 'sex' in req_data:
-            firm = req_data['sex']
+            sex = req_data['sex']
         if 'law_practice' in req_data:
             law_practice = req_data['law_practice']
         if 'password' in req_data:
@@ -1603,7 +1649,7 @@ def lawyer_signup():
                         if get_rollno(str(rollno)):
                             roll_exist = Lawyer.rollno_exist(rollno=rollno)
                             if not roll_exist:
-                                lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,rollno=rollno,cityOrMunicipality=cityOrMunicipality,office=office,firm=firm,password=password,status="activated",limit_case="5")
+                                lawyer = Lawyer.save(first_name=first_name,last_name=last_name,email=email,phone=phone,rollno=rollno,sex=sex,cityOrMunicipality=cityOrMunicipality,office=office,firm=firm,password=password,status="activated",limit_case="5")
                                 if lawyer:
                                     # pract as in practice
                                     for pract in law_practice:

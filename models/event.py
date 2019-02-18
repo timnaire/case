@@ -107,6 +107,12 @@ class Event(ndb.Model):
         if self.client:
             client = self.client.get()
             data['client'] = client.to_dict()
+
+        # info sa owner 
+        data['owner_info'] = None
+        if self.event_owner:
+            info = self.event_owner.get()
+            data['owner_info'] = info.event_dict()
         
         data['event_title'] = self.event_title
         data['event_location'] = self.event_location
