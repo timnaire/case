@@ -167,6 +167,7 @@ class Client(ndb.Model):
         data['profile_pic'] = self.profile_pic
         data['first_name'] = self.first_name
         data['last_name'] = self.last_name
+        data['manager'] = 'client'
 
         return data
 

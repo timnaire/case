@@ -571,7 +571,13 @@ def viewCase(lawyer_id=None,client_id=None):
     
 
     if session.get('client') is not None:
-        return render_template('case/lawyer-viewCase.html',title="View Case", case_id=case_id, case= case_dict,client=session['client'])
+        client = Client.get_by_id(int(client_id))
+        events = Event.query(Event.client == client.key).fetch()
+        event_dict = []
+        for event in events:
+            event_dict.append(event.to_dict())
+        return render_template('case/lawyer-viewCase.html',title="View Case", case_id=case_id,event=event_dict, case= case_dict,client=session['client'])
+    
     elif session.get('lawyer'):
         lawyer = Lawyer.get_by_id(int(lawyer_id))
         events = Event.query(Event.lawyer == lawyer.key).fetch()

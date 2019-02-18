@@ -79,7 +79,7 @@
                             </div>
                         </a>
                         {% elif client %}
-                        <a href="{{url_for('viewCase',case_id=case.case_id,lawyer_id=lawyer,client_id=case.client_id)}}" class="list-group-item list-group-item-action ">
+                        <a href="{{url_for('viewCase',case_id=case.case_id,lawyer_id=case.lawyer_id,client_id=client)}}" class="list-group-item list-group-item-action ">
                                 <div class="row">
                                     <div class="col-sm-9" id="div-info-case">
                                         <div class="d-flex w-100 justify-content-between">

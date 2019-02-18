@@ -212,7 +212,7 @@ class Lawyer(ndb.Model):
         data['profile_pic'] = self.profile_pic
         data['first_name'] = self.first_name
         data['last_name'] = self.last_name
-
+        data['manager'] = 'lawyer'
         return data
 
     def to_dict(self):

@@ -42,8 +42,6 @@ $(function(){
         $.each($("input[class='practice']:checked"), function(){            
             practice.push($(this).val());
         });
-        
-        alert(first_name);
         sendInfo = {
             first_name : first_name,
             last_name : last_name,
@@ -64,9 +62,9 @@ $(function(){
             var err = 1;
             var m = response['message']
             if(response['error'] == false){
-                window.location.replace('/lawyer/signup?succ='+succ+"&m="+m);
+                alert(m);
             }else if(response['error'] == true){
-                window.location.replace('/lawyer/signup?err='+err+"&m="+m);
+                alert(m);
             }
         });
     });

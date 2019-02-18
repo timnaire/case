@@ -9,12 +9,6 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-- kind: Case 
-  properties: 
-  - name: client 
-  - name: created 
-    direction: desc
-
 - kind: Case
   properties:
   - name: client
@@ -62,13 +56,13 @@ indexes:
   - name: created
     direction: desc
 
-- kind: UploadFile 
-  properties: 
-  - name: case 
+- kind: UploadFile
+  properties:
+  - name: case
   - name: created
 
-- kind: UploadFile 
-  properties: 
-  - name: case 
-  - name: file_type 
+- kind: UploadFile
+  properties:
+  - name: case
+  - name: file_type
   - name: created

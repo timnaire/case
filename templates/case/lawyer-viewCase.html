@@ -61,24 +61,63 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane active" id="home">
-                        <!-- <textarea name="" id="" cols="30" rows="10">{{event}}</textarea> -->
-                            {% for ev in event%}
-                            <div class="vc-event-container">
+                            {% for ev in event %}
+                            <div class="vc-event-container wow fadeInUp" id="{{ev.event_id}}" >
+                                <textarea name="" id="" cols="30" rows="10">{{client}}</textarea>
+                                {% if lawyer %}
+                                <input type="text" id="event-lawyer-id"  value="{{lawyer}}" hidden>                                
+                                {% elif client %}
+                                <input type="text" id="event-client-id"  value="{{client}}" hidden>
+                                {% endif %}
+                                <input type="text" id="event-owner-person"  value="{{ev.owner_info.manager}}" hidden>
+                                <input type="text" id="event_div_fordel" value="{{ev.event_id}}" hidden>
                                 <div class="row">
                                     <div class="col-sm-2">
                                         <div class="text-center">
-                                          <img class="vc-event-pic" src="{{ev.client.profile_pic}}" alt="">
+                                            
+                                          <img class="vc-event-pic" src="{{ev.owner_info.profile_pic}}" alt="">
                                         </div>
                                     </div>
                                     <div class="col-sm-8">
-                                        <div class="text-center">
-                                           <h5>Donaire , Timmy</h5>
+                                        <div class="text-left">
+                                                {% if ev.event_type == 'trial'%}
+                                                <span class="label label-info" id="vc-event-container-label">Trial Hearing</span>
+                                                {% elif ev.event_type == 'meeting'%}
+                                                <span class="label label-warning" id="vc-event-container-label">Meeting</span>
+                                                {% endif %}
+                                           <h5 class="vc-event-container-name">{{ev.owner_info.first_name}}&nbsp;{{ev.owner_info.last_name}}</h5>
+                                           {% if ev.owner_info.manager == 'lawyer'%}
+                                           <p>Lawyer</p>
+                                           {% elif ev.owner_info.manager == 'client'%}
+                                           <p>Client</p>
+                                           {% endif %}
                                         </div>
                                     </div>
                                     <div class="col-sm-2">
-                                            <span class="label label-info">Info Label</span>
+                                        <div class="text-right">
+
+
+                                            {% if lawyer and ev.owner_info.manager == 'lawyer'%}
+                                                <span class="glyphicon glyphicon-remove-sign  " id="removeEventBtn" ></span>
+                                            {% elif client and ev.owner_info.manager == 'client'%}
+                                                <span class="glyphicon glyphicon-remove-sign " id="removeEventBtn"></span>
+                                            {% endif %}
+
+                                            
+                                        </div>
                                     </div>
                                 </div>
+                                <div class="vc-event-context">
+                                    <div class="text-center">
+                                            <h3>{{ev.event_title}}</h3>
+                                            <p><span class="glyphicon glyphicon-map-marker"></span>{{ev.event_location}}</p>
+                                    </div>
+                                    <div class="text-center">
+                                            <p class="vc-event-context">{{ev.event_details}}</p>
+                                    </div>
+                                            
+                                </div>
+
                             </div>
                             {% endfor %}
                     </div>

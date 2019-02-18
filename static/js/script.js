@@ -48,7 +48,7 @@ $(document).ready(function(){
             if(response['error'] == false){
                 window.location.replace('/client/signup?succ='+succ+"&m="+m);
             }else if(response['error'] == true){
-                window.location.replace('/client/signup?err='+err+"&m="+m);
+                alert(m);
             }
         });
     });
@@ -295,11 +295,47 @@ $(document).ready(function(){
             var err = 1;
             var m = response['message']
             if(response['error'] == false){
-                window.location.replace('/lawyer/signup?succ='+succ+"&m="+m);
+                alert('Account Created');
             }else if(response['error'] == true){
-                window.location.replace('/lawyer/signup?err='+err+"&m="+m);
+                alert(m);
             }
         });
+    });
+
+    $('#removeEventBtn').click(function(e){
+        e.preventDefault();
+        var client_id = $("#event-client-id").val();
+        var lawyer_id = $('#event-lawyer-id').val();
+        var event_id = $('#event_div_fordel').val();
+        var owner = $('#event-owner-person').val();
+
+        
+         if(client_id != null)  {
+            sendInfo = { client_id : client_id ,
+                        event_id : event_id   }  
+
+            $('#'+event_id).fadeOut();
+            $.post('/client/'+client_id+'/delete-event', JSON.stringify(sendInfo), function(response){
+                if(response['error'] == false){
+                    alert('Event Deleted.');
+                }else if(response['error'] == true){
+                    alert('Event Deletion Failed');
+                }
+            });
+        }
+        else if(lawyer_id !=null){
+            sendInfo = { client_id : client_id ,
+                        event_id : event_id   }  
+
+            $('#'+event_id).fadeOut();
+            $.post('/lawyer/'+lawyer_id+'/delete-event', JSON.stringify(sendInfo), function(response){
+                if(response['error'] == false){
+                    alert('Event Deleted.');
+                }else if(response['error'] == true){
+                    alert('Event Deletion Failed');
+                }
+            });
+        }
     });
 
     $('#PA-client-accept').click(function(e){
@@ -308,7 +344,6 @@ $(document).ready(function(){
         var lawyer_id = $('#PA-request-lawyer-id').val();
         var relation_id = $('#PA-request-relation-id').val();
         var status = "Accepted";
-        alert(relation_id);
         sendInfo = { lawyer_id : lawyer_id ,
                      relation_id  : relation_id,
                      status : status   }
@@ -320,7 +355,7 @@ $(document).ready(function(){
                 console.log(response);
             }
         });
-    })
+    });
     $('#PA-client-decline').click(function(e){
         e.preventDefault();
         var client_id = $("#PA-request-client-id").val();
