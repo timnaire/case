@@ -161,6 +161,15 @@ class Client(ndb.Model):
 
         return data
 
+    def event_dict(self):
+        data = {}
+
+        data['profile_pic'] = self.profile_pic
+        data['first_name'] = self.first_name
+        data['last_name'] = self.last_name
+
+        return data
+
     def to_dict(self):
         data = {}
 

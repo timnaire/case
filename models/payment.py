@@ -25,7 +25,7 @@ class Payment(ndb.Model):
             lawyer_key = ndb.Key('Lawyer',int(lawyer_id))
             payment.lawyer = lawyer_key
         
-        client_id = str(kwargs.get('client_id'))
+        client_id = str(kwargs.get('client'))
         if client_id.isdigit():
             client_key = ndb.Key('Client', int(client_id))
             payment.client = client_key 

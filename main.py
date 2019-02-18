@@ -1012,12 +1012,12 @@ def list_lawyer(client_id=None):
     if list_of_lawyers:
         return json_response({
             "error" : False,
-            "message" : "Found clients",
+            "message" : "Found lawyers",
             "lawyers" : list_of_lawyers})
     else:
         return json_response({
             "error" : True,
-            "message" : "No clients found.",})
+            "message" : "No lawyers found.",})
 
 # route for lawyer, getting the event
 @app.route('/lawyer/<int:lawyer_id>/get-event',methods=['GET','POST'])
@@ -1292,21 +1292,16 @@ def client_payment(client_id=None):
         if 'payment_amount' in req_data:
             payment_amount = req_data['payment_amount']
 
-        if payment_id and payment_method and payment_amount:
-            payment = Payment.save(lawyer=lawyer_id,client=client_id,payment_id=payment_id,payment_method=payment_method,payment_amount=payment_amount)
-            if payment:
-                return json_response({
-                    "error" : False,
-                    "message" : "Payment Success!"})
-            else:
-                return json_response({
-                    "error" : True,
-                    "message" : "Unsuccessful payment, please try again."})
+        payment = Payment.save(lawyer=lawyer_id,client=client_id,payment_id=payment_id,payment_method=payment_method,payment_amount=payment_amount)
+        if payment:
+            return json_response({
+                "error" : False,
+                "message" : "Payment Success!"})
         else:
             return json_response({
                 "error" : True,
                 "message" : "Unsuccessful payment, please try again."})
-
+        
 # route for mobile lawyer subscription ~~~~~~~
 @app.route('/lawyer/<int:lawyer_id>/subscribe')
 def lawyer_subscribe(lawyer_id=None):
@@ -1320,27 +1315,22 @@ def lawyer_subscribe(lawyer_id=None):
         if 'payment_amount' in req_data:
             payment_amount = req_data['payment_amount']
 
-        if payment_id and payment_method and payment_amount:
-            payment = Payment.save(lawyer=lawyer_id,payment_id=payment_id,payment_method=payment_method,payment_amount=payment_amount)
-            if payment:
-                subscribe = Subscription.save(payment=payment.key.id(),status="subscribed")
-                if subscribe:
-                    return json_response({
-                        "error" : False,
+        payment = Payment.save(lawyer=lawyer_id,payment_id=payment_id,payment_method=payment_method,payment_amount=payment_amount)
+        if payment:
+            subscribe = Subscription.save(payment=payment.key.id(),status="subscribed")
+            if subscribe:
+                return json_response({
+                    "error" : False,
                         "message" : "Thank you for subscribing"})
-                else:
-                    return json_response({
-                        "error" : True,
-                        "message" : "Subscription failed, please try again."})
             else:
-                return json_response(
-                    {"error" : True,
-                    "message" : "Unsuccessful payment, please try again."})
+                return json_response({
+                    "error" : True,
+                    "message" : "Subscription failed, please try again."})
         else:
-            return json_response({
-                "error" : True,
+            return json_response(
+                {"error" : True,
                 "message" : "Unsuccessful payment, please try again."})
-
+        
     
 # profile picture route
 @app.route('/lawyer/<int:lawyer_id>/account-setting/profile-picture', methods=['POST'])
