@@ -162,6 +162,6 @@ class Case(ndb.Model):
         data['case_title'] = self.case_title
         data['case_description'] = self.case_description
         data['case_status'] = self.case_status
-        data['created'] = self.created.isoformat()
-        data['updated'] = self.updated.isoformat()
+        data['created'] = self.created.isoformat() + "Z"
+        data['updated'] = self.updated.isoformat() + "Z"
         return data

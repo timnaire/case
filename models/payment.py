@@ -54,6 +54,17 @@ class Payment(ndb.Model):
 
     def to_dict(self):
         data = {}
+
+        data['lawyer'] = None
+        if self.lawyer:
+            lawyer = self.lawyer.get()
+            data['lawyer'] = lawyer.to_dict()
+
+        data['client'] = None
+        if self.client:
+            client = self.client.get()
+            data['client'] = client.to_dict()
+
         data['payment_id'] = self.payment_id
         data['payment_method'] = self.payment_method
         data['payment_amount'] = self.payment_amount
