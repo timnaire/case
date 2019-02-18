@@ -1346,18 +1346,19 @@ def lawyer_subscribe(lawyer_id=None):
 
         payment = Payment.save(lawyer=lawyer_id,payment_id=payment_id,payment_method=payment_method,payment_amount=payment_amount)
         if payment:
-            subscribe = Subscription.save(payment=payment.key.id(),status="subscribed")
+
+            subscribe = Subscription.save(payment=payment.id(),status="subscribed")
             if subscribe:
                 return json_response({
                     "error" : False,
-                        "message" : "Thank you for subscribing"})
+                    "message" : "Thank you for subscribing"})
             else:
                 return json_response({
                     "error" : True,
                     "message" : "Subscription failed, please try again."})
         else:
-            return json_response(
-                {"error" : True,
+            return json_response({
+                "error" : True,
                 "message" : "Unsuccessful payment, please try again."})
         
     
