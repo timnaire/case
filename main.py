@@ -567,10 +567,18 @@ def viewCase(lawyer_id=None,client_id=None):
     if case:
         case_dict.append(case.to_dict())
 
+
+    
+
     if session.get('client') is not None:
         return render_template('case/lawyer-viewCase.html',title="View Case", case_id=case_id, case= case_dict,client=session['client'])
     elif session.get('lawyer'):
-        return render_template('case/lawyer-viewCase.html',title="View Case", case_id=case_id, case= case_dict,lawyer=session['lawyer'])
+        lawyer = Lawyer.get_by_id(int(lawyer_id))
+        events = Event.query(Event.lawyer == lawyer.key).fetch()
+        event_dict = []
+        for event in events:
+            event_dict.append(event.to_dict())
+        return render_template('case/lawyer-viewCase.html',title="View Case", case_id=case_id,event=event_dict, case= case_dict,lawyer=session['lawyer'])
     else:
         return json_response({
                 "error" : True,
@@ -785,8 +793,7 @@ def add_event_client(client_id=None):
                     'body': event_details
                 },
                 "data":{
-                    'client_id': client.key.id(),
-                    'relation_id' : relation_id
+                    'client_id': client.key.id()
                 }
             }
             headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
@@ -843,8 +850,7 @@ def add_event_lawyer(lawyer_id=None):
                     'body': event_details
                 },
                 "data":{
-                    'lawyer_id': lawyer.key.id(),
-                    'relation_id' : relation_id
+                    'lawyer_id': lawyer.key.id()
                 }
             }
             headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
@@ -1182,6 +1188,21 @@ def getAllCase(lawyer_id=None):
     else:
         case_dict="Empty"
     return render_template('lawyer/lawyer-mycases.html',lawyer=session['lawyer'],cases=case_dict,title="My Cases",available_practice=available_practice)
+
+# route for lawyer listing all case for lawyer
+@app.route('/client/<int:client_id>/myclient-cases',methods=['GET','POST'])
+def getAllCase_web(client_id=None):
+    global available_practice
+    client = Client.get_by_id(int(client_id))
+    cases = Case.query(Case.client == client.key).order(-Case.created).fetch()
+    if cases != None:
+        case_dict = []
+        for case in cases:
+            case_dict.append(case.to_dict())
+    else:
+        case_dict="Empty"
+    return render_template('lawyer/lawyer-mycases.html',client=session['client'],cases=case_dict,title="My Cases",available_practice=available_practice)
+
 
 # route for client listing all case for client
 @app.route('/client/<int:client_id>/get-case',methods=['GET','POST'])

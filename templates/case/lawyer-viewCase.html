@@ -13,13 +13,20 @@
                              <h1 class="wow fadeInDown">{{case[0].case_title}}</h1>
                             </div>
                             <div class="row">
-                                <div class="col-sm-6 " id="viewcase-lawyerPortrait">
+                                <div class="col-sm-4 " id="viewcase-lawyerPortrait">
                                     
                                     <img src="{{case[0].lawyer.profile_pic}}" alt="" class="wow fadeInLeft">
                                     <h2 class="wow fadeInLeft">Atty. {{case[0].lawyer.first_name}} &nbsp;&nbsp;{{case[0].lawyer.last_name}}</h2>
                                     <h5  class="wow fadeInLeft">Lawyer</h5>
                                 </div>
-                                <div class="col-sm-6 " id="viewcase-clientPortrait">
+                                <div class="col-sm-4" >
+                                    <div id="viewcase-createEventButton">
+                                        <div class="text-center">
+                                            <button type="button" id="modalBtn" class="btn btn-info btn-lg wow fadeInUp" data-toggle="modal" data-target="#creatEvent">Create Event</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 " id="viewcase-clientPortrait">
                                         <img src="{{case[0].client.profile_pic}}" class="wow fadeInRight" alt="">
                                     <h2 class="wow fadeInRight"data-wow-delay=".10s">{{case[0].client.first_name}} &nbsp;&nbsp;{{case[0].client.last_name}}</h2>
                                     <h5  class="wow fadeInRight">Client</h5>
@@ -40,13 +47,12 @@
             <input type="text" id="vc-case_title" value="{{case[0].case_title}}" hidden />
             <input type="text" id="vc-case_desc" value="{{case[0].case_description}}" hidden />
             <input type="text" id="vc-case_stat" value="{{case[0].case_status}}" hidden /> -->
-
+            
                 <ul class="nav nav-tabs">
                         <li class="active"><a data-toggle="tab" href="#home">Homepage</a></li>
                         <li><a data-toggle="tab" href="#payment">Payment</a></li>
                         <li><a data-toggle="tab" href="#documents">Documents</a></li>
                         <li><a data-toggle="tab" href="#caseDetails">Case Details</a></li>
-                        
                         {% if lawyer %}
                         <div style="float:right;">
                            <a href="{{url_for('edit_case',case_id=case[0].case_id,client=client,lawyer_id=lawyer)}}"><button class="normal-button-mine">Edit Case &nbsp;<span class="glyphicon glyphicon-cog"></span></button></a>
@@ -55,18 +61,90 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane active" id="home">
-                        <div id="vc-event-container" class="d-flex justify-content-center">
-                            <div class="form-group">
-                                <input type="text" placeholder="Enter Event Title" class="form-control">
+                        <!-- <textarea name="" id="" cols="30" rows="10">{{event}}</textarea> -->
+                            {% for ev in event%}
+                            <div class="vc-event-container">
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <div class="text-center">
+                                          <img class="vc-event-pic" src="{{ev.client.profile_pic}}" alt="">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <div class="text-center">
+                                           <h5>Donaire , Timmy</h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                            <span class="label label-info">Info Label</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <textarea class="form-control" name="" id="" cols="30" rows="10">asdfasdfasdfasdfasdfasdfasdfasdfadfs</textarea>
-                            </div>
-                        </div>
+                            {% endfor %}
                     </div>
                     <div class="tab-pane" id="documents">
                         <h2>hello</h2>
                     </div>
+                    <!-- THIS IS THE CREATE EVENT MODAL -->
+                    <div class="modal fade" id="creatEvent" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                  <h4 class="modal-title">Create Event</h4>
+                                </div>
+                                <div class="modal-body">
+                                        {% if client %}
+                                        <input type="text" id="owner" value="client" hidden>
+                                        <input type="text" id="owner_id" value="{{client}}" hidden>
+                                        {% elif lawyer %}
+                                        <input type="text" id="owner" value="lawyer" hidden>
+                                        <input type="text" id="owner_id" value="{{lawyer}}" hidden>
+                                        {% endif %}
+                                        <input type="text" id="lawyer_id" value="{{case[0].lawyer.lawyer_id}}" hidden>
+                                        <input type="text" id="client_id" value="{{case[0].client.client_id}}" hidden>
+                                        <div class="form-group">
+                                                <input type="text" id="event_title" placeholder="Enter Event Title" class="form-control">
+                                            </div>
+                                            <div class="form-group">
+                                                    <input type="text" id="event_location" placeholder="Enter Event Location" class="form-control">
+                                                </div>             
+                                            <div class="form-group">
+                                                    <div class='input-group date' id='event_date'>
+                                                            <input data-format="dddd, MMMM DD, YYYY" type='text' class="form-control" />
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-calendar"></span>
+                                                            </span>
+                                                        </div>
+                                            </div> 
+                                            <div class="form-group">
+                                                    <div class='input-group date' id='event_time'>
+                                                            <input data-format="LT" type='text' class="form-control"/>
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-time"></span>
+                                                            </span>
+                                                        </div>
+                                                </div>
+                                            <div class="form-group">
+                                                
+                                                <select class="form-control" id="event_type">
+                                                    <option value="None">Select Event Type</option>
+                                                    <option value="trial">Trial</option>
+                                                    <option value="meeting">Meeting</option>
+                                                </select>
+                                            </div>               
+                                            <div class="form-group">
+                                                <textarea class="form-control" name="" id="event_details" cols="30" rows="10">asdfasdfasdfasdfasdfasdfasdfasdfadfs</textarea>
+                                            </div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-default" id="createEvent">Create Now</button>
+                                
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
                 </div>
         </div>
       </section><!-- #about -->

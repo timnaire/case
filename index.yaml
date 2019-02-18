@@ -11,6 +11,12 @@ indexes:
 
 - kind: Case
   properties:
+  - name: client
+  - name: created
+    direction: desc
+
+- kind: Case
+  properties:
   - name: lawyer
   - name: created
     direction: desc

@@ -158,7 +158,7 @@ class Relationship(ndb.Model):
 
         data['client'] = None
         if self.client:
-            client = self.client.get()
+            client = self.client.get()            
             data['client'] = client.to_dict()
         
         data['status'] = self.status

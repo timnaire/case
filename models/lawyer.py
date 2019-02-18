@@ -208,7 +208,7 @@ class Lawyer(ndb.Model):
 
     def to_dict(self):
         data = {}
-
+        data['lawyer_id'] = self.key.id()
         data['first_name'] = self.first_name
         data['last_name'] = self.last_name
         data['email'] = self.email

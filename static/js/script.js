@@ -4,7 +4,6 @@ $(document).ready(function(){
   new WOW().init();
 
     $('#login-container-div').show(1000);
-  $('#lawyer-signup-form').fadeIn(1000);
   $('#findlawyer').fadeIn(1000);
   $('#card-result-container').fadeIn(1000);
     $('#btnClientSignin').click(function(e){
@@ -462,6 +461,54 @@ $(document).ready(function(){
                 window.location.replace('/client/client-account-setting?err='+err+"&m="+m);
             }
         } ,"json" );
+    });
+    $('#createEvent').click(function(e){
+        e.preventDefault();
+        
+        var lawyer_id = $("#lawyer_id").val();
+        var client_id = $("#client_id").val();
+        var event_title = $('#event_title').val().trim();
+        var event_location = $('#event_location').val().trim();
+        var event_details = $('#event_details').val().trim();
+        var event_date= $('#event_date').data("DateTimePicker").date();
+        var event_time= $('#event_time').data("DateTimePicker").date();
+        var event_type=$('#event_type').val().trim();
+        var event_owner=$('#owner_id').val().trim();
+        var owner= $('#owner').val().trim();
+        sendInfo = {
+            lawyer_id : lawyer_id,
+            client_id : client_id,
+            event_title : event_title,
+            event_location : event_location,
+            event_details : event_details,
+            event_date : event_date,
+            event_time : event_time,
+            event_type : event_type,
+            event_owner : event_owner
+        }
+        var succ = 1;
+            var err = 1;
+            
+        if(owner=='client'){
+            $.post("/client/"+client_id+"/add-event", JSON.stringify(sendInfo), function(response){
+                var m = response['message']
+                if(response['error'] == false){
+                   alert(m);
+                }else if(response['error'] == true){
+                   alert(m);
+                }
+            } ,"json" );
+        }
+        else if(owner=='lawyer'){
+            $.post("/lawyer/"+lawyer_id+"/add-event", JSON.stringify(sendInfo), function(response){
+                var m = response['message']
+                if(response['error'] == false){
+                    alert(m);
+                }else if(response['error'] == true){
+                    alert(m);
+                }
+            } ,"json" );
+        }
     });
 
     $('#preAppointLawyer').click(function(e){
