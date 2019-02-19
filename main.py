@@ -1308,7 +1308,7 @@ def deleteCase(lawyer_id=None):
                 "message" : "Case was not deleted"})
 
 # route for mobile client payment ~~~~~~~
-@app.route('/client/<int:client_id>/payment')
+@app.route('/client/<int:client_id>/payment',methods=['POST'])
 def client_payment(client_id=None):
     if request.method == "POST":
         req_data = request.get_json(force=True)
@@ -1333,7 +1333,7 @@ def client_payment(client_id=None):
                 "message" : "Unsuccessful payment, please try again."})
         
 # route for mobile lawyer subscription ~~~~~~~
-@app.route('/lawyer/<int:lawyer_id>/subscribe')
+@app.route('/lawyer/<int:lawyer_id>/subscribe',methods=['POST'])
 def lawyer_subscribe(lawyer_id=None):
     if request.method == "POST":
         req_data = request.get_json(force=True)
@@ -1363,14 +1363,14 @@ def lawyer_subscribe(lawyer_id=None):
                 "message" : "Unsuccessful payment, please try again."})
 
 # save client's feedback to lawyer
-@app.route('/client/<int:client_id>/lawyer/feedback')
+@app.route('/client/<int:client_id>/lawyer/feedback',methods=['POST'])
 def save_feedback(client_id=None):
     if request.method == "POST":
         req_data = request.get_json(force=True)
         if 'lawyer_id' in req_data:
             lawyer_id = req_data['lawyer_id']
         if 'rating' in req_data:
-            rating = req_data['rating']
+            rating = str(req_data['rating'])
         if 'feedback' in req_data:
             feedback = req_data['feedback']
         
@@ -1385,7 +1385,7 @@ def save_feedback(client_id=None):
                 "message" : "Feedback was not saved."})
 
 # get all feedback info
-@app.route('/lawyer/total-feedback')
+@app.route('/lawyer/total-feedback',methods=['POST'])
 def feedback_info(client_id=None):
     counter = 0
     if request.method == "POST":

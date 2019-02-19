@@ -34,8 +34,8 @@ class Feedback(ndb.Model):
         if kwargs.get('feedback'):
             feedback.feedback = kwargs.get('feedback')
 
-        subscription.put()
-        return subscription
+        feedback.put()
+        return feedback
 
     def to_dict(self):
         data = {}
