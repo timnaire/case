@@ -431,10 +431,20 @@ $(document).ready(function () {
             data: form_data,
             type: 'post',
             success: function (response) {
-                console.log(response) // display success response from the server
+                if (response['error'] == false) {
+                    $("#changepic-success").removeClass('d-none');
+                    $("#changepic-failed").addClass('d-none');
+                    $(".message").text(response['message']);
+                } else if (response['error'] == true) {
+                    $("#changepic-success").addClass('d-none');
+                    $("#changepic-failed").removeClass('d-none');
+                    $(".message").text(response['message']);
+                }
             },
             error: function (response) {
-                console.log(response) // display error response from the server
+                $("#changepic-success").addClass('d-none');
+                $("#changepic-failed").removeClass('d-none');
+                $(".message").text("Please choose a picture.");
             }
         });
     });
@@ -451,7 +461,15 @@ $(document).ready(function () {
             password: password
         }
         $.post("/client/" + id + "/account-setting/change-email", JSON.stringify(sendInfo), function (response) {
-            console.log(response)
+            if (response['error'] == false) {
+                $("#changeemail-success").removeClass('d-none');
+                $("#changeemail-failed").addClass('d-none');
+                $(".message").text(response['message']);
+            } else if (response['error'] == true) {
+                $("#changeemail-success").addClass('d-none');
+                $("#changeemail-failed").removeClass('d-none');
+                $(".message").text(response['message']);
+            }
         })
     });
 
@@ -467,7 +485,15 @@ $(document).ready(function () {
             confirm: confirm_pass
         }
         $.post("/client/" + id + "/account-setting/change-password", JSON.stringify(sendInfo), function (response) {
-            console.log(response['error'])
+            if (response['error'] == false) {
+                $("#changepass-success").removeClass('d-none');
+                $("#changepass-failed").addClass('d-none');
+                $(".message").text(response['message']);
+            } else if (response['error'] == true) {
+                $("#changepass-success").addClass('d-none');
+                $("#changepass-failed").removeClass('d-none');
+                $(".message").text(response['message']);
+            }
         })
     });
     $('#btnEditCase').click(function (e) {
@@ -501,18 +527,24 @@ $(document).ready(function () {
         var last_name = $('#uc_last_name').val().trim();
         var phone = $('#uc_phone').val().trim();
         var address = $('#uc_Address').val().trim();
+        var sex = $("[name='csex']:checked").val();
 
         sendInfo = {
             first_name: first_name,
             last_name: last_name,
             phone: phone,
             address: address,
+            sex: sex
         }
         $.post("/client/" + id + "/account-setting/profile-information", JSON.stringify(sendInfo), function (response) {
             if (response['error'] == false) {
-                window.location.replace('/client/client-account-setting?succ=' + succ + "&m=" + m);
+                $("#changeinfo-success").removeClass('d-none');
+                $("#changeinfo-failed").addClass('d-none');
+                $(".message").text(response['message']);
             } else if (response['error'] == true) {
-                window.location.replace('/client/client-account-setting?err=' + err + "&m=" + m);
+                $("#changeinfo-success").addClass('d-none');
+                $("#changeinfo-failed").removeClass('d-none');
+                $(".message").text(response['message']);
             }
         }, "json");
     });
@@ -616,13 +648,42 @@ $(document).ready(function () {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
             reader.onload = function (e) {
-                $('#lawyerpic').attr('src', e.target.result);
+                $('#userimg').attr('src', e.target.result);
             }
             reader.readAsDataURL(input.files[0]);
         }
     }
+
     $("#image").change(function () {
         readURL(this);
+    });
+
+    $("#btnChangePicture").click(function (e) {
+        $("#form-picture").removeClass("d-none");
+        $("#form-information").removeClass("d-none").addClass("d-none");
+        $("#form-password").removeClass("d-none").addClass("d-none");
+        $("#form-email").removeClass("d-none").addClass("d-none");
+    });
+
+    $("#btnChangeInformation").click(function (e) {
+        $("#form-picture").removeClass("d-none").addClass("d-none");
+        $("#form-information").removeClass("d-none");
+        $("#form-password").removeClass("d-none").addClass("d-none");
+        $("#form-email").removeClass("d-none").addClass("d-none");
+    });
+
+    $("#btnChangeEmail").click(function (e) {
+        $("#form-picture").removeClass("d-none").addClass("d-none");
+        $("#form-information").removeClass("d-none").addClass("d-none");
+        $("#form-email").removeClass("d-none");
+        $("#form-password").removeClass("d-none").addClass("d-none");
+    });
+
+    $("#btnChangePassword").click(function (e) {
+        $("#form-picture").removeClass("d-none").addClass("d-none");
+        $("#form-information").removeClass("d-none").addClass("d-none");
+        $("#form-password").removeClass("d-none");
+        $("#form-email").removeClass("d-none").addClass("d-none");
     });
 
     // function getBase64(file) {

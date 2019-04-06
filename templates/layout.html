@@ -61,9 +61,9 @@
                         <li class="{{ 'active' if active_page == 'lawyers' else '' }}"><a href="/lawyers">Lawyer</a>
                         </li>
                         {% if client %}
-                            <li class="{{ 'active' if active_page == 'cases' else '' }}"><a href="/client/cases">Case</a></li>
+                            <li class="{{ 'active' if active_page == 'cases' else '' }}"><a href="/client/{{client}}/cases">Case</a></li>
                         {% elif lawyer %}
-                            <li class="{{ 'active' if active_page == 'cases' else '' }}"><a href="/lawyer/cases">Case</a></li>
+                            <li class="{{ 'active' if active_page == 'cases' else '' }}"><a href="/lawyer/{{lawyer}}/cases">Case</a></li>
                         {% endif %}
                         <li class="{{ 'active' if active_page == 'about' else '' }}"><a href="/about">About</a></li>
                         <li class="{{ 'active' if active_page == 'contact' else '' }}"><a href="/contact">Contact</a>
@@ -72,7 +72,7 @@
                             <li class="has-children {{ 'active' if active_page == 'profile' else '' }}">
                                 <a href="#">Profile</a>
                                 <ul class="dropdown">
-                                    <li><a href="/client/myaccount">My Account</a></li>
+                                    <li><a href="/client/{{ client }}/myaccount">My Account</a></li>
                                     <li><a href="/signout">Sign Out</a></li>
                                 </ul>
                             </li>

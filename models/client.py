@@ -179,6 +179,7 @@ class Client(ndb.Model):
         data['email'] = self.email
         data['phone'] = self.phone
         data['address'] = self.address
+        data['sex'] = self.sex
         data['profile_pic'] = self.profile_pic
         data['created'] = self.created.isoformat() + 'Z'
         data['updated'] = self.updated.isoformat() + 'Z'

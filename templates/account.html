@@ -33,14 +33,19 @@
       <div class="col-md-3" data-aos="fade" data-aos-delay="100">
 
         <div class="row">
-          <button class="col-md-12 btn btn-primary py-2 px-4 text-white" id="btnChangePicture">Change Picture</button>
+          <button class="col-md-12 btn btn-primary mb-2 py-2 px-4 text-white" id="btnChangePicture">Change
+            Picture</button>
         </div>
         <div class="row">
-          <button class="col-md-12 btn btn-primary py-2 px-4 text-white" id="btnChangeInformation">Change
+          <button class="col-md-12 btn btn-primary mb-2 py-2 px-4 text-white" id="btnChangeInformation">Change
             Information</button>
         </div>
         <div class="row">
-          <button class="col-md-12 btn btn-primary py-2 px-4 text-white" id="btnChangePassword">Change Password</button>
+          <button class="col-md-12 btn btn-primary mb-2 py-2 px-4 text-white" id="btnChangeEmail">Change Email</button>
+        </div>
+        <div class="row">
+          <button class="col-md-12 btn btn-primary mb-2 py-2 px-4 text-white" id="btnChangePassword">Change
+            Password</button>
         </div>
 
       </div>
@@ -48,33 +53,44 @@
       <!-- change picture -->
       <div class="col-md-9 mb-5" id="form-picture" data-aos="fade">
 
+        <div class="row d-none" id="changepic-success">
+          <div class="col-md-12">
+            <div class="alert alert-success alert-dismissible">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              <p class="justify-content-center align-items-center message" style="margin: 0">
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row d-none" id="changepic-failed">
+          <div class="col-md-12">
+            <div class="alert alert-danger alert-dismissible">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              <p class="justify-content-center align-items-center message" style="margin: 0">
+              </p>
+            </div>
+          </div>
+        </div>
+
         <form method="POST" class="p-5 bg-white" enctype="multipart/form-data">
-          {% if client %}
-          <input type="hidden" class="user" value="client">
-          <input type="hidden" class="user_id" value="{{ client_info.client_id }}">
-          {% elif lawyer %}
-          <input type="hidden" class="user" value="lawyer">
-          <input type="hidden" class="user_id" value="{{ lawyer_info.lawyer_id }}">
-          {% endif %}
+
+          <input type="hidden" class="client_id" value="{{ client_info.client_id }}">
 
           <div class="row form-group justify-content-center">
 
-            {% if client %}
             <img {% if client_info.profile_pic %} src="{{ client_info.profile_pic }}" {% else %}
               src='/static/images/default.png' {% endif %} class="mb-5" width='180px' height='150px' id='userimg' />
-            {% elif lawyer %}
-            <img {% if lawyer_info.profile_pic %} src="{{ lawyer_info.profile_pic }}" {% else %}
-              src='/static/images/default.png' {% endif %} class="mb-5" width='180px' height='150px' id='userimg' />
-            {% endif %}
 
             <div class="custom-file">
-              <input type="file" class="custom-file-input" id="image" accept=".jpg, .jpeg, .png" multiple>
-              <label class="custom-file-label" for="image">Choose file</label>
+              <input type="file" class="form-control-file" name="image" id="image" accept=".jpg, .jpeg, .png" multiple>
+              <label class="custom-file-label" for="image">Choose image</label>
             </div>
+
           </div>
           <div class="row form-group">
             <div class="col-md-12">
-              <button id="btnClientChangePic" class="btn btn-primary py-2 px-4 text-white">Save</button>
+              <button id="btnClientSavePicture" class="btn btn-primary py-2 px-4 text-white">Save</button>
             </div>
           </div>
         </form>
@@ -83,105 +99,84 @@
       <!-- change information -->
       <div class="col-md-9 mb-5 d-none" id="form-information" data-aos="fade">
 
+        <div class="row d-none" id="changeinfo-success">
+          <div class="col-md-12">
+            <div class="alert alert-success alert-dismissible">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              <p class="justify-content-center align-items-center message" style="margin: 0">
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row d-none" id="changeinfo-failed">
+          <div class="col-md-12">
+            <div class="alert alert-danger alert-dismissible">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              <p class="justify-content-center align-items-center message" style="margin: 0">
+              </p>
+            </div>
+          </div>
+        </div>
+
         <form method="POST" class="p-5 bg-white">
-          {% if client %}
-          <input type="hidden" class="user_id" value="{{ client_info.client_id }}">
-          {% elif lawyer %}
-          <input type="hidden" class="user_id" value="{{ lawyer_info.lawyer_id }}">
-          {% endif %}
+          <input type="hidden" class="client_id" value="{{ client_info.client_id }}">
 
           <div class="row form-group">
             <div class="col-md-6 mb-3 mb-md-0">
-              <label class="text-black" for="fname">First Name</label>
-              {% if client %}
-              <input type="text"
-                value="{% if client_info.first_name %} {{client_info.first_name}} {% else %} {% endif %}" id="fname"
-                class="form-control">
-              {% elif lawyer %}
-              <input type="text"
-                value="{% if lawyer_info.first_name %} {{lawyer_info.first_name}} {% else %} {% endif %}" id="fname"
-                class="form-control">
-              {% endif %}
+              <label class="text-black" for="uc_first_name">First Name</label>
+              <input type="text" value="{% if client_info.first_name %}{{client_info.first_name}}{% else %} {% endif %}"
+                id="uc_first_name" class="form-control">
             </div>
 
             <div class="col-md-6">
-              <label class="text-black" for="lname">Last Name</label>
-              {% if client %}
-              <input type="text" value="{% if client_info.last_name %} {{client_info.last_name}} {% else %} {% endif %}"
-                id="lname" class="form-control">
-              {% elif lawyer %}
-              <input type="text" value="{% if lawyer_info.last_name %} {{lawyer_info.last_name}} {% else %} {% endif %}"
-                id="lname" class="form-control">
-              {% endif %}
-
-            </div>
-          </div>
-
-          <div class="row form-group">
-            <div class="col-md-12">
-              <label class="text-black" for="email">Email</label>
-              {% if client %}
-              <input type="email" value="{% if client_info.email %} {{client_info.email}} {% else %} {% endif %}"
-                id="email" class="form-control">
-              {% elif lawyer %}
-              <input type="email" value="{% if lawyer_info.email %} {{lawyer_info.email}} {% else %} {% endif %}"
-                id="email" class="form-control">
-              {% endif %}
+              <label class="text-black" for="uc_last_name">Last Name</label>
+              <input type="text" value="{% if client_info.last_name %}{{client_info.last_name}}{% else %} {% endif %}"
+                id="uc_last_name" class="form-control">
 
             </div>
           </div>
 
           <div class="row form-group">
             <div class="col-md-4">
-              <label class="text-black" for="phone">Phone</label>
-              {% if client %}
-              <input type="text" value="{% if client_info.phone %} {{client_info.phone}} {% else %} {% endif %}"
-                id="phone" class="form-control">
-              {% elif lawyer %}
-              <input type="text" value="{% if lawyer_info.phone %} {{lawyer_info.phone}} {% else %} {% endif %}"
-                id="phone" class="form-control">
-              {% endif %}
+              <label class="text-black" for="uc_phone">Phone</label>
+              <input type="text" value="{% if client_info.phone %}{{client_info.phone}}{% else %} {% endif %}"
+                id="uc_phone" class="form-control">
 
             </div>
 
             <div class="col-md-8">
-              <label class="text-black" for="address">Address</label>
-              {% if client %}
-              <input type="text" value="{% if client_info.address %} {{client_info.address}} {% else %} {% endif %}"
-                id="address" class="form-control">
-              {% elif lawyer %}
-              <input type="text" value="{% if lawyer_info.address %} {{lawyer_info.address}} {% else %} {% endif %}"
-                id="address" class="form-control">
-              {% endif %}
+              <label class="text-black" for="uc_Address">Address</label>
+              <input type="text" value="{% if client_info.address %}{{client_info.address}}{% else %} {% endif %}"
+                id="uc_Address" class="form-control">
 
             </div>
           </div>
 
           <div class="row form-group">
             <label for="" class="ml-3">Gender
-              {% if client_info.sex == "male" %}
+              {% if client_info.sex == "Male" %}
               <div class="form-check col-md-6 ml-3">
-                <input class="form-check-input" type="radio" name="male" id="male" value="Male" checked>
+                <input class="form-check-input" type="radio" name="csex" id="male" value="Male" checked>
                 <label class="form-check-label" for="male">
                   Male
                 </label>
               </div>
-              {% elif client_info.sex == "female" %}
               <div class="form-check col-md-6 ml-3">
-                <input class="form-check-input" type="radio" name="female" id="female" value="Female" checked>
+                <input class="form-check-input" type="radio" name="csex" id="female" value="Female">
                 <label class="form-check-label" for="female">
                   Female
                 </label>
               </div>
-              {% else %}
+              {% elif client_info.sex == "Female" %}
               <div class="form-check col-md-6 ml-3">
-                <input class="form-check-input" type="radio" name="gender" id="male" value="male">
+                <input class="form-check-input" type="radio" name="csex" id="male" value="Male">
                 <label class="form-check-label" for="male">
                   Male
                 </label>
               </div>
               <div class="form-check col-md-6 ml-3">
-                <input class="form-check-input" type="radio" name="gender" id="female" value="female">
+                <input class="form-check-input" type="radio" name="csex" id="female" value="Female" checked>
                 <label class="form-check-label" for="female">
                   Female
                 </label>
@@ -192,7 +187,7 @@
 
           <div class="row form-group">
             <div class="col-md-12">
-              <button id="btnClientChangeInfo" class="btn btn-primary py-2 px-4 text-white">Save</button>
+              <button id="btnClientSaveInfo" class="btn btn-primary py-2 px-4 text-white">Save</button>
             </div>
           </div>
 
@@ -202,30 +197,101 @@
       <!-- change password -->
       <div class="col-md-9 mb-5 d-none" id="form-password" data-aos="fade">
 
+        <div class="row d-none" id="changepass-success">
+          <div class="col-md-12">
+            <div class="alert alert-success alert-dismissible">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              <p class="justify-content-center align-items-center message" style="margin: 0">
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row d-none" id="changepass-failed">
+          <div class="col-md-12">
+            <div class="alert alert-danger alert-dismissible">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              <p class="justify-content-center align-items-center message" style="margin: 0">
+              </p>
+            </div>
+          </div>
+        </div>
+
         <form method="POST" class="p-5 bg-white">
-          {% if client %}
-          <input type="hidden" class="user_id" value="{{ client_info.client_id }}">
-          {% elif lawyer %}
-          <input type="hidden" class="user_id" value="{{ lawyer_info.lawyer_id }}">
-          {% endif %}
+
+          <input type="hidden" class="client_id" value="{{ client_info.client_id }}">
 
           <div class="row form-group">
             <div class="col-md-12">
-              <label class="text-black" for="current-password">Current Password</label>
-              <input type="password" id="current-password" class="form-control">
+              <label class="text-black" for="uc_current_password">Current Password</label>
+              <input type="password" id="uc_current_password" class="form-control">
             </div>
             <div class="col-md-12">
-              <label class="text-black" for="new-password">New Password</label>
-              <input type="password" id="new-password" class="form-control">
+              <label class="text-black" for="uc_new_password">New Password</label>
+              <input type="password" id="uc_new_password" class="form-control">
             </div>
             <div class="col-md-12">
-              <label class="text-black" for="confirm-password">Confirm New Password</label>
-              <input type="password" id="confirm-password" class="form-control">
+              <label class="text-black" for="uc_confirm_password">Confirm New Password</label>
+              <input type="password" id="uc_confirm_password" class="form-control">
             </div>
           </div>
           <div class="row form-group">
             <div class="col-md-12">
-              <button id="btnClientChangePass" class="btn btn-primary py-2 px-4 text-white">Save</button>
+              <button id="btnClientSavePassword" class="btn btn-primary py-2 px-4 text-white">Save</button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- change email -->
+      <div class="col-md-9 mb-5 d-none" id="form-email" data-aos="fade">
+
+        <div class="row d-none" id="changeemail-success">
+          <div class="col-md-12">
+            <div class="alert alert-success alert-dismissible">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              <p class="justify-content-center align-items-center message" style="margin: 0">
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row d-none" id="changeemail-failed">
+          <div class="col-md-12">
+            <div class="alert alert-danger alert-dismissible">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              <p class="justify-content-center align-items-center message" style="margin: 0">
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <form method="POST" class="p-5 bg-white">
+
+          <input type="hidden" class="client_id" value="{{ client_info.client_id }}">
+
+          <div class="row form-group">
+            <div class="col-md-12">
+              <label class="text-black" for="uc_current_email">Current Email</label>
+              <input type="email" value="{% if client_info.email %} {{client_info.email}} {% else %} {% endif %}"
+                id="uc_current_email" class="form-control">
+            </div>
+
+            <div class="col-md-12">
+              <label class="text-black" for="uc_new_email">New Email</label>
+              <input type="email" id="uc_new_email" class="form-control">
+            </div>
+
+            <div class="col-md-12">
+              <label class="text-black" for="uc_e_current_password">Confirm Password</label>
+              <input type="password" id="uc_e_current_password" class="form-control">
+            </div>
+
+          </div>
+          <div class="row form-group">
+            <div class="col-md-12">
+              <button id="btnClientSaveEmail" class="btn btn-primary py-2 px-4 text-white">Save</button>
             </div>
           </div>
 

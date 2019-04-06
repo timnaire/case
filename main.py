@@ -103,7 +103,7 @@ def client_update_picture(client_id=None):
                     'error' : True,
                     'message' : "Profile picture was not saved!"})
     
-@app.route('/client/<int:client_id>/account-setting',methods=['GET','POST'])
+@app.route('/client/<int:client_id>/myaccount',methods=['GET','POST'])
 @login_required_client
 def client_account_setting(client_id=None):
     # get the lawyer details in a dictionary format
@@ -116,7 +116,7 @@ def client_account_setting(client_id=None):
             abort(404)
     client = Client.get_by_id(int(client_id))
 
-    return render_template("client/client-account-setting.html",title="Account Setting",client=session.get('client'),client_info=client_dict)
+    return render_template("account.html",title="Account Setting",client=session.get('client'),client_info=client_dict)
  
 
 @app.route('/client/signup',methods=['GET','POST'])
@@ -507,11 +507,11 @@ def find_lawyer():
 
                 lawyers = found_lawyers
                 if session.get('lawyer'):
-                    return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,lawyer=session['lawyer'])
+                    return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,lawyer=session['lawyer'],lawpractice=law_practice,cityOrMunicipality=cityOrMunicipality)
                 elif session.get('client'):
-                    return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,client=session['client'])
+                    return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,client=session['client'],lawpractice=law_practice,cityOrMunicipality=cityOrMunicipality)
                 else:
-                    return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers)
+                    return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,lawpractice=law_practice,cityOrMunicipality=cityOrMunicipality)
                 # return json_response({"found" : found_lawyers})
             else:
                 return redirect(url_for('find_lawyer'))
@@ -529,12 +529,18 @@ def find_lawyer():
     #         lawyers = found_lawyers
     #     else:
     #         lawyers = None
+    
+    attorneys = Lawyer.query().fetch()
+    lawyers = Practice.all_lawyers(attorneys)
+    logging.info(lawyers)
+
     if session.get('lawyer'):
         return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,lawyer=session['lawyer'])
     elif session.get('client'):
         return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,client=session['client'])
     else:
         return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers)
+        
 #dashboard route for lawyers
 @app.route('/lawyer/<int:lawyer_id>/dashboard')
 @login_required_lawyer
@@ -1218,7 +1224,7 @@ def getAllCase(lawyer_id=None):
     return render_template('lawyer/lawyer-mycases.html',lawyer=session['lawyer'],cases=case_dict,title="My Cases",available_practice=available_practice)
 
 # route for lawyer listing all case for lawyer
-@app.route('/client/<int:client_id>/myclient-cases',methods=['GET','POST'])
+@app.route('/client/<int:client_id>/cases',methods=['GET','POST'])
 def getAllCase_web(client_id=None):
     global available_practice
     client = Client.get_by_id(int(client_id))
@@ -1229,7 +1235,7 @@ def getAllCase_web(client_id=None):
             case_dict.append(case.to_dict())
     else:
         case_dict="Empty"
-    return render_template('lawyer/lawyer-mycases.html',client=session['client'],cases=case_dict,title="My Cases",available_practice=available_practice)
+    return render_template('cases.html',client=session['client'],cases=case_dict,title="My Cases",available_practice=available_practice)
 
 
 # route for client listing all case for client

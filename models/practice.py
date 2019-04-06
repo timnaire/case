@@ -43,6 +43,22 @@ class Practice(ndb.Model):
 
         return found_lawyers
 
+    @classmethod
+    def all_lawyers(cls,lawyers):
+        found_lawyers = []
+
+        lawyers = lawyers
+        if lawyers:
+            for lawyer in lawyers:
+                practice = cls.query(cls.lawyer == lawyer.key).get()
+                if practice:
+                    found_lawyers.append(practice.to_dict())
+
+        if not found_lawyers:
+            found_lawyers = None
+        
+        return found_lawyers
+
     def to_dict(self):
         data = {}
         
