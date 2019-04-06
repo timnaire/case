@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<div id="findlawyer">
+        <h1>Find your Lawyer!</h1>
+        <h2>Let us help you find the right lawyer.</h2>
+    <form id="find-lawyer-form" action="{{url_for('find_lawyer')}}" method="POST">
+        <!-- f in id means find lawyer -->
+        <div class="form-group">
+            <select id="lawpractice" class="form-control" name="lawpractice">
+                <option selected="true" disabled="disabled" >Select a Legal Issue</option>
+                {% for key, value in law_practice.items()|sort %}
+                    <option value="{{key}}" > {{value}}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <input type="text" name="city" class="form-control" id="cityOrMunicipality" placeholder="City or Municipality" required>
+        </div>
+        <input type='submit' id="btnFindLawyer"   value="Find Now" class="btn-get-started">
+    </form>                                  
+</div>
+<!-- 
+    <h4>A Lawyer?</h4>   onclick="if(getElementById('cityOrMunicipality').val()){document.getElementById('find-lawyer-form')}"
+    <p>Getting to know you.</p>
+    <small><a href="{{ url_for('lawyer_signup') }}">Become a lawyer with us.</a></small>
+
+    <h4>Sign-Up Client</h4>
+    <p>Start finding your client now.</p>
+    <small><a href="{{ url_for('client_signup') }}">Sign-Up</a></small> -->
+    
+    <!-- <h4>Sign in Here</h4>
+    
+    <form method="POST">
+        <div class="form-group">
+            <input type="text" id='email' class="form-control" placeholder="Email">
+        </div>
+        <div class="form-group">
+            <input type="password" id='password' class="form-control" placeholder="Password">
+        </div>
+        <button id='btnClientSignin' class="btn btn-primary">Sign In</button>
+    </form> -->
+    <!-- This is the list results -->
+    <div id="found-lawyer">
+        
+    </div>
+
+{% endblock %}

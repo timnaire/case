@@ -1,0 +1,328 @@
+{% extends 'empty_layout_2.html' %}
+
+{% block content %}
+<br />
+
+
+<!-- u in every id stands for Update -->
+<!-- hidden input value lawyer which is id for route purpose  -->
+
+<!-- Update Profile Picture -->
+<!-- <div>
+    <h3>Profile Picture</h3>
+    <form method="post">
+         <input type="hidden" class='lawyer_id' value='{{ lawyer }}'>
+        {% if lawyer_dict.profile_pic %}
+        <img src="{{ lawyer_dict.profile_pic }}" width='160px' height='160px' class="img-thumbnail" id='lawyerpic' />
+        {% else %}
+        <img src="/static/img/team-1.jpg" width='160px' height='160px' class="img-thumbnail" id='lawyerpic' />
+        {% endif %}
+        <div class="form-group">
+            <label for="profilepic">Profile Picture</label>
+            <input type="file" class="form-control-file" id="image" name="image" accept=".jpg, .jpeg, .png" multiple>
+        </div>
+        <button id='btnLawyerSavePicture' class="btn btn-primary">Save</button>
+    </form>
+</div> -->
+
+<!-- Update Personal -->
+<!-- <div>
+    <h3>Profile Information</h3>
+    <form method="post">
+        <input type="hidden" class='lawyer_id' value='{{ lawyer }}'>
+        <div class="form-group">
+            <input type="text" id="ufirst_name" value="{{ lawyer_dict.first_name }}" class="form-control" placeholder="First name">
+        </div>
+        <div class="form-group">
+            <input type="text" id="ulast_name" value="{{ lawyer_dict.last_name }}" class="form-control" placeholder="Last name">
+        </div>
+        <div class="form-group">
+            <input type="text" id="uphone" value="{{ lawyer_dict.phone }}" class="form-control" placeholder="Phone">
+        </div>
+        <div class="form-group">
+            <input type="text" id="ucityOrMunicipality" value="{{ lawyer_dict.cityOrMunicipality }}" class="form-control" placeholder="City Or Municipality">
+        </div>
+        <div class="form-group">
+            <input type="text" id="uoffice" value="{{ lawyer_dict.office }}" class="form-control" placeholder="Office">
+        </div>
+        <div class="form-group">
+            <textarea class="form-control" id="uaboutme" rows="3" placeholder="About myself">{% if lawyer_dict.aboutme == None %}{% else %}{{lawyer_dict.aboutme}}{% endif %}</textarea>
+        </div>
+        <div class="checkbox">
+            {% for key, value in law_practice.items()|sort %}
+            <label>
+                <input type="checkbox" class="practice" 
+                {% for practice in practices %}
+                {% if key in practice.law_practice %}
+                    checked
+                {% endif %}
+                {% endfor %}
+                value="{{ value }}"> {{ value }}
+            </label>
+            {% endfor %}
+        </div>
+        <button id='btnLawyerSaveInfo' class="btn btn-primary">Save</button>
+    </form>
+</div> -->
+
+<!-- Update Email -->
+<!-- <div>
+    <h3>Change Email</h3>
+    <form method="post">
+        <input type="hidden" class='lawyer_id' value='{{ lawyer }}'>
+        <div class="form-group">
+            <input type="text" id='current_email' value="{{ lawyer_dict.email }}" class="form-control" placeholder="Email">
+        </div>
+        <div class="form-group">
+            <input type="text" id='new_email' class="form-control" placeholder="New email">
+        </div>
+        <div class="form-group">
+            
+            <input type="password" id='e_current_password' class="form-control" placeholder="Current password">
+        </div>
+        <button id="btnLawyerSaveEmail" class="btn btn-primary" >Save</button>
+    </form>
+</div> -->
+
+<!-- Update Password -->
+<!-- <div>
+    <h3>Change Password</h3>
+    <form method="post">
+        <input type="hidden" class='lawyer_id' value='{{ lawyer }}'>
+        <div class="form-group">
+            <input type="password" id='current_password' class="form-control" placeholder="Current password">
+        </div>
+        <div class="form-group">
+            <input type="password" id='new_password' class="form-control" placeholder="New password">
+        </div>
+        <div class="form-group">
+            <input type="password" id='confirm_password' class="form-control" placeholder="Confirm password">
+        </div>
+        <button id='btnLawyerSavePassword' class='btn btn-primary'>Save</button>
+    </form>
+</div> -->
+{% if request.args.get('err') %}
+                <div class="alert alert-danger">
+                    {{ request.args.get('m') }}
+                </div>
+                {% elif request.args.get('succ') %}
+                <div class="alert alert-success">
+                    {{ request.args.get('m') }}
+                </div>
+                {% endif %}
+<div class="container bootstrap snippet" id="account-profile-container">
+        
+        <div class="row">
+              <div class="col-sm-3"><!--left col-->
+                  
+    
+          <div class="text-center">
+            <form action="">
+
+                
+               
+                {% if lawyer_dict.profile_pic %}
+                <img src="{{ lawyer_dict.profile_pic }}" width='160px' height='160px' class="img-thumbnail" id='lawyerpic' />
+                {% else %}
+                <img src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="avatar img-circle img-thumbnail" alt="avatar">
+                {% endif %}
+                <div class="form-group">
+                    <input type="file" id="image" name="image" accept=".jpg, .jpeg, .png" class="text-center center-block file-upload">
+                </div>
+                <button id='btnLawyerSavePicture' class="btn btn-primary">Save</button>
+            </form>
+          </div></hr><br>
+    
+                   
+              <div class="panel panel-default">
+                <div class="panel-heading">Website <i class="fa fa-link fa-1x"></i></div>
+                <div class="panel-body"><a href="http://bootnipets.com">bootnipets.com</a></div>
+              </div>
+              
+              
+              <ul class="list-group">
+                <li class="list-group-item text-muted">Activity <i class="fa fa-dashboard fa-1x"></i></li>
+                <li class="list-group-item text-right"><span class="pull-left"><strong>Shares</strong></span> 125</li>
+                <li class="list-group-item text-right"><span class="pull-left"><strong>Likes</strong></span> 13</li>
+                <li class="list-group-item text-right"><span class="pull-left"><strong>Posts</strong></span> 37</li>
+                <li class="list-group-item text-right"><span class="pull-left"><strong>Followers</strong></span> 78</li>
+              </ul> 
+                   
+              
+            </div><!--/col-3-->
+            <div class="col-sm-9">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#home">Account</a></li>
+                    <li><a data-toggle="tab" href="#email">Change E-mail</a></li>
+                    <li><a data-toggle="tab" href="#password">Change Password</a></li>
+                    <li><a data-toggle="tab" href="#deactivateLawyer">Deactivate Account</a></li>
+                  </ul>
+                  
+              <div class="tab-content" >
+                <div class="tab-pane active" id="home">
+                    <hr>
+                      <form class="form" action="##" method="post" id="registrationForm">
+                            <input type="hidden" class='lawyer_id' value='{{ lawyer }}'>
+                          <div class="form-group">
+                              
+                              <div class="col-xs-6">
+                                  <label for="ufirst_name"><h4>First name</h4></label>
+                                  <input type="text" class="form-control" name="ufirst_name" value="{{ lawyer_dict.first_name }}" id="ufirst_name" placeholder="First name" title="enter your first name if any.">
+                              </div>
+                          </div>
+                          <div class="form-group">
+                              
+                              <div class="col-xs-6">
+                                <label for="ulast_name"><h4>Last name</h4></label>
+                                  <input type="text" class="form-control" name="ulast_name" value="{{ lawyer_dict.last_name }}" id="ulast_name" placeholder="Last name" title="enter your last name if any.">
+                              </div>
+                          </div>
+                          <div class="form-group">
+                              
+                              <div class="col-xs-6">
+                                  <label for="uphone"><h4>Phone</h4></label>
+                                  <input type="text" class="form-control" name="uphone" value="{{ lawyer_dict.phone }}" id="uphone" placeholder="Enter phone" title="enter your phone number if any.">
+                              </div>
+                          </div>
+                          <div class="form-group">
+                              
+                              <div class="col-xs-6">
+                                  <label for="ucityOrMunicipality"><h4>City</h4></label>
+                                  <input type="text" class="form-control" id="ucityOrMunicipality" value="{{ lawyer_dict.cityOrMunicipality }}" placeholder="City" title="enter a location">
+                              </div>
+                          </div>
+                          <div class="form-group">
+                              
+                                <div class="col-xs-6">
+                                    <label for="uoffice"><h4>Office Address</h4></label>
+                                    <input type="text" class="form-control" id="uoffice" value="{{ lawyer_dict.office }}" placeholder="Office Address" title="enter a location">
+                                </div>
+                            </div>
+                          <div class="form-group">
+                              
+                                <div class="col-xs-6">
+                                    <label for="ufirm"><h4>Firm</h4></label>
+                                    <input type="text" class="form-control" id="ufirm" value="{% if lawyer_dict.firm %}{{ lawyer_dict.firm }}{% else %}None{% endif %}" placeholder="Firm name" title="enter a location">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                              
+                                <div class="col-xs-6">
+                                    <label for="uaboutme"><h4>About me</h4></label>
+                                    <textarea class="form-control" id="uaboutme" rows="3" placeholder="About myself">{% if lawyer_dict.aboutme %}{{lawyer_dict.aboutme}}{% else %}None{% endif %}</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                    {% for key, value in law_practice.items()|sort %}
+                                    <label>
+                                        <input type="checkbox" class="practice" 
+                                        {% for practice in practices %}
+                                        {% if key in practice.law_practice %}
+                                            checked
+                                        {% endif %}
+                                        {% endfor %}
+                                        value="{{ value }}"> {{ value }}
+                                    </label>
+                                    {% endfor %}
+                                </div>
+                          <div class="form-group">
+                               <div class="col-xs-12">
+                                    <br>
+                                      <button class="btn btn-lg btn-success" id="btnLawyerSaveInfo" type="submit"><i class="glyphicon glyphicon-ok-sign"></i> Save</button>
+                                  </div>
+                          </div>
+                      </form>
+                  
+                  <hr>
+                  
+                 </div><!--/tab-pane-->
+                 <div class="tab-pane" id="email">
+                   
+                   <h2></h2>
+                   
+                   <hr>
+                      <form class="form" action="##" method="post" id="registrationForm"> 
+                          <input type="hidden" class='lawyer_id' value='{{ lawyer }}'>             
+                          <div class="form-group">
+                              
+                              <div class="col-xs-6">
+                                  <label for="email"><h4>Email</h4></label>
+                                  <input type="email" id='current_email' value="{{ lawyer_dict.email }}" class="form-control" name="email" placeholder="Email">
+                              </div>
+                          </div>
+                          <div class="form-group">
+                              
+                              <div class="col-xs-6">
+                                  <label for="newemail"><h4>New Email</h4></label>
+                                  <input type="email" class="form-control" name="newemail" id="new_email" placeholder="you@email.com" title="enter your email.">
+                              </div>
+                          </div>
+                          <div class="form-group">
+                              
+                              <div class="col-xs-6">
+                                  <label for="password"><h4>Current Password</h4></label>
+                                  <input type="password" class="form-control" name="password" id="e_current_password" placeholder="password" title="enter your password.">
+                              </div>
+                          </div>
+                          <div class="form-group">
+                               <div class="col-xs-12">
+                                    <br>
+                                      <button class="btn btn-lg btn-success" id="btnLawyerSaveEmail" type="submit"><i class="glyphicon glyphicon-ok-sign"></i> Save</button>
+                                       <button class="btn btn-lg" type="reset"><i class="glyphicon glyphicon-repeat"></i> Reset</button>
+                                </div>
+                          </div>
+                      </form>
+                   
+                 </div><!--/tab-pane-->
+                 <div class="tab-pane" id="password">
+                        
+                       
+                      <hr>
+                      <form class="form" action="##" method="post" id="registrationForm">
+                          
+                          <div class="form-group">
+                              
+                              <div class="col-xs-6">
+                                <label for="last_name"><h4>New Password</h4></label>
+                                  <input type="password" class="form-control" id="new_password" placeholder="New Password" title="enter your new password.">
+                              </div>
+                          </div>
+                          <div class="form-group">
+                              
+                                <div class="col-xs-6">
+                                  <label for="last_name"><h4>Confirm Password</h4></label>
+                                    <input type="password" class="form-control" id="confirm_password" placeholder="Confirm Password" title="Verify your password.">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                              
+                                    <div class="col-xs-6">
+                                        <label for="first_name"><h4>Current Password</h4></label>
+                                        <input type="password" class="form-control" id="current_password" placeholder="Enter Current Password" title="Verify using your current password.">
+                                    </div>
+                                </div>
+                          <div class="form-group">
+                               <div class="col-xs-12">
+                                    <br>
+                                      <button class="btn btn-lg btn-success pull-right" id='btnLawyerSavePassword' ><i class="glyphicon glyphicon-ok-sign"></i>Change Password</button>
+                                       <!--<button class="btn btn-lg" type="reset"><i class="glyphicon glyphicon-repeat"></i> Reset</button>-->
+                                </div>
+                          </div>
+                      </form>
+                  </div>
+                <div class="tab-pane" id="deactivateLawyer">
+                                                                        
+                        <hr>
+                        <h3>Deactivating your account will delete your account.</h3>   
+                        <button class="danger-button-mine"  id="btnDeactivateLawyer">Deactivate Account</button>
+                        
+                      </div><!--/tab-pane-->            
+                  
+                    
+              </div><!--/tab-content-->
+    
+            </div><!--/col-9-->
+        </div>
+
+        
+{% endblock %}

@@ -84,7 +84,7 @@ def client_signin():
     if session.get('client') is not None:
         return redirect(url_for('dashboard_client'))
 
-    return render_template('lawyer/login.html',title='Sign In')
+    return render_template('signin.html',title='Sign In')
 
 @app.route('/client/<int:client_id>/account-setting/profile-picture', methods=['POST'])
 @login_required_client
@@ -172,7 +172,7 @@ def client_signup():
                 "error" : True,
                 "message" : "Please dont leave the fields empty and try again."})
         
-    return render_template('client/client-signup.html',title="Client Sign up")
+    return render_template('signup.html',title="Client Sign up")
 
 # for mobile upload with no login required
 @app.route('/client/<int:client_id>/profile-picture', methods=['POST'])
@@ -323,9 +323,11 @@ def home():
     # del session['client']
     global available_practice
     if session.get('lawyer') is not None:
-        return render_template('home.html',title='Home',lawyer=session['lawyer'],law_practice=available_practice)
-    elif session.get('client'):        
-        return render_template('home.html',title='Home',law_practice=available_practice,client=session['client'])    
+        lawyer = Lawyer.get_by_id(int(session['lawyer']))
+        return render_template('home.html',title='Home',lawyer=session['lawyer'],law_practice=available_practice,lawyer_first=lawyer.first_name)
+    elif session.get('client'):
+        client = Client.get_by_id(int(session['client']))
+        return render_template('home.html',title='Home',law_practice=available_practice,client=session['client'],client_first=client.first_name)    
     else:
         return render_template('home.html',title='Home',law_practice=available_practice)
 
@@ -491,7 +493,7 @@ def number_of_case(lawyer_id=None):
             "message" : "No notification"})
     
 # find a lawyer route
-@app.route('/lawyer/found',methods=['GET','POST'])
+@app.route('/lawyers',methods=['GET','POST'])
 def find_lawyer():
     lawyers = None
     found_lawyers = []
@@ -505,11 +507,11 @@ def find_lawyer():
 
                 lawyers = found_lawyers
                 if session.get('lawyer'):
-                    return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers,lawyer=session['lawyer'])
+                    return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,lawyer=session['lawyer'])
                 elif session.get('client'):
-                    return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers,client=session['client'])
+                    return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,client=session['client'])
                 else:
-                    return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers)
+                    return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers)
                 # return json_response({"found" : found_lawyers})
             else:
                 return redirect(url_for('find_lawyer'))
@@ -528,11 +530,11 @@ def find_lawyer():
     #     else:
     #         lawyers = None
     if session.get('lawyer'):
-        return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers,lawyer=session['lawyer'])
+        return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,lawyer=session['lawyer'])
     elif session.get('client'):
-        return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers,client=session['client'])
+        return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,client=session['client'])
     else:
-        return render_template('lawyer-found.html',title='Find',law_practice=available_practice,results=lawyers)
+        return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers)
 #dashboard route for lawyers
 @app.route('/lawyer/<int:lawyer_id>/dashboard')
 @login_required_lawyer
@@ -1656,13 +1658,11 @@ def lawyer_signin():
     if session.get('lawyer') is not None:
         return redirect(url_for('dashboard'))
 
-    return render_template('lawyer/login.html',title='Sign In')
+    return render_template('lawyer-signin.html',title='Sign In')
 
 #sign up lawyer route
 @app.route('/lawyer/signup', methods=['GET','POST'])
 def lawyer_signup():
-
-
     if session.get('client'):
         return redirect(url_for('home'))
 
@@ -1755,7 +1755,7 @@ def lawyer_signup():
         return redirect(url_for('dashboard'))
     global available_practice
     
-    return render_template('lawyer/lawyer-signup.html',title='Try it for Free',law_practice=available_practice)
+    return render_template('lawyer-signup.html',title='Lawyer Sign Up',law_practice=available_practice)
 
 # send email with token client
 def send_reset_email(client):
@@ -1963,20 +1963,33 @@ def lawyer_deactivate(lawyer_id=None):
                     "error" : True,
                     "message" : "Lawyer Id not transferred"})
 
+@app.route("/about",methods=['GET'])
+def about():
+    if session.get('lawyer') is not None:
+        return render_template('about.html',title='About Us',lawyer=session['lawyer'])
+    elif session.get('client') is not None:
+        return render_template('about.html',title='About Us',client=session['client'])
+    else:
+        return render_template("about.html",title="About Us")
 
+@app.route("/contact",methods=['GET'])
+def contact():
+    if session.get('lawyer') is not None:
+        return render_template('contact.html',title='Contact',lawyer=session['lawyer'])
+    elif session.get('client') is not None:
+        return render_template('contact.html',title='Contact',client=session['client'])
+    else:
+        return render_template("contact.html",title="Contact")
 
 # sign out route
-@app.route('/lawyer/signout')
-def lawyer_signout():
-    del session['lawyer']
-    return redirect(url_for('lawyer_signin'))
-
-
-# sign out route
-@app.route('/client/signout')
-def client_signout():
-    del session['client']
-    return redirect(url_for('client_signin'))
+@app.route('/signout')
+def signout():
+    if session.get('client') is not None:
+        del session['client']
+        return redirect(url_for('client_signin'))
+    if session.get('lawyer') is not None:
+        del session['lawyer']
+        return redirect(url_for('lawyer_signin'))
 
 @app.errorhandler(500)
 def error_500(e):

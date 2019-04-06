@@ -1,263 +1,186 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>
+        {% if title %}
+        {{ title }}
+        {% else %}
+        Case
+        {% endif %}
+    </title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Poppins:300,400,500,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic:400,700,800" rel="stylesheet">
+    <link rel="stylesheet" href="/static/fonts/icomoon/style.css">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/magnific-popup.css">
+    <link rel="stylesheet" href="/static/css/jquery-ui.css">
+    <link rel="stylesheet" href="/static/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="/static/css/owl.theme.default.min.css">
+
+    <link rel="stylesheet" href="/static/css/bootstrap-datepicker.css">
+
+    <link rel="stylesheet" href="/static/fonts/flaticon/font/flaticon.css">
+
+    <link rel="stylesheet" href="/static/css/aos.css">
+    <link rel="stylesheet" href="/static/css/rangeslider.css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dropzone.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/animate.min.css') }}">
 
-    {% if title %}
-        <title>Case - {{ title }}</title>
-    {% else %}
-        <title>Case</title>
-    {% endif %}
+    <link rel="stylesheet" href="/static/css/style.css">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
+
 <body>
 
+    <div class="site-mobile-menu">
+        <div class="site-mobile-menu-header">
+            <div class="site-mobile-menu-close mt-3">
+                <span class="icon-close2 js-menu-toggle"></span>
+            </div>
+        </div>
+        <div class="site-mobile-menu-body"></div>
+    </div>
 
-        <header id="header">
-                <div class="container">
-            
-                  <div id="logo" class="pull-left">
-                    <!-- Uncomment below if you prefer to use a text logo -->
-                    <!--<h1><a href="#hero">Regna</a></h1>-->
-                  </div>
-            
-                  <nav id="nav-menu-container">
-                    <ul class="nav-menu">
-                      <li class="menu-active"><a href="/">Home</a></li>
-                      <li><a href="#about">About Us</a></li>
-                      <li><a href="#services">Services</a></li>
-                      <li><a href="#team">Team</a></li>                      
-                      <li><a href="#contact">Contact Us</a></li>
-                      {% if lawyer %}                      
-                      <li><a href="#">My Account</a>
-                         <ul>
-                           <li><a href="/lawyer/{{lawyer}}/dashboard">My Dashboard</a></li>
-                           <li><a href="/lawyer/{{lawyer}}/mycases">Cases</a></li>
-                           <li><a href="/lawyer/{{lawyer}}/account-setting">Account Settings</a></li>
-                           <li><a href="/lawyer/signout">Log Out</a></li>
-                         </ul>
-                      </li>
-                      {% elif client %}
-                      <li><a href="#">My Account</a>
-                        <ul>
-                          <li><a href="/client/{{client}}/myclient-cases">Cases</a></li>
-                          <li><a href="/client/{{client}}/account-setting">Account Client Settings</a></li>
-                          <li><a href="/client/signout">Log Out</a></li>
-                        </ul>
-                     </li>                     
-                      {% else %}                      
-                      <li><a href="/lawyer/signin">Sign In</a></li>
-                      {% endif %}
+    <header class="site-navbar container py-0 bg-white" role="banner">
+
+        <!-- <div class="container"> -->
+        <div class="row align-items-center">
+
+            <div class="col-6 col-xl-2">
+                <h1 class="mb-0 site-logo"><a href="/" class="text-black mb-0">CA<span class="text-primary">SE</span>
+                    </a></h1>
+            </div>
+            <div class="col-12 col-md-10 d-none d-xl-block">
+                <nav class="site-navigation position-relative text-right" role="navigation">
+
+                    <ul class="site-menu js-clone-nav mr-auto d-none d-lg-block">
+                        <li class="{{ 'active' if active_page == 'home' else '' }}"><a href="/">Home</a></li>
+                        <li class="{{ 'active' if active_page == 'lawyers' else '' }}"><a href="/lawyers">Lawyer</a>
+                        </li>
+                        {% if client %}
+                            <li class="{{ 'active' if active_page == 'cases' else '' }}"><a href="/client/cases">Case</a></li>
+                        {% elif lawyer %}
+                            <li class="{{ 'active' if active_page == 'cases' else '' }}"><a href="/lawyer/cases">Case</a></li>
+                        {% endif %}
+                        <li class="{{ 'active' if active_page == 'about' else '' }}"><a href="/about">About</a></li>
+                        <li class="{{ 'active' if active_page == 'contact' else '' }}"><a href="/contact">Contact</a>
+                        </li>
+                        {% if client %}
+                            <li class="has-children {{ 'active' if active_page == 'profile' else '' }}">
+                                <a href="#">Profile</a>
+                                <ul class="dropdown">
+                                    <li><a href="/client/myaccount">My Account</a></li>
+                                    <li><a href="/signout">Sign Out</a></li>
+                                </ul>
+                            </li>
+                        {% elif lawyer %}
+                            <li class="has-children {{ 'active' if active_page == 'profile' else '' }}">
+                                <a href="#">Profile</a>
+                                <ul class="dropdown">
+                                    <li><a href="/lawyer/myaccount">My Account</a></li>
+                                    <li><a href="/signout">Sign Out</a></li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="has-children {{ 'active' if active_page == 'signin' else '' }}">
+                                <a href="#">Sign in</a>
+                                <ul class="dropdown">
+                                    <li><a href="/client/signin">as Client</a></li>
+                                    <li><a href="/lawyer/signin">as Lawyer</a></li>
+                                </ul>
+                            </li>
+                            <li class="has-children {{ 'active' if active_page == 'signup' else '' }}">
+                                <a href="#">Sign up</a>
+                                <ul class="dropdown">
+                                    <li><a href="/client/signup">as Client</a></li>
+                                    <li><a href="/lawyer/signup">as Lawyer</a></li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                        <!-- <li><a href="#" class="cta"><span class="bg-primary text-white rounded">+ Post an Ad</span></a>
+                        </li> -->
                     </ul>
-                  </nav><!-- #nav-menu-container -->
-                </div>
-        </header>
-    
-    <main id="main">
-        <section id="hero">
-                <div class="hero-container">                  
-                  {% block content %} {% endblock %}  
-                </div>
-        </section>
+                </nav>
+            </div>
 
-        <!--==========================
-      About Us Section
-    ============================-->
-    <section id="about">
-            <div class="container">
-              <div class="row about-container">
-      
-                <div class="col-lg-6 content order-lg-1 order-2">
-                  <h2 class="title">Few Words About Us</h2>
-                  <p>
-                      We are an application that helps Clients and Lawyers connect efficiently, we make things much more comfortable than the old ways of dealing a case. We offer great services.
-                  </p>
-      
-                  <div class="icon-box wow fadeInUp">
-                    <div class="icon"><i class="fa fa-shopping-bag"></i></div>
-                    <h4 class="title"><a href="">Organizing Documents</a></h4>
-                    <p class="description">Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi</p>
-                  </div>
-      
-                  <div class="icon-box wow fadeInUp" data-wow-delay="0.2s">
-                    <div class="icon"><i class="fa fa fa-road"></i></div>
-                    <h4 class="title"><a href="">Map Availability</a></h4>
-                    <p class="description">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</p>
-                  </div>
-      
-                  <div class="icon-box wow fadeInUp" data-wow-delay="0.4s">
-                    <div class="icon"><i class="fa fa-bar-chart"></i></div>
-                    <h4 class="title"><a href="">Fast Updates about the case</a></h4>
-                    <p class="description">Minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat tarad limino ata</p>
-                  </div>
-      
-                </div>
-      
-                <div class="col-lg-6 background order-lg-2 order-1 wow fadeInRight"></div>
-              </div>
-      
+
+            <div class="d-inline-block d-xl-none ml-auto py-3 col-6 text-right" style="position: relative; top: 3px;">
+                <a href="#" class="site-menu-toggle js-menu-toggle text-black"><span class="icon-menu h3"></span></a>
             </div>
-          </section><!-- #about -->
-          <!--==========================
-      Services Section
-    ============================-->
-    <section id="services">
-            <div class="container wow fadeIn">
-              <div class="section-header">
-                <h3 class="section-title">Services</h3>
-                <p class="section-description">Here are the services we can offer!</p>
-              </div>
-              <div class="row">
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.2s">
-                  <div class="box">
-                    <div class="icon"><a href=""><i class="fa fa-desktop"></i></a></div>
-                    <h4 class="title"><a href="">Calendar</a></h4>
-                    <p class="description">Busy Schedule? No worries, we offer you a calendar to keep you on track!</p>
-                  </div>
-                </div>
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.4s">
-                  <div class="box">
-                    <div class="icon"><a href=""><i class="fa fa fa-road"></i></a></div>
-                    <h4 class="title"><a href="">Maps</a></h4>
-                    <p class="description">Do you wanna know where the nearest Law Offices are? No worries ..</p>
-                  </div>
-                </div>
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.6s">
-                  <div class="box">
-                    <div class="icon"><a href=""><i class="fa fa-paper-plane"></i></a></div>
-                    <h4 class="title"><a href="">Upload Document</a></h4>
-                    <p class="description">We offer you a service where you can just submit your case requirements online!</p>
-                  </div>
-                </div>
-      
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.2s">
-                  <div class="box">
-                    <div class="icon"><a href=""><i class="fa fa-photo"></i></a></div>
-                    <h4 class="title"><a href="">Online Appointments</a></h4>
-                    <p class="description">Pre Appointment online is here! Gone are the days of personal pre appointments.</p>
-                  </div>
-                </div>
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.4s">
-                  <div class="box">
-                    <div class="icon"><a href=""><i class="fa fa-road"></i></a></div>
-                    <h4 class="title"><a href="">Nemo Enim</a></h4>
-                    <p class="description">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque</p>
-                  </div>
-                </div>
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.6s">
-                  <div class="box">
-                    <div class="icon"><a href=""><i class="fa fa-shopping-bag"></i></a></div>
-                    <h4 class="title"><a href="">Eiusmod Tempor</a></h4>
-                    <p class="description">Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi</p>
-                  </div>
-                </div>
-              </div>
-      
-            </div>
-          </section><!-- #services -->
-          <!--==========================
-    Call To Action Section
-    ============================-->
-    <section id="call-to-action">
-            <div class="container wow fadeIn">
-              <div class="row">
-                <div class="col-lg-9 text-center text-lg-left">
-                  <h3 class="cta-title">Become our Lawyer!</h3>
-                  <p class="cta-text">We can help you meet your clients by clicking more of the details here</p>                    
-                </div>
-                <div class="col-lg-3 cta-btn-container text-center">
-                  <a class="cta-btn align-middle" href="{{url_for('lawyer_signup')}}">See More</a>
-                </div>
-              </div>
-      
-            </div>
-          </section><!-- #call-to-action -->
-          <!--==========================
-      Team Section
-    ============================-->
-    <section id="team">
-            <div class="container wow fadeInUp">
-              <div class="section-header">
-                <h3 class="section-title">Team</h3>
-                <p class="section-description">We are a group of students from University of Cebu - Main Campus.</p>
-              </div>
-              <div class="row">
-                <div class="col-lg-4 col-md-6">
-                  <div class="member">
-                    <div class="pic"><img src="/static/img/team-1.jpg" alt=""></div>
-                    <h4>Mc James R. Gulles</h4>
-                    <span>Hipster/Designer</span>
-                    <div class="social">
-                      <a href=""><i class="fa fa-twitter"></i></a>
-                      <a href=""><i class="fa fa-facebook"></i></a>
-                      <a href=""><i class="fa fa-google-plus"></i></a>
-                      <a href=""><i class="fa fa-linkedin"></i></a>
+
+        </div>
+        <!-- </div> -->
+
+    </header>
+
+    {% block content %} {% endblock %}
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h2 class="footer-heading mb-4">A Lawyer?</h2>
+                            <p>Go to this link <span><a href="#">hahah</a></span></p>
+                        </div>
+
+                        <div class="col-md-3">
+                            <h2 class="footer-heading mb-4">Navigations</h2>
+                            <ul class="list-unstyled">
+                                <li><a href="/">Home</a></li>
+                                <li><a href="/lawyers">Lawyer</a></li>
+                                <li><a href="/about">About Us</a></li>
+                                <li><a href="/contact">Contact Us</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-3">
+                            <h2 class="footer-heading mb-4">Follow Us</h2>
+                            <a href="#" class="pl-0 pr-3"><span class="icon-facebook"></span></a>
+                            <a href="#" class="pl-3 pr-3"><span class="icon-twitter"></span></a>
+                            <a href="#" class="pl-3 pr-3"><span class="icon-instagram"></span></a>
+                            <a href="#" class="pl-3 pr-3"><span class="icon-linkedin"></span></a>
+                        </div>
                     </div>
-                  </div>
                 </div>
-      
-                <div class="col-lg-4 col-md-6">
-                  <div class="member">
-                    <div class="pic"><img src="/static/img/team-2.jpg" alt=""></div>
-                    <h4>Maribel Redilosa</h4>
-                    <span>Hustler/Product Manager</span>
-                    <div class="social">
-                      <a href=""><i class="fa fa-twitter"></i></a>
-                      <a href=""><i class="fa fa-facebook"></i></a>
-                      <a href=""><i class="fa fa-google-plus"></i></a>
-                      <a href=""><i class="fa fa-linkedin"></i></a>
-                    </div>
-                  </div>
-                </div>
-      
-                <div class="col-lg-4 col-md-6">
-                  <div class="member">
-                    <div class="pic"><img src="/static/img/team-3.jpg" alt=""></div>
-                    <h4>Timmy G. Donaire</h4>
-                    <span>Hacker/Programmer</span>
-                    <div class="social">
-                      <a href=""><i class="fa fa-twitter"></i></a>
-                      <a href=""><i class="fa fa-facebook"></i></a>
-                      <a href=""><i class="fa fa-google-plus"></i></a>
-                      <a href=""><i class="fa fa-linkedin"></i></a>
-                    </div>
-                  </div>
-                </div>
-      
             </div>
-          </section><!-- #team -->
-    </main>
-    
-    
-    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/hoverIntent.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/dropzone.js') }}"></script>
+            <div class="row pt-5 mt-5 text-center">
+                <div class="col-md-12">
+                    <div class="border-top pt-5">
+                        <p>
+                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                            Made with ❤️at Case.<br /> ©
+                            <script>document.write(new Date().getFullYear());</script> Case. All rights reserved
+                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </footer>
+    </div>
+
+    <script src="/static/js/jquery-3.3.1.min.js"></script>
+    <script src="/static/js/jquery-migrate-3.0.1.min.js"></script>
+    <script src="/static/js/jquery-ui.js"></script>
+    <script src="/static/js/popper.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/owl.carousel.min.js"></script>
+    <script src="/static/js/jquery.stellar.min.js"></script>
+    <script src="/static/js/jquery.countdown.min.js"></script>
+    <script src="/static/js/jquery.magnific-popup.min.js"></script>
+    <script src="/static/js/bootstrap-datepicker.min.js"></script>
+    <script src="/static/js/aos.js"></script>
+    <script src="/static/js/rangeslider.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/wow.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/superfish.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/waypoints.min.js') }}"></script>
-    <a href="#" class="back-to-top"><i class="fa fa-chevron-up"></i></a>
 
-    <script>
-    // function load_home() {
-    //   document.getElementById("found-lawyer").innerHTML='<object type="text/html" data="home.html" ></object>';
-    // }
-    </script>
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/script.js"></script>
+
 </body>
+
 </html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Lawyer Signup</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="author" content="colorlib.com">
+
+		<!-- MATERIAL DESIGN ICONIC FONT -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='fonts/material-design-iconic-font.css') }}">
+		<!-- STYLE CSS -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/l-g.css') }}">
+	</head>
+	<body>
+		<div class="wrapper">
+            <form action="" id="wizard">
+        		<!-- SECTION 1 -->
+                <h2></h2>
+                <section>
+                    <div class="inner">
+						<div class="image-holder">
+							<img src="{{url_for('static',filename='img/lawyer-pic1.jpg')}}" class="reg-image" alt="">
+						</div>
+						<div class="form-content" >
+							<div class="form-header">
+								<h3>Registration</h3>
+							</div>
+							<p>Please fill with your details</p>
+							<div class="form-row">
+								<div class="form-holder">
+									<input type="text" id="first_name" placeholder="First Name" class="form-control" required>
+								</div>
+								<div class="form-holder">
+									<input type="text" id="last_name" placeholder="Last Name" class="form-control" required>
+								</div>
+							</div>
+							<div class="form-row">
+								<div class="form-holder">
+									<input type="text" id="email" placeholder="Your Email" class="form-control" required>
+								</div>
+								<div class="form-holder">
+									<input type="text" id="phone" placeholder="Phone Number" class="form-control" required>
+								</div>
+							</div>
+							<div class="form-row">
+								<div class="form-holder">
+									<input type="number" id='rollno' class="form-control" name="rollno" placeholder="Roll Number" required>
+								</div>
+								<div class="form-holder" id='sex' style="align-self: flex-end; transform: translateY(4px);">
+									<div class="checkbox-tick">
+										<label class="male">
+											<input type="radio" name="gender" value="male" checked> Male<br>
+											<span class="checkmark"></span>
+										</label>
+										<label class="female">
+											<input type="radio" name="gender" value="female"> Female<br>
+											<span class="checkmark"></span>
+										</label>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+                </section>
+
+				<!-- SECTION 2 -->
+                <h2></h2>
+                <section>
+                    <div class="inner">
+						<div class="image-holder">
+							<img src="{{url_for('static',filename='img/lawyer-pic2.jpg')}}" class="reg-image" alt="">
+						</div>
+						<div class="form-content">
+							<div class="form-header">
+								<h3>Registration</h3>
+							</div>
+							<p>Please fill with additional info</p>
+							<div class="form-row">
+								<div class="form-holder w-100">
+									<input type="text" id="office" placeholder="Office Address" class="form-control">
+								</div>
+							</div>
+							<div class="form-row">
+								<div class="form-holder">
+									<input type="text" id="cityOrMunicipality" placeholder="City" class="form-control">
+								</div>
+								<div class="form-holder">
+									<input type="text" id='firm' placeholder="Firm (Optional)" class="form-control">
+								</div>
+							</div>
+                            <div class="form-row">
+                                    <div class="form-holder">
+                                        <input type="password" id="the-password" placeholder="Password" class="form-control">
+                                    </div>
+                                    <div class="form-holder">
+                                        <input type="password" id='confirm-password' placeholder="Confirm Password" class="form-control">
+                                    </div>
+                                </div>
+						</div>
+					</div>
+                </section>
+
+                <!-- SECTION 3 -->
+                <h2></h2>
+                <section>
+                    <div class="inner">
+						<div class="image-holder">
+							<img src="{{url_for('static',filename='img/lawyer-pic3.jpg')}}" class="reg-image" alt="">
+						</div>
+						<div class="form-content">
+							<div class="form-header">
+								<h3>Registration</h3>
+							</div>
+							<p>Select your law practice!</p>
+							<div class="form-row">
+								<div class="form-holder w-100">
+                                        <div class="checkbox">
+                                                {% for key, value in law_practice.items() | sort %}
+                                                <div class="checkbox">
+                                                    <label>                            
+                                                        <input  type="checkbox" class="practice" value="{{ key }}"> {{ value }}
+                                                    </label>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+								</div>
+							</div>
+							<div class="checkbox-circle mt-24">
+								<label>
+									<input type="checkbox" checked>  Please accept <a href="#">terms and conditions ?</a>
+									<span class="checkmark"></span>
+								</label>
+							</div>
+						</div>
+					</div>
+                </section>
+            </form>
+		</div>
+
+		<!-- JQUERY -->
+		<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+
+        <!-- JQUERY STEP -->
+        <script src="{{ url_for('static', filename='js/jquery.steps.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/lawyer-registration.js') }}"></script>
+        
+		<!-- Template created and distributed by Colorlib -->
+</body>
+</html>
+
+
+
