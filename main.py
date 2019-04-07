@@ -494,7 +494,8 @@ def number_of_case(lawyer_id=None):
     
 # find a lawyer route
 @app.route('/lawyers',methods=['GET','POST'])
-def find_lawyer():
+# @app.route('/lawyers?lawpractice=<string:lawpractice>',methods=['GET','POST'])
+def find_lawyer(practice=None,cityOrMunicipality=None):
     lawyers = None
     found_lawyers = []
     if request.method == "POST":        
@@ -507,11 +508,14 @@ def find_lawyer():
 
                 lawyers = found_lawyers
                 if session.get('lawyer'):
-                    return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,lawyer=session['lawyer'],lawpractice=law_practice,cityOrMunicipality=cityOrMunicipality)
+                    return redirect(url_for('find_lawyer',practice=law_practice,cityOrMunicipality=cityOrMunicipality))
+                    # return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,lawyer=session['lawyer'])
                 elif session.get('client'):
-                    return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,client=session['client'],lawpractice=law_practice,cityOrMunicipality=cityOrMunicipality)
+                    return redirect(url_for('find_lawyer',practice=law_practice,cityOrMunicipality=cityOrMunicipality))
+                    # return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,client=session['client'])
                 else:
-                    return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,lawpractice=law_practice,cityOrMunicipality=cityOrMunicipality)
+                    return redirect(url_for('find_lawyer',practice=law_practice,cityOrMunicipality=cityOrMunicipality))
+                    # return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,lawpractice=law_practice)
                 # return json_response({"found" : found_lawyers})
             else:
                 return redirect(url_for('find_lawyer'))
@@ -520,20 +524,21 @@ def find_lawyer():
                 'error' : True,
                 'message' : "Please select your legal issue and city to find lawyer."}))
     
+    
+
     law_practice = request.args.get('practice')
     cityOrMunicipality = request.args.get('cityOrMunicipality')
 
-    # if law_practice and cityOrMunicipality:
-    #     found_lawyers = Practice.find_practice(law_practice=law_practice, cityOrMunicipality=cityOrMunicipality)
-    #     if found_lawyers:
-    #         lawyers = found_lawyers
-    #     else:
-    #         lawyers = None
+    if law_practice and cityOrMunicipality:
+        found_lawyers = Practice.find_practice(law_practice=law_practice, cityOrMunicipality=cityOrMunicipality)
+        if found_lawyers:
+            lawyers = found_lawyers
+        else:
+            lawyers = None
+    else:
+        attorneys = Lawyer.query().fetch()
+        lawyers = Practice.all_lawyers(attorneys)
     
-    attorneys = Lawyer.query().fetch()
-    lawyers = Practice.all_lawyers(attorneys)
-    logging.info(lawyers)
-
     if session.get('lawyer'):
         return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,lawyer=session['lawyer'])
     elif session.get('client'):
@@ -1915,7 +1920,7 @@ def lawyer_reset_token(token):
     return render_template('lawyer/lawyer-reset-token.html',title="Reset Password",token=token)
 
 # see more details
-@app.route('/find/lawyer-details/<string:lawyer_email>')
+@app.route('/lawyer/find/lawyer-details/<string:lawyer_email>')
 def see_more(lawyer_email):
     lawyer= []
     if lawyer_email:
@@ -1925,11 +1930,11 @@ def see_more(lawyer_email):
             #         "error" : True,
             #         "message" : lawyer_details})
             if session.get('lawyer'):
-                return render_template('lawyer/lawyer-seemore.html',title='Lawyer Details',lawyer=session['lawyer'],results=lawyer)
+                return render_template('lawyer-single.html',title='Lawyer Details',lawyer=session['lawyer'],result=lawyer)
             elif session.get('client'):
-                return render_template('lawyer/lawyer-seemore.html',title='Lawyer Details',client=session['client'],results=lawyer)
+                return render_template('lawyer-single.html',title='Lawyer Details',client=session['client'],result=lawyer)
             else:
-                return render_template('lawyer/lawyer-seemore.html',title='Lawyer Details',results=lawyer)
+                return render_template('lawyer-single.html',title='Lawyer Details',result=lawyer)
         else:
             return json_response({
                     "error" : True,
@@ -1940,7 +1945,7 @@ def see_more(lawyer_email):
                     "error" : True,
                     "message" : "No lawyer is selected"})
 
-    return render_template('lawyer/lawyer-seemore.html',lawyer=session['lawyer'],title="Lawyer Details")
+    return render_template('lawyer-single.html',lawyer=session['lawyer'],title="Lawyer Details")
 
 @app.route('/lawyer/<int:lawyer_id>/deactivate')
 @login_required_lawyer

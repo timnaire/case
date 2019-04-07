@@ -37,14 +37,20 @@
 
             <div class="d-block d-md-flex listing">
               {% if person.lawyer.profile_pic %}
-              <a href="#" class="img d-block" style="background-image: url({{person.lawyer.profile_pic}})"></a>
+              <a href="/lawyer/find/lawyer-details/{{person.lawyer.email}}" class="img d-block"
+                style="background-image: url({{person.lawyer.profile_pic}})"></a>
               {% else %}
-              <a href="#" class="img d-block" style="background-image: url('static/images/default.png')"></a>
+              <a href="/lawyer/find/lawyer-details/{{person.lawyer.email}}" class="img d-block"
+                style="background-image: url('static/images/default.png')"></a>
               {% endif %}
               <div class="lh-content">
-                <span class="category">{{person.law_practice}}</span>
+                {% for lp in person.law_practice %}
+                <span class="category">{{lp}}</span>
+                {% endfor %}
                 <a href="#" class="bookmark"><span class="icon-heart"></span></a>
-                <h3><a href="/lawyers/{{person.lawyer.lawyer_id}}">{{person.lawyer.first_name}}&nbsp;{{person.lawyer.last_name}}</a></h3>
+                <h3><a
+                    href="/lawyers/{{person.lawyer.lawyer_id}}">{{person.lawyer.first_name}}&nbsp;{{person.lawyer.last_name}}</a>
+                </h3>
                 <address>{{person.lawyer.office}}</address>
                 <p class="mb-0">
                   <span class="icon-star text-warning"></span>
@@ -80,7 +86,7 @@
 
         </div>
 
-        
+
 
       </div>
       <div class="col-lg-3 ml-auto">
@@ -91,14 +97,13 @@
             <div class="form-group">
               <div class="select-wrap">
                 <span class="icon"><span class="icon-keyboard_arrow_down"></span></span>
-                <select class="form-control" name="" id="">
-                  <option value="">All Categories</option>
-                  <option value="" selected="">Real Estate</option>
-                  <option value="">Books &amp; Magazines</option>
-                  <option value="">Furniture</option>
-                  <option value="">Electronics</option>
-                  <option value="">Cars &amp; Vehicles</option>
-                  <option value="">Others</option>
+                <select id="lawpractice" class="form-control rounded" name="lawpractice">
+                  <option selected="true" disabled="disabled">Select a Legal Issue</option>
+
+                  {% for key, value in law_practice.items()|sort %}
+                  <option value="{{key}}" {% if request.args.get('practice') == key %} selected {% endif %}> {{value}}
+                  </option>
+                  {% endfor %}
                 </select>
               </div>
             </div>
@@ -106,7 +111,9 @@
               <!-- select-wrap, .wrap-icon -->
               <div class="wrap-icon">
                 <span class="icon icon-room"></span>
-                <input type="text" placeholder="Location" class="form-control">
+                <input type="text" placeholder="Location"
+                  value="{% if request.args.get('cityOrMunicipality') %}{{request.args.get('cityOrMunicipality')}}{% endif %}"
+                  class="form-control">
               </div>
             </div>
           </form>
@@ -115,35 +122,21 @@
         <div class="mb-5">
           <form action="#" method="post">
             <div class="form-group">
-              <p>Category 'Real Estate' is selected</p>
-              <p>More filters</p>
+              {% if request.args.get('practice') %}
+                <p>Category '{{ request.args.get('practice') }}' is selected</p>
+                <p>More filters</p>
+              {% endif %}
             </div>
             <div class="form-group">
               <ul class="list-unstyled">
+                {% if request.args.get('practice') == "Labor Law" %}
                 <li>
                   <label for="option1">
                     <input type="checkbox" id="option1">
-                    Residential
+                    Disabilities
                   </label>
                 </li>
-                <li>
-                  <label for="option2">
-                    <input type="checkbox" id="option2">
-                    Commercial
-                  </label>
-                </li>
-                <li>
-                  <label for="option3">
-                    <input type="checkbox" id="option3">
-                    Industrial
-                  </label>
-                </li>
-                <li>
-                  <label for="option4">
-                    <input type="checkbox" id="option4">
-                    Land
-                  </label>
-                </li>
+                {% endif %}
               </ul>
             </div>
           </form>
@@ -197,7 +190,7 @@
           <figure class="mb-4">
             <img src="/static/images/person_4.jpg" alt="Image" class="img-fluid mb-3">
             <p>Robert Spears</p>
-          </figure>
+          </figure> 
           <blockquote>
             <p>&ldquo;Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur unde reprehenderit aperiam
               quaerat fugiat repudiandae explicabo animi minima fuga beatae illum eligendi incidunt consequatur. Amet
@@ -209,7 +202,7 @@
       <div>
         <div class="testimonial">
           <figure class="mb-4">
-            <img src="/staticimages/person_5.jpg" alt="Image" class="img-fluid mb-3">
+            <img src="/static/images/person_5.jpg" alt="Image" class="img-fluid mb-3">
             <p>Bruce Rogers</p>
           </figure>
           <blockquote>

@@ -1,3 +1,4 @@
+import logging
 from google.appengine.ext import ndb
 from models.lawyer import Lawyer
 
@@ -59,15 +60,21 @@ class Practice(ndb.Model):
         
         return found_lawyers
 
+
     def to_dict(self):
         data = {}
-        
         data['lawyer'] = None
         if self.lawyer:
             lawyer = self.lawyer.get()
             data['lawyer'] = lawyer.to_dict()
+            practices = self.query().fetch()
+            lawyer_pract = []
+            for p in practices:
+                if p.lawyer == lawyer.key:
+                    lawyer_pract.append(p.law_practice)
+            
+            data['law_practice'] = lawyer_pract
         
-        data['law_practice'] = self.law_practice
         return data
 
     def practice(self):
