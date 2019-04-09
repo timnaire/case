@@ -1597,7 +1597,7 @@ def lawyer_update_password(lawyer_id=None):
                 "message" : "Please dont leave the fields empty"})
 
 #main render template for account setting for lawyers / editing profile route
-@app.route('/lawyer/<int:lawyer_id>/account-setting',methods=['GET','POST'])
+@app.route('/lawyer/<int:lawyer_id>/myaccount',methods=['GET','POST'])
 @login_required_lawyer
 def lawyer_account_setting(lawyer_id=None):
     # get the lawyer details in a dictionary format
@@ -1614,7 +1614,7 @@ def lawyer_account_setting(lawyer_id=None):
     for practice in practices:
         practice_dict.append(practice.to_dict())
 
-    return render_template("lawyer/lawyer-account-setting.html",title="Account Setting",lawyer=session.get('lawyer'),lawyer_dict=lawyer_dict,law_practice=available_practice,practices=practice_dict)
+    return render_template("lawyer-myaccount.html",title="Account Setting",lawyer=session.get('lawyer'),law_practice=available_practice,practices=practice_dict,lawyer_info=lawyer_dict)
     
 @app.route('/lawyer/<int:lawyer_id>/get-lawyer-practice',methods=['GET'])
 def getPractice(lawyer_id=None):

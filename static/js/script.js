@@ -161,10 +161,15 @@ $(document).ready(function () {
             data: form_data,
             type: 'post',
             success: function (response) {
-                console.log(response) // display success response from the server
-            },
-            error: function (response) {
-                console.log(response) // display error response from the server
+                if (response['error'] == false) {
+                    $("#changepic-success").removeClass('d-none');
+                    $("#changepic-failed").addClass('d-none');
+                    $(".message").text(response['message']);
+                } else if (response['error'] == true) {
+                    $("#changepic-success").addClass('d-none');
+                    $("#changepic-failed").removeClass('d-none');
+                    $(".message").text(response['message']);
+                }
             }
         });
     });
@@ -179,6 +184,8 @@ $(document).ready(function () {
         var cityOrMunicipality = $('#ucityOrMunicipality').val().trim();
         var office = $('#uoffice').val().trim();
         var aboutme = $('#uaboutme').val().trim();
+        var firm = $('#ufirm').val().trim();
+        var sex = $("[name='lsex']:checked").val();
         var practice = [];
         $.each($("input[class='practice']:checked"), function () {
             practice.push($(this).val());
@@ -191,10 +198,21 @@ $(document).ready(function () {
             cityOrMunicipality: cityOrMunicipality,
             office: office,
             aboutme: aboutme,
-            law_practice: practice
+            law_practice: practice,
+            firm : firm,
+            sex : sex,
+
         }
         $.post("/lawyer/" + id + "/account-setting/profile-information", JSON.stringify(sendInfo), function (response) {
-            console.log(response)
+            if (response['error'] == false) {
+                $("#changeinfo-success").removeClass('d-none');
+                $("#changeinfo-failed").addClass('d-none');
+                $(".message").text(response['message']);
+            } else if (response['error'] == true) {
+                $("#changeinfo-success").addClass('d-none');
+                $("#changeinfo-failed").removeClass('d-none');
+                $(".message").text(response['message']);
+            }
         }, "json");
     });
 
@@ -223,7 +241,15 @@ $(document).ready(function () {
             password: password
         }
         $.post("/lawyer/" + id + "/account-setting/change-email", JSON.stringify(sendInfo), function (response) {
-            console.log(response)
+            if (response['error'] == false) {
+                $("#changeemail-success").removeClass('d-none');
+                $("#changeemail-failed").addClass('d-none');
+                $(".message").text(response['message']);
+            } else if (response['error'] == true) {
+                $("#changeemail-success").addClass('d-none');
+                $("#changeemail-failed").removeClass('d-none');
+                $(".message").text(response['message']);
+            }
         })
     });
 
@@ -239,7 +265,15 @@ $(document).ready(function () {
             confirm: confirm_pass
         }
         $.post("/lawyer/" + id + "/account-setting/change-password", JSON.stringify(sendInfo), function (response) {
-            console.log(response)
+            if (response['error'] == false) {
+                $("#changepass-success").removeClass('d-none');
+                $("#changepass-failed").addClass('d-none');
+                $(".message").text(response['message']);
+            } else if (response['error'] == true) {
+                $("#changepass-success").addClass('d-none');
+                $("#changepass-failed").removeClass('d-none');
+                $(".message").text(response['message']);
+            }
         })
     });
 
