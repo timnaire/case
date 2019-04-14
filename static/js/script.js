@@ -199,8 +199,8 @@ $(document).ready(function () {
             office: office,
             aboutme: aboutme,
             law_practice: practice,
-            firm : firm,
-            sex : sex,
+            firm: firm,
+            sex: sex,
 
         }
         $.post("/lawyer/" + id + "/account-setting/profile-information", JSON.stringify(sendInfo), function (response) {
@@ -232,9 +232,9 @@ $(document).ready(function () {
     $('#btnLawyerSaveEmail').click(function (e) {
         e.preventDefault();
         var id = $(".lawyer_id").val();
-        var current = $('#current_email').val().trim();
-        var new_email = $('#new_email').val().trim();
-        var password = $('#e_current_password').val().trim();
+        var current = $('#ul_current_email').val().trim();
+        var new_email = $('#ul_new_email').val().trim();
+        var password = $('#ul_e_current_password').val().trim();
         sendInfo = {
             current: current,
             new_email: new_email,
@@ -256,9 +256,9 @@ $(document).ready(function () {
     $('#btnLawyerSavePassword').click(function (e) {
         e.preventDefault();
         var id = $(".lawyer_id").val();
-        var current_pass = $('#current_password').val();
-        var new_pass = $('#new_password').val();
-        var confirm_pass = $('#confirm_password').val();
+        var current_pass = $('#ul_current_password').val();
+        var new_pass = $('#ul_new_password').val();
+        var confirm_pass = $('#ul_confirm_password').val();
         sendInfo = {
             current: current_pass,
             newpass: new_pass,
@@ -656,6 +656,7 @@ $(document).ready(function () {
             window.location.replace('/client/signin');
         }
     });
+    
     // if(image){
     //     getBase64(image).then(
     //     data => {

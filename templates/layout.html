@@ -61,44 +61,46 @@
                         <li class="{{ 'active' if active_page == 'lawyers' else '' }}"><a href="/lawyers">Lawyer</a>
                         </li>
                         {% if client %}
-                            <li class="{{ 'active' if active_page == 'cases' else '' }}"><a href="/client/{{client}}/cases">Case</a></li>
+                        <li class="{{ 'active' if active_page == 'cases' else '' }}"><a
+                                href="/client/{{client}}/cases">Case</a></li>
                         {% elif lawyer %}
-                            <li class="{{ 'active' if active_page == 'cases' else '' }}"><a href="/lawyer/{{lawyer}}/cases">Case</a></li>
+                        <li class="{{ 'active' if active_page == 'cases' else '' }}"><a
+                                href="/lawyer/{{lawyer}}/cases">Case</a></li>
                         {% endif %}
                         <li class="{{ 'active' if active_page == 'about' else '' }}"><a href="/about">About</a></li>
                         <li class="{{ 'active' if active_page == 'contact' else '' }}"><a href="/contact">Contact</a>
                         </li>
                         {% if client %}
-                            <li class="has-children {{ 'active' if active_page == 'profile' else '' }}">
-                                <a href="#">Profile</a>
-                                <ul class="dropdown">
-                                    <li><a href="/client/{{ client }}/myaccount">My Account</a></li>
-                                    <li><a href="/signout">Sign Out</a></li>
-                                </ul>
-                            </li>
+                        <li class="has-children {{ 'active' if active_page == 'profile' else '' }}">
+                            <a href="#">Profile</a>
+                            <ul class="dropdown">
+                                <li><a href="/client/{{ client }}/myaccount">My Account</a></li>
+                                <li><a href="/signout">Sign Out</a></li>
+                            </ul>
+                        </li>
                         {% elif lawyer %}
-                            <li class="has-children {{ 'active' if active_page == 'profile' else '' }}">
-                                <a href="#">Profile</a>
-                                <ul class="dropdown">
-                                    <li><a href="/lawyer/{{ lawyer }}/myaccount">My Account</a></li>
-                                    <li><a href="/signout">Sign Out</a></li>
-                                </ul>
-                            </li>
+                        <li class="has-children {{ 'active' if active_page == 'profile' else '' }}">
+                            <a href="#">Profile</a>
+                            <ul class="dropdown">
+                                <li><a href="/lawyer/{{ lawyer }}/myaccount">My Account</a></li>
+                                <li><a href="/signout">Sign Out</a></li>
+                            </ul>
+                        </li>
                         {% else %}
-                            <li class="has-children {{ 'active' if active_page == 'signin' else '' }}">
-                                <a href="#">Sign in</a>
-                                <ul class="dropdown">
-                                    <li><a href="/client/signin">as Client</a></li>
-                                    <li><a href="/lawyer/signin">as Lawyer</a></li>
-                                </ul>
-                            </li>
-                            <li class="has-children {{ 'active' if active_page == 'signup' else '' }}">
-                                <a href="#">Sign up</a>
-                                <ul class="dropdown">
-                                    <li><a href="/client/signup">as Client</a></li>
-                                    <li><a href="/lawyer/signup">as Lawyer</a></li>
-                                </ul>
-                            </li>
+                        <li class="has-children {{ 'active' if active_page == 'signin' else '' }}">
+                            <a href="#">Sign in</a>
+                            <ul class="dropdown">
+                                <li><a href="/client/signin">as Client</a></li>
+                                <li><a href="/lawyer/signin">as Lawyer</a></li>
+                            </ul>
+                        </li>
+                        <li class="has-children {{ 'active' if active_page == 'signup' else '' }}">
+                            <a href="#">Sign up</a>
+                            <ul class="dropdown">
+                                <li><a href="/client/signup">as Client</a></li>
+                                <li><a href="/lawyer/signup">as Lawyer</a></li>
+                            </ul>
+                        </li>
                         {% endif %}
                         <!-- <li><a href="#" class="cta"><span class="bg-primary text-white rounded">+ Post an Ad</span></a>
                         </li> -->
@@ -125,7 +127,8 @@
                     <div class="row">
                         <div class="col-md-6">
                             <h2 class="footer-heading mb-4">Few Words About Uss</h2>
-                            <p>We are an application that helps Clients and Lawyers connect efficiently, we make things much more comfortable than the old ways of dealing a case. We offer great services.</p>
+                            <p>We are an application that helps Clients and Lawyers connect efficiently, we make things
+                                much more comfortable than the old ways of dealing a case. We offer great services.</p>
                         </div>
 
                         <div class="col-md-3">
@@ -180,7 +183,52 @@
 
     <script src="/static/js/main.js"></script>
     <script src="/static/js/script.js"></script>
+    <script>
+      var map;
+  var service;
+  var infowindow;
 
+  function initMap() {
+    var cebu = new google.maps.LatLng(10.3157, 123.8854);
+
+    infowindow = new google.maps.InfoWindow();
+
+    map = new google.maps.Map(
+      document.getElementById('map_canvas'), { center: cebu, zoom: 15 });
+    address = $("#lawyerAddress").val();
+    var request = {
+      query: address,
+      fields: ['name', 'geometry'],
+    };
+
+    service = new google.maps.places.PlacesService(map);
+
+    service.findPlaceFromQuery(request, function (results, status) {
+      if (status === google.maps.places.PlacesServiceStatus.OK) {
+        for (var i = 0; i < results.length; i++) {
+          createMarker(results[i]);
+        }
+
+        map.setCenter(results[0].geometry.location);
+      }
+    });
+  }
+
+  function createMarker(place) {
+    var marker = new google.maps.Marker({
+      map: map,
+      position: place.geometry.location
+    });
+
+    google.maps.event.addListener(marker, 'click', function () {
+      infowindow.setContent(place.name);
+      infowindow.open(map, this);
+    });
+  }
+    </script>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBpO3zy8fmYoy5hx5ER3XKKYFKvXZg7Zws&libraries=places&callback=initMap"
+        async defer></script>
 </body>
 
 </html>
