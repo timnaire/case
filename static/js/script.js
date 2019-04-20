@@ -291,7 +291,7 @@ $(document).ready(function () {
             var m = response['message'];
             var email = response['email'];
             if (response['error'] == false) {
-                window.location.replace('/home');
+                window.location.replace('/lawyer/'+response['lawyer']+'/dashboard');
             }
             else if (response['error'] == true) {
                 window.location.replace('/lawyer/signin?err=' + err + "&m=" + m + "&email=" + email)
@@ -436,7 +436,11 @@ $(document).ready(function () {
         var confirm = $('#confirm-password').val();
         sendInfo = { password: password, confirm: confirm }
         $.post('/lawyer/reset-password/' + token, JSON.stringify(sendInfo), function (response) {
-            console.log(response)
+            if(response['error'] == false){
+                window.location.replace("/lawyer/reset-password?succ="+1+"&m="+response['message']);
+            } else {
+                window.location.replace("/lawyer/reset-password?err="+1+"&m="+response['message']);
+            }
         });
     })
 
@@ -444,10 +448,16 @@ $(document).ready(function () {
         var email = $('#email').val();
         sendInfo = { email: email }
         $.post('/lawyer/reset-password', JSON.stringify(sendInfo), function (response) {
-            console.log(response)
+            if(response['error'] == false){
+                window.location.replace("/lawyer/reset-password?succ="+1+"&m="+response['message']);
+            } else {
+                window.location.replace("/lawyer/reset-password?err="+1+"&m="+response['message']);
+            }
         });
         e.preventDefault()
     });
+
+    
     // FOR THE ACCOUNT SETTINGS CLIENT
 
     $('#btnClientSavePicture').click(function (e) {
@@ -655,6 +665,34 @@ $(document).ready(function () {
         else {
             window.location.replace('/client/signin');
         }
+    });
+
+    $('#btnResetPasswordClient').click(function (e) {
+        e.preventDefault();
+        var token = $("#token").val();
+        var password = $('#password').val();
+        var confirm = $('#confirm-password').val();
+        sendInfo = { password: password, confirm: confirm }
+        $.post('/client/reset-password/' + token, JSON.stringify(sendInfo), function (response) {
+            if(response['error'] == false){
+                window.location.replace("/client/reset-password?succ="+1+"&m="+response['message']);
+            } else {
+                window.location.replace("/client/reset-password?err="+1+"&m="+response['message']);
+            }
+        });
+    })
+
+    $("#btnForgotPassClient").click(function (e) {
+        var email = $('#email').val();
+        sendInfo = { email: email }
+        $.post('/client/reset-password', JSON.stringify(sendInfo), function (response) {
+            if(response['error'] == false){
+                window.location.replace("/client/reset-password?succ="+1+"&m="+response['message']);
+            } else {
+                window.location.replace("/client/reset-password?err="+1+"&m="+response['message']);
+            }
+        });
+        e.preventDefault()
     });
     
     // if(image){

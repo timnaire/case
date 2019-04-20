@@ -559,7 +559,7 @@ def dashboard(lawyer_id=None):
                 'error' : True,
                 'message' : "Not Int"}))
 
-    return render_template('lawyer/lawyer-dashboard.html',title="Welcome to Dashboard",lawyer=session['lawyer'],results=lawyer,relationship=relation)
+    return render_template('lawyer-dashboard.html',title="Welcome to Dashboard",lawyer=session['lawyer'],results=lawyer,relationship=relation)
 
 #dashboard route for client
 @app.route('/client/')
@@ -1769,10 +1769,10 @@ def lawyer_signup():
     return render_template('lawyer-signup.html',title='Lawyer Sign Up',law_practice=available_practice)
 
 # send email with token client
-def send_reset_email(client):
+def send_reset_email_client(client):
     token = client.get_reset_token()
     msg = Message('Password Reset Request', sender='noreply@case.com', recipients=[client.email])
-    msg.body  = "To reset your password, visit the following link: \n" + url_for('lawyer_reset_token',token=token, _external=True) +"\n if you did not make this request then simply ignore this email and no changes will be made."
+    msg.body  = "To reset your password, visit the following link: \n" + url_for('client_reset_token',token=token, _external=True) +"\n if you did not make this request then simply ignore this email and no changes will be made."
     mail.send(msg)
 
 # ask for email to reset password lawyer
@@ -1789,7 +1789,7 @@ def client_reset_request():
             if is_email(email):
                 client = Client.check_email(email)
                 if client:
-                    send_reset_email(client)
+                    send_reset_email_client(client)
                     return json_response({
                         "error" : False,
                         "message" : "A password reset message was sent to your email. Please click the link in that message to reset your password."})
@@ -1805,7 +1805,7 @@ def client_reset_request():
             return json_response({
                 "error" : True,
                 "message" : "Please enter your email and try again."})
-    return render_template('client/client-reset-pass.html',title="Reset")
+    return render_template('forgot.html',title="Reset")
 
 # resetting password with new password lawyer
 @app.route('/client/reset-password/<token>',methods=['GET','POST'])
@@ -1841,7 +1841,7 @@ def client_reset_token(token):
                     "error" : True,
                     "message" : "Please dont leave the fields empty and try again."})
         
-    return render_template('client/client-reset-token.html',title="Reset Password",token=token)
+    return render_template('reset.html',title="Reset Password",token=token)
 
 
 # send email with token lawyer
@@ -1881,7 +1881,7 @@ def lawyer_reset_request():
             return json_response({
                 "error" : True,
                 "message" : "Please enter your email and try again."})
-    return render_template('lawyer/lawyer-reset-pass.html',title="Reset")
+    return render_template('lawyer-forgot.html',title="Reset")
 
 # resetting password with new password lawyer
 @app.route('/lawyer/reset-password/<token>',methods=['GET','POST'])
@@ -1917,7 +1917,7 @@ def lawyer_reset_token(token):
                     "error" : True,
                     "message" : "Please dont leave the fields empty and try again."})
         
-    return render_template('lawyer/lawyer-reset-token.html',title="Reset Password",token=token)
+    return render_template('lawyer-reset.html',title="Reset Password",token=token)
 
 # see more details
 @app.route('/lawyer/find/lawyer-details/<string:lawyer_email>')

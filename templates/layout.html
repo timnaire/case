@@ -57,7 +57,13 @@
                 <nav class="site-navigation position-relative text-right" role="navigation">
 
                     <ul class="site-menu js-clone-nav mr-auto d-none d-lg-block">
+                        {% if client or not lawyer %}
                         <li class="{{ 'active' if active_page == 'home' else '' }}"><a href="/">Home</a></li>
+                        {% endif %}
+                        {% if lawyer %}
+                        <li class="{{ 'active' if active_page == 'dashboard' else '' }}"><a href="/lawyer/{{lawyer}}/dashboard">Dashboard</a>
+                        </li>
+                        {% endif %}
                         <li class="{{ 'active' if active_page == 'lawyers' else '' }}"><a href="/lawyers">Lawyer</a>
                         </li>
                         {% if client %}
@@ -67,12 +73,14 @@
                         <li class="{{ 'active' if active_page == 'cases' else '' }}"><a
                                 href="/lawyer/{{lawyer}}/cases">Case</a></li>
                         {% endif %}
+                        {% if client or not lawyer %}
                         <li class="{{ 'active' if active_page == 'about' else '' }}"><a href="/about">About</a></li>
                         <li class="{{ 'active' if active_page == 'contact' else '' }}"><a href="/contact">Contact</a>
                         </li>
+                        {% endif %}
                         {% if client %}
                         <li class="has-children {{ 'active' if active_page == 'profile' else '' }}">
-                            <a href="#">Profile</a>
+                            <a href="#">Settings</a>
                             <ul class="dropdown">
                                 <li><a href="/client/{{ client }}/myaccount">My Account</a></li>
                                 <li><a href="/signout">Sign Out</a></li>
@@ -80,7 +88,7 @@
                         </li>
                         {% elif lawyer %}
                         <li class="has-children {{ 'active' if active_page == 'profile' else '' }}">
-                            <a href="#">Profile</a>
+                            <a href="#">Settings</a>
                             <ul class="dropdown">
                                 <li><a href="/lawyer/{{ lawyer }}/myaccount">My Account</a></li>
                                 <li><a href="/signout">Sign Out</a></li>
