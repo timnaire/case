@@ -31,60 +31,7 @@
     <div class="row">
       <div class="col-lg-8">
         {{results}}
-        <!-- <div class="row">
-
-          {% if results %}
-          <div class="col-lg-12">
-            
-            <div class="d-block d-md-flex listing">
-              {% if results.profile_pic %}
-              <a href="/lawyer/find/lawyer-details/{{results.email}}" class="img d-block"
-                style="background-image: url({{results.lawyer.profile_pic}})"></a>
-              {% else %}
-              <a href="/lawyer/find/lawyer-details/{{results.email}}" class="img d-block"
-                style="background-image: url('static/images/default.png')"></a>
-              {% endif %}
-              <div class="lh-content">
-                {% for lp in results.law_practice %}
-                <span class="category">{{lp}}</span>
-                {% endfor %}
-                <a href="#" class="bookmark"><span class="icon-heart"></span></a>
-                <h3><a
-                    href="/lawyer/find/lawyer-details/{{results.email}}">{{results.first_name}}&nbsp;{{results.last_name}}</a>
-                </h3>
-                <address>{{results.office}}</address>
-                <p class="mb-0">
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-warning"></span>
-                  <span class="icon-star text-secondary"></span>
-                  <span class="review">(3 Reviews)</span>
-                </p>
-              </div>
-            </div>
-
-          </div> -->
-
-        <div class="col-12 mt-5 text-center">
-          <div class="custom-pagination">
-            <span>1</span>
-            <a href="#">2</a>
-            <a href="#">3</a>
-            <span class="more-page">...</span>
-            <a href="#">10</a>
-          </div>
-        </div>
-
-        {% else %}
-        <div class="col-12">
-          <center>
-            <h1>No Results Found</h1>
-          </center>
-        </div>
-        {% endif %}
-
-      </div>
+        
 
 
 
