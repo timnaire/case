@@ -25,15 +25,26 @@
           </div>
         </div>
 
+        {% if request.args.get('msg') %}
+        <div class="row">
+          <div class="col-md-12">
+            <div class="alert alert-danger alert-dismissible">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              <div class="justify-content-center align-items-center text-red" style="margin: 0">{{ request.args.get('msg') }}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
         <div class="form-search-wrap" data-aos="fade-up" data-aos-delay="200">
           <form id="find-lawyer-form" action="{{url_for('find_lawyer')}}" method="post">
             <div class="row align-items-center">
               <div class="col-lg-12 mb-5 mb-xl-0 col-xl-5">
                 <div class="wrap-icon">
                   <span class="icon icon-room"></span>
-                  <input type="text" name="city" class="form-control rounded" id="cityOrMunicipality" placeholder="Location">
+                  <input type="text" name="city" value="{% if request.args.get('cityOrMunicipality') %}{{request.args.get('cityOrMunicipality')}}{% endif %}" class="form-control rounded" id="cityOrMunicipality" placeholder="Location">
                 </div>
-
               </div>
               <div class="col-lg-12 mb-5 mb-xl-0 col-xl-5">
                 <div class="select-wrap">
@@ -41,7 +52,7 @@
                   <select id="lawpractice" class="form-control rounded" name="lawpractice">
                     <option selected="true" disabled="disabled" >Select a Legal Issue</option>
                     {% for key, value in law_practice.items()|sort %}
-                        <option value="{{key}}" > {{value}}
+                        <option value="{{key}}" {% if request.args.get("practice") == value %} selected {% endif %} > {{value}}
                     </option>
                     {% endfor %}
                 </select>

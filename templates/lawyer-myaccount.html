@@ -147,7 +147,8 @@
 
             <div class="col-md-8">
               <label class="text-black" for="ucityOrMunicipality">City / Municipality</label>
-              <input type="text" value="{% if lawyer_info.cityOrMunicipality %}{{lawyer_info.cityOrMunicipality}}{% else %} {% endif %}"
+              <input type="text"
+                value="{% if lawyer_info.cityOrMunicipality %}{{lawyer_info.cityOrMunicipality}}{% else %} {% endif %}"
                 id="ucityOrMunicipality" class="form-control">
 
             </div>
@@ -165,8 +166,8 @@
           <div class="row form-group">
             <div class="col-md-4">
               <label class="text-black" for="ufirm">Firm</label>
-              <input type="text" value="{% if lawyer_info.firm %}{{lawyer_info.firm}}{% else %} {% endif %}"
-                id="ufirm" class="form-control">
+              <input type="text" value="{% if lawyer_info.firm %}{{lawyer_info.firm}}{% else %} {% endif %}" id="ufirm"
+                class="form-control">
 
             </div>
 
@@ -180,12 +181,13 @@
           </div>
 
           <div class="row form-group">
-              <div class="col-md-12">
-                  <label class="text-black" for="uaboutme">About me</label>
-                  <textarea class="form-control" id="uaboutme" rows="3" placeholder="About myself">{% if lawyer_info.aboutme %}{{lawyer_info.aboutme}}{% else %}{% endif %}</textarea>
-    
-                </div>
-              
+            <div class="col-md-12">
+              <label class="text-black" for="uaboutme">About me</label>
+              <textarea class="form-control" id="uaboutme" rows="3"
+                placeholder="About myself">{% if lawyer_info.aboutme %}{{lawyer_info.aboutme}}{% else %}{% endif %}</textarea>
+
+            </div>
+
           </div>
 
           <div class="row form-group">
@@ -232,6 +234,24 @@
             </div>
             {% endfor %}
           </label>
+
+          <div class="row form-group">
+            <label for="lawpractice" class="ml-3">Sub Category <br/>
+              <div class="ml-3">
+                  {% for practice in practices %}
+                  {{practice.law_practice}}
+                  {% for key in subcategory[practice.law_practice] | sort %}
+                  <div class="checkbox ml-3">
+                    <label>
+                      <input type="checkbox"  class="practice" > {{key}}
+                    </label>
+                  </div>
+                  {% endfor %}
+                  <br/>
+                {% endfor %}
+              </div>
+            </label>
+          </div>
 
           <div class="row form-group">
             <div class="col-md-12">

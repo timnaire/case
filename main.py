@@ -315,6 +315,14 @@ def client_update_password(client_id=None):
 
 available_practice = {'Constitutional Law':"Constitutional Law", 'Criminal Law': 'Criminal Law', 'Business Law': 'Business Law',
         'Labor Law': 'Labor Law', 'Civil Law' : 'Civil Law', 'Taxation Law': 'Taxation Law' ,'Family Law': 'Family Law'}
+subcategory = { 'Family Law' : {'Adoptions','Child Custody and Visitation','Child Support','Annulment','Guardianship','Paternity','Separations','Spousal Support or Alimony'},
+                'Labor Law' : {'Disabilities','Employment Contracts','Employment Discrimination','Pensions and Benefits','Sexual Harassment','Wages and Overtime Pay','Workplace','Wrongful Termination'},
+                'Criminal Law' : {'Drug Crimes','Drunk Driving / DUI / DWI','Felonies','Misdemeanors','Speeding and Moving Violations'},
+                'Business Law' : {'Breach of Contract','Business Disputes','Buying and Selling a Business','Contract Drafting and Review','Corps, LLCs, Partnerships, etc.','Entertainment Law'},
+                'Constitutional Law' : {'Free Speech and Press','Libel and Slander','Right to Bear Arms'},
+                'Taxation Law': {'Corporate Tax','Income Tax','Internation Tax','Property Tax','Tax Evasion'},
+                'Civil Law' : {'Defamtion','Breach of Contract','Negligence Resulting in Injury or Death','Property Damage'}
+} 
 
 # home page for client
 @app.route('/', methods=['GET','POST'])
@@ -505,7 +513,6 @@ def find_lawyer(practice=None,cityOrMunicipality=None):
         if law_practice and cityOrMunicipality:
             found_lawyers = Practice.find_practice(law_practice=law_practice, cityOrMunicipality=cityOrMunicipality)
             if found_lawyers:
-
                 lawyers = found_lawyers
                 if session.get('lawyer'):
                     return redirect(url_for('find_lawyer',practice=law_practice,cityOrMunicipality=cityOrMunicipality))
@@ -518,12 +525,12 @@ def find_lawyer(practice=None,cityOrMunicipality=None):
                     # return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,lawpractice=law_practice)
                 # return json_response({"found" : found_lawyers})
             else:
-                return redirect(url_for('find_lawyer'))
+                return redirect(url_for('find_lawyer',practice=law_practice,cityOrMunicipality=cityOrMunicipality))
         else:
-            return redirect(json_response({
-                'error' : True,
-                'message' : "Please select your legal issue and city to find lawyer."}))
-    
+            return redirect(url_for('dashboard_client',practice=law_practice,cityOrMunicipality=cityOrMunicipality,msg="Please select your legal issue and city to find lawyer."))
+            # return redirect(json_response({
+            #     'error' : True,
+            #     'message' : "Please select your legal issue and city to find lawyer."}))
     
 
     law_practice = request.args.get('practice')
@@ -536,15 +543,15 @@ def find_lawyer(practice=None,cityOrMunicipality=None):
         else:
             lawyers = None
     else:
-        attorneys = Lawyer.query().fetch()
+        attorneys = Lawyer.query(Lawyer.status == "activated").fetch()
         lawyers = Practice.all_lawyers(attorneys)
     
     if session.get('lawyer'):
-        return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,lawyer=session['lawyer'])
+        return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,lawyer=session['lawyer'],subcategory=subcategory)
     elif session.get('client'):
-        return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,client=session['client'])
+        return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,client=session['client'],subcategory=subcategory)
     else:
-        return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers)
+        return render_template('lawyers.html',title='Lawyers',law_practice=available_practice,results=lawyers,subcategory=subcategory)
         
 #dashboard route for lawyers
 @app.route('/lawyer/<int:lawyer_id>/dashboard')
@@ -566,7 +573,8 @@ def dashboard(lawyer_id=None):
 @app.route('/client/dashboard')
 @login_required_client
 def dashboard_client():
-    return render_template('home.html',title="Client Login",client=session['client'],law_practice=available_practice)
+    client = Client.get_by_id(int(session['client']))
+    return render_template('home.html',title="Home",client_first=client.first_name,client=session['client'],law_practice=available_practice)
 
 # route for lawyer add file
 @app.route('/lawyer/view-case',methods=['GET','POST'])
@@ -1612,9 +1620,9 @@ def lawyer_account_setting(lawyer_id=None):
     practices = Practice.query(Practice.lawyer == lawyer.key).fetch()
     practice_dict = []
     for practice in practices:
-        practice_dict.append(practice.to_dict())
+        practice_dict.append(practice.practice())
 
-    return render_template("lawyer-myaccount.html",title="Account Setting",lawyer=session.get('lawyer'),law_practice=available_practice,practices=practice_dict,lawyer_info=lawyer_dict)
+    return render_template("lawyer-myaccount.html",title="Account Setting",lawyer=session.get('lawyer'),law_practice=available_practice,subcategory=subcategory,practices=practice_dict,lawyer_info=lawyer_dict)
     
 @app.route('/lawyer/<int:lawyer_id>/get-lawyer-practice',methods=['GET'])
 def getPractice(lawyer_id=None):

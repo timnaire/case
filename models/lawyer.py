@@ -70,7 +70,7 @@ class Lawyer(ndb.Model):
     def find_city(cls, cityOrMunicipality):
         lawyers = None
         if cityOrMunicipality:
-            lawyers = cls.query(cls.cityOrMunicipality == cityOrMunicipality, cls.password != None).fetch()
+            lawyers = cls.query(cls.cityOrMunicipality == cityOrMunicipality, cls.password != None, cls.status == "activated").fetch()
         
         if not lawyers:
             lawyers = None
