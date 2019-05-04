@@ -243,7 +243,8 @@
                   {% for key in subcategory[practice.law_practice] | sort %}
                   <div class="checkbox ml-3">
                     <label>
-                      <input type="checkbox"  class="practice" > {{key}}
+                      <input type="checkbox" class="subcategory" {% for subpractice in subpractices %}
+                        {% if key in subpractice.subcategory %} checked {% endif %} {% endfor %} value="{{ key }}" > {{key}}
                     </label>
                   </div>
                   {% endfor %}

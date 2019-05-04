@@ -32,9 +32,15 @@
           {% if results %}
 
           {% for person in results %}
-          <div class="col-lg-12">
 
-            <div class="d-block d-md-flex listing">
+          <div class="col-lg-12 lawyerDiv">
+            {% for s in person.subcategory %}
+            <label for="{{s}}">
+              <input type="checkbox" value="{{s}}" id="{{s}}" class="subcategory">
+              {{s}}
+            </label>
+            {% endfor %}
+            <div class="d-block d-md-flex listing ">
               {% if person.lawyer.profile_pic %}
               <a href="/lawyer/find/lawyer-details/{{person.lawyer.email}}" class="img d-block"
                 style="background-image: url({{person.lawyer.profile_pic}})"></a>
@@ -92,7 +98,7 @@
 
         <div class="mb-5">
           <h3 class="h5 text-black mb-3">Filters</h3>
-          <form action="#" method="post">
+          <form action="{{url_for('find_lawyer')}}" method="post">
             <div class="form-group">
               <div class="select-wrap">
                 <span class="icon"><span class="icon-keyboard_arrow_down"></span></span>
@@ -110,9 +116,12 @@
               <!-- select-wrap, .wrap-icon -->
               <div class="wrap-icon">
                 <span class="icon icon-room"></span>
-                <input type="text" placeholder="Location"
+                <input type="text" placeholder="Location" name="city" id="cityOrMunicipality"
                   value="{% if request.args.get('cityOrMunicipality') %}{{request.args.get('cityOrMunicipality')}}{% endif %}"
                   class="form-control">
+              </div>
+              <div class="mt-4">
+                <input type="submit" id="btnFindLawyer" class="btn btn-primary btn-block rounded" value="Search">
               </div>
             </div>
           </form>
@@ -122,7 +131,7 @@
           <form action="#" method="post">
             <div class="form-group">
               {% if request.args.get('practice') %}
-              <p>Category '{{ request.args.get('practice') }}' is selected</p>
+              <p>Category <span class="filterPractice">'{{ request.args.get('practice') }}'</span> is selected</p>
               <p>More filters</p>
               {% endif %}
             </div>
@@ -132,8 +141,8 @@
                 {% if subcategory[request.args.get('practice')] %}
                 {% for key in subcategory[request.args.get('practice')] | sort %}
                 <li>
-                  <label for="option1">
-                    <input type="checkbox" id="option1">
+                  <label for="{{key}}">
+                    <input type="checkbox" value="{{key}}" id="{{key}}" class="subcategory">
                     {{key}}
                   </label>
                 </li>

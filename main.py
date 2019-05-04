@@ -16,6 +16,7 @@ from models.notification import Notification
 from models.upload_file import UploadFile
 from models.payment import Payment
 from models.feedback import Feedback
+from models.subcategory import Subcategory
 from models.subscription import Subscription
 from decorators import login_required_lawyer,login_required_client
 from functions import json_response, is_email, save_to_gcs
@@ -1491,6 +1492,8 @@ def lawyer_update_information(lawyer_id=None):
             sex = req_data['sex']
         if 'law_practice' in req_data:
             law_practice = req_data['law_practice']
+        if 'subcategory' in req_data:
+            subcategory = req_data['subcategory']
 
         if first_name and last_name and phone and cityOrMunicipality and office and law_practice:
             lawyer = Lawyer.save(id=lawyer_id,first_name=first_name,last_name=last_name,sex=sex,phone=phone,cityOrMunicipality=cityOrMunicipality,office=office,firm=firm,aboutme=aboutme)
@@ -1502,6 +1505,14 @@ def lawyer_update_information(lawyer_id=None):
                 # saving new pick practice
                 for pract in law_practice:
                     Practice.save(lawyer=lawyer_id,pract=pract)
+                
+                # saving subcategory
+                subpractices = Subcategory.query(Subcategory.lawyer == lawyer.key).fetch()
+                for subpractice in subpractices:
+                    subpractice.key.delete()
+                for subpract in subcategory:
+                    Subcategory.save(lawyer=lawyer.key.id(),subcategory=subpract)
+
                 return json_response({
                     'error' : False,
                     'message' : "Profile information has been saved!"})
@@ -1622,7 +1633,12 @@ def lawyer_account_setting(lawyer_id=None):
     for practice in practices:
         practice_dict.append(practice.practice())
 
-    return render_template("lawyer-myaccount.html",title="Account Setting",lawyer=session.get('lawyer'),law_practice=available_practice,subcategory=subcategory,practices=practice_dict,lawyer_info=lawyer_dict)
+    subpractices = Subcategory.query(Subcategory.lawyer == lawyer.key).fetch()
+    subpract_dict = []
+    for subpractice in subpractices:
+        subpract_dict.append(subpractice.subpract())
+
+    return render_template("lawyer-myaccount.html",title="Account Setting",lawyer=session.get('lawyer'),law_practice=available_practice,subcategory=subcategory,practices=practice_dict,lawyer_info=lawyer_dict,subpractices=subpract_dict)
     
 @app.route('/lawyer/<int:lawyer_id>/get-lawyer-practice',methods=['GET'])
 def getPractice(lawyer_id=None):

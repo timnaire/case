@@ -1,6 +1,7 @@
 import logging
 from google.appengine.ext import ndb
 from models.lawyer import Lawyer
+from models.subcategory import Subcategory
 
 class Practice(ndb.Model):
     lawyer = ndb.KeyProperty(kind=Lawyer)
@@ -74,6 +75,17 @@ class Practice(ndb.Model):
                     lawyer_pract.append(p.law_practice)
             
             data['law_practice'] = lawyer_pract
+
+        data['subcategory'] = None
+        if self.lawyer:
+            lawyer = self.lawyer.get()
+            subcategory = Subcategory.query().fetch()
+            lawyer_sub = []
+            for s in subcategory:
+                if s.lawyer == lawyer.key:
+                    lawyer_sub.append(s.subcategory)
+            
+            data['subcategory'] = lawyer_sub
         
         return data
 

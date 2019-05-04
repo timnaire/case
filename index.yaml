@@ -41,12 +41,12 @@ indexes:
 - kind: Lawyer
   properties:
   - name: cityOrMunicipality
-  - name: status
   - name: password
 
 - kind: Lawyer
   properties:
   - name: cityOrMunicipality
+  - name: status
   - name: password
 
 - kind: Lawyer

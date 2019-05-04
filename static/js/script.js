@@ -7,6 +7,13 @@ $(document).ready(function () {
     //   $('#findlawyer').fadeIn(1000);
     //   $('#card-result-container').fadeIn(1000);
 
+    $('.subcategory').on("click", function() {
+         if($(this).prop("checked")){
+            var selected = $(this).val();
+            $('.lawyerDiv').find($('.subcategory'));
+         }
+    });
+
     $('#btnClientSignin').click(function (e) {
         e.preventDefault()
         var email = $('#client_login_email').val();
@@ -187,11 +194,15 @@ $(document).ready(function () {
         var firm = $('#ufirm').val().trim();
         var sex = $("[name='lsex']:checked").val();
         var practice = [];
+        var subcategory = [];
         $.each($("input[class='practice']:checked"), function () {
             practice.push($(this).val());
         });
 
-        console.log(practice);
+        $.each($("input[class='subcategory']:checked"), function () {
+            subcategory.push($(this).val());
+        });
+
         sendInfo = {
             first_name: first_name,
             last_name: last_name,
@@ -202,7 +213,7 @@ $(document).ready(function () {
             law_practice: practice,
             firm: firm,
             sex: sex,
-
+            subcategory : subcategory,
         }
         $.post("/lawyer/" + id + "/account-setting/profile-information", JSON.stringify(sendInfo), function (response) {
             if (response['error'] == false) {
