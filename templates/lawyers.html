@@ -33,13 +33,7 @@
 
           {% for person in results %}
 
-          <div class="col-lg-12 lawyerDiv">
-            {% for s in person.subcategory %}
-            <label for="{{s}}">
-              <input type="checkbox" value="{{s}}" id="{{s}}" class="subcategory">
-              {{s}}
-            </label>
-            {% endfor %}
+          <div class="col-lg-12 lawyerDiv {% for s in person.subcategory %}{{s|replace(' ', '-')}} {% endfor %}">
             <div class="d-block d-md-flex listing ">
               {% if person.lawyer.profile_pic %}
               <a href="/lawyer/find/lawyer-details/{{person.lawyer.email}}" class="img d-block"
@@ -139,14 +133,16 @@
               <ul class="list-unstyled">
                 <!-- {{subcategory[request.args.get('practice')] | sort }} -->
                 {% if subcategory[request.args.get('practice')] %}
+                <div id="filterControls">
                 {% for key in subcategory[request.args.get('practice')] | sort %}
                 <li>
-                  <label for="{{key}}">
-                    <input type="checkbox" value="{{key}}" id="{{key}}" class="subcategory">
-                    {{key}}
-                  </label>
+                    <label for="{{key}}">
+                      <input type="checkbox" rel="{{key}}" value="{{key|replace(' ', '-')}}" id="{{key}}" class="subcategory">
+                      {{key}}
+                    </label>
                 </li>
                 {% endfor %}
+              </div>
                 {% endif %}
               </ul>
             </div>

@@ -364,7 +364,7 @@ def lawyer_clicked(client_id=None):
         
         if relation:
             relation = Relationship.save(id=relation.key.id(),lawyer=lawyer.key.id(),client=client.key.id(),status=status)
-        else:    
+        else:
             relation = Relationship.save(lawyer=lawyer.key.id(),client=client.key.id(),status=status)
 
         json_data = {
@@ -1953,12 +1953,20 @@ def see_more(lawyer_email):
             # return json_response({
             #         "error" : True,
             #         "message" : lawyer_details})
+            practices = Practice.query(Practice.lawyer == lawyer.key).fetch()
+            practice_dict = []
+            for practice in practices:
+                practice_dict.append(practice.practice())
+            subpractices = Subcategory.query(Subcategory.lawyer == lawyer.key).fetch()
+            subpract_dict = []
+            for subpractice in subpractices:
+                subpract_dict.append(subpractice.subpract())
             if session.get('lawyer'):
-                return render_template('lawyer-single.html',title='Lawyer Details',lawyer=session['lawyer'],result=lawyer)
+                return render_template('lawyer-single.html',title='Lawyer Details',subcategory=subpract_dict,practices=practice_dict,lawyer=session['lawyer'],result=lawyer)
             elif session.get('client'):
-                return render_template('lawyer-single.html',title='Lawyer Details',client=session['client'],result=lawyer)
+                return render_template('lawyer-single.html',title='Lawyer Details',subcategory=subpract_dict,practices=practice_dict,client=session['client'],result=lawyer)
             else:
-                return render_template('lawyer-single.html',title='Lawyer Details',result=lawyer)
+                return render_template('lawyer-single.html',title='Lawyer Details',subcategory=subpract_dict,practices=practice_dict,result=lawyer)
         else:
             return json_response({
                     "error" : True,

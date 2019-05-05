@@ -6,13 +6,38 @@ $(document).ready(function () {
     //     $('#login-container-div').show(1000);
     //   $('#findlawyer').fadeIn(1000);
     //   $('#card-result-container').fadeIn(1000);
+    // var subpractices =[];
+    // $.each($(".subpractices"), function () {
+    //     subpractices.push($(this).text());
+    // });
+    // console.log(subpractices);
+    // $('.subcategory').on("click", function() {
+        
+    //      if($(this).prop("checked")){
+    //         var selected = $(this).val();
+    //         // $('.lawyerDiv').find($('.subcategory'));
+    //         // if(selected )
+    //         $('.lawyerDiv').removeClass('d-block').addClass('d-none');
+    //      } else {
+    //         $('.lawyerDiv').removeClass('d-none').addClass('d-block');
+    //      }
+    // });
 
-    $('.subcategory').on("click", function() {
-         if($(this).prop("checked")){
-            var selected = $(this).val();
-            $('.lawyerDiv').find($('.subcategory'));
-         }
-    });
+    var sections = $('.lawyerDiv');
+    function updateContentVisibility(){
+        var checked = $("#filterControls :checkbox:checked");
+        if(checked.length){
+            sections.hide();
+            checked.each(function(){
+                $("." + $(this).val()).show();
+            });
+        } else {
+            sections.show();
+        }
+    }
+
+    $("#filterControls :checkbox").click(updateContentVisibility);
+    updateContentVisibility();
 
     $('#btnClientSignin').click(function (e) {
         e.preventDefault()
@@ -667,7 +692,8 @@ $(document).ready(function () {
             $.post("/lawyer/" + client + "/pre-appoint", JSON.stringify(sendInfo), function (response) {
 
                 if (response['error'] == false) {
-                    alert('Appointment Requeset Sent');
+                    $("#textHere").text("Appointment Requeset Sent, Please ensure your that phone is with you and you might receive calls from unknown number please accept it. ");
+                    $('#preAppointModal').modal('show');
                 }
                 else if (response['error'] == true) {
                     console.log(response);
