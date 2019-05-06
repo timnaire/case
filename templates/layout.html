@@ -59,19 +59,21 @@
                     <ul class="site-menu js-clone-nav mr-auto d-none d-lg-block">
                         {% if client or not lawyer %}
                         <li class="{{ 'active' if active_page == 'home' else '' }}"><a href="/">Home</a></li>
+                        <li class="{{ 'active' if active_page == 'lawyers' else '' }}"><a href="/lawyers">Lawyer</a>
+                        </li>
                         {% endif %}
                         {% if lawyer %}
                         <li class="{{ 'active' if active_page == 'dashboard' else '' }}"><a href="/lawyer/{{lawyer}}/dashboard">Dashboard</a>
                         </li>
+                        <li class="{{ 'active' if active_page == 'clients' else '' }}"><a href="/lawyer/{{lawyer}}/clients">My Client</a></li>
                         {% endif %}
-                        <li class="{{ 'active' if active_page == 'lawyers' else '' }}"><a href="/lawyers">Lawyer</a>
-                        </li>
+                        
                         {% if client %}
                         <li class="{{ 'active' if active_page == 'cases' else '' }}"><a
                                 href="/client/{{client}}/cases">Case</a></li>
                         {% elif lawyer %}
                         <li class="{{ 'active' if active_page == 'cases' else '' }}"><a
-                                href="/lawyer/{{lawyer}}/cases">Case</a></li>
+                                href="/lawyer/{{lawyer}}/mycases">Case</a></li>
                         {% endif %}
                         {% if client or not lawyer %}
                         <li class="{{ 'active' if active_page == 'about' else '' }}"><a href="/about">About</a></li>

@@ -766,6 +766,18 @@ $(document).ready(function () {
         }
     }
 
+    $("#btnPreAppoint").click(function (e) {
+        $("#pre-appointment").removeClass("d-none");
+        $("#incoming-client").removeClass("d-none").addClass("d-none");
+        console.log('appointment');
+    });
+
+    $("#btnIncomingClient").click(function (e) {
+        $("#incoming-client").removeClass("d-none");
+        $("#pre-appointment").removeClass("d-none").addClass("d-none");
+        console.log('client');
+    });
+
     $("#image").change(function () {
         readURL(this);
     });

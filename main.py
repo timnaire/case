@@ -617,15 +617,14 @@ def find_lawyer(practice=None,cityOrMunicipality=None):
 @login_required_lawyer
 def dashboard(lawyer_id=None):
 
-    if lawyer_id:
-        lawyer = Lawyer.get_by_id(lawyer_id)
-        relation = Relationship.pa_unaccepted_request(lawyer_id)
-    else:
-        return redirect(json_response({
-                'error' : True,
-                'message' : "Not Int"}))
+    preappoints = PreAppoint.allPreAppointment(lawyer=lawyer_id)
+    preappoint_dict = []
+    for preappoint in preappoints:
+        preappoint_dict.append(preappoint.to_dict())
 
-    return render_template('lawyer-dashboard.html',title="Welcome to Dashboard",lawyer=session['lawyer'],results=lawyer,relationship=relation)
+    lawyer_id = Lawyer.get_by_id(int(lawyer_id))
+    lawyer = lawyer_id.to_dict()
+    return render_template('lawyer-dashboard.html',title="Welcome to Dashboard",lawyer=session['lawyer'],results=lawyer,preappointments=preappoint_dict)
 
 #dashboard route for client
 @app.route('/client/')
@@ -1088,6 +1087,14 @@ def edit_event():
                 "error" : True,
                 "message" : "Event was not updated."})
 
+@app.route('/lawyer/<int:lawyer_id>/clients',methods=['GET','POST'])
+@login_required_lawyer
+def list_client_web(lawyer_id=None):
+    list_of_clients = Relationship.my_clients(lawyer_id=lawyer_id)
+    lawyer_id = Lawyer.get_by_id(int(lawyer_id))
+    lawyer = lawyer_id.to_dict()
+    return render_template("lawyer-clients.html",clients=list_of_clients,lawyer=session['lawyer'])
+
 @app.route('/lawyer/<int:lawyer_id>/list-client',methods=['GET','POST'])
 def list_client(lawyer_id=None):
     list_of_clients = Relationship.my_clients(lawyer_id=lawyer_id)
@@ -1293,7 +1300,9 @@ def getAllCase(lawyer_id=None):
             case_dict.append(case.to_dict())
     else:
         case_dict="Empty"
-    return render_template('lawyer/lawyer-mycases.html',lawyer=session['lawyer'],cases=case_dict,title="My Cases",available_practice=available_practice)
+    lawyer_id = Lawyer.get_by_id(int(lawyer_id))
+    lawyer = lawyer_id.to_dict()
+    return render_template('lawyer-cases.html',lawyer=session['lawyer'],cases=case_dict,title="My Cases",available_practice=available_practice,results=lawyer)
 
 # route for lawyer listing all case for lawyer
 @app.route('/client/<int:client_id>/cases',methods=['GET','POST'])
