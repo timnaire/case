@@ -1,3 +1,7 @@
+var pusher = new Pusher('86eb9d2db54de852df31', {
+    cluster: 'ap1',
+    forceTLS: true
+  });
 $(document).ready(function () {
     var sendInfo = {}
     // Initiate the wowjs
@@ -6,22 +10,15 @@ $(document).ready(function () {
     //     $('#login-container-div').show(1000);
     //   $('#findlawyer').fadeIn(1000);
     //   $('#card-result-container').fadeIn(1000);
-    // var subpractices =[];
-    // $.each($(".subpractices"), function () {
-    //     subpractices.push($(this).text());
-    // });
-    // console.log(subpractices);
-    // $('.subcategory').on("click", function() {
-        
-    //      if($(this).prop("checked")){
-    //         var selected = $(this).val();
-    //         // $('.lawyerDiv').find($('.subcategory'));
-    //         // if(selected )
-    //         $('.lawyerDiv').removeClass('d-block').addClass('d-none');
-    //      } else {
-    //         $('.lawyerDiv').removeClass('d-none').addClass('d-block');
-    //      }
-    // });
+  
+    var channel = pusher.subscribe('appointment');
+    channel.bind('preappoint', function(data) {
+        alert(JSON.stringify(data));
+    });
+
+    channel.bind('accepted', function(data) {
+      alert(JSON.stringify(data));
+    });
 
     var sections = $('.lawyerDiv');
     function updateContentVisibility(){
@@ -766,16 +763,52 @@ $(document).ready(function () {
         }
     }
 
+    $(".btnPreAppoint").click(function(e){
+        var client_id = $(this).data('id');
+        var lawyer_id = $(this).data('lawyerid');
+        var status = $(this).data('status');
+        if(status=="decline") {
+            if(confirm("Are you sure you want to decline this appointment?")) {
+                sendInfo = { lawyer_id: lawyer_id , status: status}
+                // /lawyer/<int:client_id>/pre-appoint-response
+                $.post('/lawyer/'+client_id+'/pre-appoint-response', JSON.stringify(sendInfo), function (response) {
+                    if(response['error'] == false){
+                        $("#preappoint-accept").removeClass('d-none');
+                        $("#preappoint-decline").addClass('d-none');
+                        $(".message").text(response['message']);
+                    } else {
+                        $("#preappoint-accept").addClass('d-none');
+                        $("#preappoint-decline").removeClass('d-none');
+                        $(".message").text(response['message']);
+                    }
+                });
+            }
+        } else {
+            sendInfo = { lawyer_id: lawyer_id , status: status}
+            // /lawyer/<int:client_id>/pre-appoint-response
+            $.post('/lawyer/'+client_id+'/pre-appoint-response', JSON.stringify(sendInfo), function (response) {
+                if(response['error'] == false){
+                    $("#preappoint-accept").removeClass('d-none');
+                    $("#preappoint-decline").addClass('d-none');
+                    $(".message").text(response['message']);
+                } else {
+                    $("#preappoint-accept").addClass('d-none');
+                    $("#preappoint-decline").removeClass('d-none');
+                    $(".message").text(response['message']);
+                }
+            });
+        }
+        e.preventDefault()
+    });
+
     $("#btnPreAppoint").click(function (e) {
         $("#pre-appointment").removeClass("d-none");
         $("#incoming-client").removeClass("d-none").addClass("d-none");
-        console.log('appointment');
     });
 
     $("#btnIncomingClient").click(function (e) {
         $("#incoming-client").removeClass("d-none");
         $("#pre-appointment").removeClass("d-none").addClass("d-none");
-        console.log('client');
     });
 
     $("#image").change(function () {

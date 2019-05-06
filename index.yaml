@@ -8,12 +8,16 @@ indexes:
 
 - kind: "Lawyer"
   properties:
-  - name: "cityOrMunicipality"
+  - name: "email"
   - name: "status"
+  - name: "password"
+- kind: "Client"
+  properties:
+  - name: "email"
   - name: "password"
 - kind: "Lawyer"
   properties:
-  - name: "email"
+  - name: "cityOrMunicipality"
   - name: "status"
   - name: "password"
 - kind: "Case"
@@ -21,10 +25,6 @@ indexes:
   - name: "lawyer"
   - name: "created"
     direction: desc
-- kind: "Client"
-  properties:
-  - name: "email"
-  - name: "password"
 - kind: "Case"
   properties:
   - name: "client"
