@@ -18,6 +18,8 @@ from models.payment import Payment
 from models.feedback import Feedback
 from models.subcategory import Subcategory
 from models.subscription import Subscription
+from models.pre_appoint import PreAppoint
+from models.incoming_client import IncomingClient
 from decorators import login_required_lawyer,login_required_client
 from functions import json_response, is_email, save_to_gcs
 
@@ -348,6 +350,56 @@ def home():
 
 
 # appoint lawyer 
+# @app.route('/lawyer/<int:client_id>/pre-appoint',methods=['POST'])
+# def lawyer_clicked(client_id=None):
+#     if request.method == "POST":
+#         lawyer_id=None
+#         req_data = request.get_json(force=True)
+#         if 'id' in req_data:
+#             lawyer_id = req_data['id']
+#         # first relationship status will be stranger for both
+#         status = ""
+
+#         relation = Relationship.client_exist(client_id)
+#         lawyer = Lawyer.get_by_id(int(lawyer_id))
+#         client = Client.get_by_id(int(client_id))
+        
+#         if relation:
+#             relation = Relationship.save(id=relation.key.id(),lawyer=lawyer.key.id(),client=client.key.id(),status=status)
+#         else:
+#             relation = Relationship.save(lawyer=lawyer.key.id(),client=client.key.id(),status=status)
+
+#         json_data = {
+#             "to": lawyer.fcm_token,     
+#             "notification":{
+#                 'click_action' : '.MainActivity',
+#                 'title': 'Pre-Appointment', 
+#                 'body': client.first_name + ' ' + client.last_name + ' sends Pre-Appointment request.'
+#             },
+#             "data":{
+#                 'client_id': client_id,
+#                 'relation_id' : relation.id()
+#             }
+#         }
+
+#         headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
+#         requests.post(
+#             'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
+#         )
+#         msg = client.first_name + " " + client.last_name + " sends Pre-Appointment request."
+#         notification = Notification.save(notif_to=lawyer.key,notif_from=client.key,msg=msg,sent="1",received="0")
+#         if notification:
+#             return json_response({
+#                 "error" : False,
+#                 "message" : "You have now set a pre appointment with "+lawyer.first_name+" "+lawyer.last_name,
+#                 "client_name": client.first_name+ " " +client.last_name,
+#                 "client_phone" : client.phone,
+#                 "client_email" : client.email})
+#         else:
+#             return json_response({
+#                 "error" : True,
+#                 "message" : "Pre-appointment was not made, please try again."})
+
 @app.route('/lawyer/<int:client_id>/pre-appoint',methods=['POST'])
 def lawyer_clicked(client_id=None):
     if request.method == "POST":
@@ -355,48 +407,54 @@ def lawyer_clicked(client_id=None):
         req_data = request.get_json(force=True)
         if 'id' in req_data:
             lawyer_id = req_data['id']
-        # first relationship status will be stranger for both
-        status = ""
 
-        relation = Relationship.client_exist(client_id)
         lawyer = Lawyer.get_by_id(int(lawyer_id))
         client = Client.get_by_id(int(client_id))
-        
-        if relation:
-            relation = Relationship.save(id=relation.key.id(),lawyer=lawyer.key.id(),client=client.key.id(),status=status)
-        else:
-            relation = Relationship.save(lawyer=lawyer.key.id(),client=client.key.id(),status=status)
 
-        json_data = {
-            "to": lawyer.fcm_token,     
-            "notification":{
-                'click_action' : '.MainActivity',
-                'title': 'Pre-Appointment', 
-                'body': client.first_name + ' ' + client.last_name + ' sends Pre-Appointment request.'
-            },
-            "data":{
-                'client_id': client_id,
-                'relation_id' : relation.id()
+        preappoint = PreAppoint.isAppointed(client=client_id,lawyer=lawyer_id)
+
+        if not preappoint:
+            preappoint = PreAppoint.save(lawyer=lawyer_id,client=client_id,status="")
+            json_data = {
+                "to": lawyer.fcm_token,     
+                "notification":{
+                    'click_action' : '.MainActivity',
+                    'title': 'Pre-Appointment', 
+                    'body': client.first_name + ' ' + client.last_name + ' sends Pre-Appointment request.'
+                },
+                "data":{
+                    'client_id': client_id,
+                    'preappoint_id' : preappoint.key.id()
+                }
             }
-        }
 
-        headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
-        requests.post(
-            'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
-        )
-        msg = client.first_name + " " + client.last_name + " sends Pre-Appointment request."
-        notification = Notification.save(notif_to=lawyer.key,notif_from=client.key,msg=msg,sent="1",received="0")
-        if notification:
+            headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
+            requests.post(
+                'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
+            )
             return json_response({
                 "error" : False,
-                "message" : "You have now set a pre appointment with "+lawyer.first_name+" "+lawyer.last_name,
-                "client_name": client.first_name+ " " +client.last_name,
-                "client_phone" : client.phone,
-                "client_email" : client.email})
+                "message" : "Pre-appointment Request has been sent!"
+            })
         else:
             return json_response({
                 "error" : True,
-                "message" : "Pre-appointment was not made, please try again."})
+                "message" : "You already sent a pre appointment!"
+            })
+
+@app.route('/lawyer/<int:lawyer_id>/preappointments',methods=['GET','POST'])
+def lawyer_preappointments(lawyer_id=None):
+    preappoints = PreAppoint.allPreAppointment(lawyer=lawyer_id)
+
+    preappoint_dict = []
+    for preappoint in preappoints:
+        preappoint_dict.append(preappoint.to_dict())
+        
+    return json_response({
+        "error" : False,
+        "preappoints" : preappoint_dict,
+        "message" : "You have "+`len(preappoints)`+" pre appointments"
+    })
 
 # pre-appoint response from lawyer mobile
 @app.route('/lawyer/<int:client_id>/pre-appoint-response',methods=['POST'])

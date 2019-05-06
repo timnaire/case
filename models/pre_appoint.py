@@ -11,10 +11,10 @@ class PreAppoint(ndb.Model):
     
     @classmethod
     def save(cls,*args,**kwargs):
-        preappoin_id = str(kwargs.get('id'))
+        preappoint_id = str(kwargs.get('id'))
 
-        if preappoin_id and preappoin_id.isdigit():
-            preappoint = cls.get_by_id(int(preappoin_id))
+        if preappoint_id and preappoint_id.isdigit():
+            preappoint = cls.get_by_id(int(preappoint_id))
         else:
             preappoint = cls()
 
@@ -31,4 +31,59 @@ class PreAppoint(ndb.Model):
         if kwargs.get('status'):
             preappoint.status = kwargs.get('status')
         
-        return preappoint.put()
+        preappoint.put()
+        return preappoint
+
+    @classmethod
+    def isAppointed(cls,*args,**kwargs):
+        preappoint = None
+
+        lawyer_id = str(kwargs.get('lawyer'))
+        if lawyer_id.isdigit():
+            lawyer_key = ndb.Key('Lawyer',int(lawyer_id))
+        
+        client_id = str(kwargs.get('client'))
+        if client_id.isdigit():
+            client_key = ndb.Key('Client', int(client_id))
+
+        if client_id and lawyer_id:
+            preappoint = cls.query(cls.lawyer == lawyer_key, cls.client == client_key).get()
+
+        if not preappoint:
+            preappoint = None
+
+        return preappoint
+
+    @classmethod
+    def allPreAppointment(cls,*args,**kwargs):
+        preappoint = None 
+
+        lawyer_id = str(kwargs.get('lawyer'))
+        if lawyer_id.isdigit():
+            lawyer_key = ndb.Key('Lawyer',int(lawyer_id))
+            if lawyer_key:
+                preappoint = cls.query(cls.lawyer == lawyer_key).fetch()
+        
+        if not preappoint:
+            preappoint = None
+
+        return preappoint
+
+    def to_dict(self):
+        data = {}
+        
+        data['lawyer'] = None
+        if self.lawyer:
+            lawyer = self.lawyer.get()
+            data['lawyer'] = lawyer.to_dict()
+
+        data['client'] = None
+        if self.client:
+            client = self.client.get()            
+            data['client'] = client.to_dict()
+        
+        data['status'] = self.status
+        data['created'] = self.created.isoformat() + 'Z'
+        data['updated'] = self.updated.isoformat() + 'Z'
+
+        return data

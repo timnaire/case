@@ -696,7 +696,8 @@ $(document).ready(function () {
                     $('#preAppointModal').modal('show');
                 }
                 else if (response['error'] == true) {
-                    console.log(response);
+                    $("#textHere").text(response['message']);
+                    $('#preAppointModal').modal('show');
                 }
             }, "json")
         }
