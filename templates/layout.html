@@ -27,8 +27,10 @@
 
     <link rel="stylesheet" href="/static/css/aos.css">
     <link rel="stylesheet" href="/static/css/rangeslider.css">
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
+    <link rel="stylesheet" href="/static/css/dropzone.css">
+    <!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> -->
+    {{ moment.include_jquery() }}
+    {{ moment.include_moment() }}
     <link rel="stylesheet" href="/static/css/style.css">
 
 </head>
@@ -63,11 +65,13 @@
                         </li>
                         {% endif %}
                         {% if lawyer %}
-                        <li class="{{ 'active' if active_page == 'dashboard' else '' }}"><a href="/lawyer/{{lawyer}}/dashboard">Dashboard</a>
+                        <li class="{{ 'active' if active_page == 'dashboard' else '' }}"><a
+                                href="/lawyer/{{lawyer}}/dashboard">Dashboard</a>
                         </li>
-                        <li class="{{ 'active' if active_page == 'clients' else '' }}"><a href="/lawyer/{{lawyer}}/clients">My Client</a></li>
+                        <li class="{{ 'active' if active_page == 'clients' else '' }}"><a
+                                href="/lawyer/{{lawyer}}/clients">My Client</a></li>
                         {% endif %}
-                        
+
                         {% if client %}
                         <li class="{{ 'active' if active_page == 'cases' else '' }}"><a
                                 href="/client/{{client}}/cases">Case</a></li>
@@ -130,6 +134,27 @@
 
     {% block content %} {% endblock %}
 
+    <!-- Modal -->
+    <div class="modal fade" id="notification" tabindex="-1" role="dialog" aria-labelledby="notification"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="notificationTitle"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="notificationMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer class="site-footer">
         <div class="container">
             <div class="row">
@@ -189,53 +214,55 @@
     <script src="/static/js/bootstrap-datepicker.min.js"></script>
     <script src="/static/js/aos.js"></script>
     <script src="/static/js/rangeslider.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="https://js.pusher.com/4.4/pusher.min.js"></script>
+    <script src="/static/js/dropzone.js"></script>
+    <!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
+    <!-- <script src="https://js.pusher.com/4.4/pusher.min.js"></script> -->
+    <script src="/static/js/pusher.js"></script>
 
     <script src="/static/js/main.js"></script>
     <script src="/static/js/script.js"></script>
     <script>
-      var map;
-  var service;
-  var infowindow;
+        var map;
+        var service;
+        var infowindow;
 
-  function initMap() {
-    var cebu = new google.maps.LatLng(10.3157, 123.8854);
+        function initMap() {
+            var cebu = new google.maps.LatLng(10.3157, 123.8854);
 
-    infowindow = new google.maps.InfoWindow();
+            infowindow = new google.maps.InfoWindow();
 
-    map = new google.maps.Map(
-      document.getElementById('map_canvas'), { center: cebu, zoom: 15 });
-    address = $("#lawyerAddress").val();
-    var request = {
-      query: address,
-      fields: ['name', 'geometry'],
-    };
+            map = new google.maps.Map(
+                document.getElementById('map_canvas'), { center: cebu, zoom: 15 });
+            address = $("#lawyerAddress").val();
+            var request = {
+                query: address,
+                fields: ['name', 'geometry'],
+            };
 
-    service = new google.maps.places.PlacesService(map);
+            service = new google.maps.places.PlacesService(map);
 
-    service.findPlaceFromQuery(request, function (results, status) {
-      if (status === google.maps.places.PlacesServiceStatus.OK) {
-        for (var i = 0; i < results.length; i++) {
-          createMarker(results[i]);
+            service.findPlaceFromQuery(request, function (results, status) {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    for (var i = 0; i < results.length; i++) {
+                        createMarker(results[i]);
+                    }
+
+                    map.setCenter(results[0].geometry.location);
+                }
+            });
         }
 
-        map.setCenter(results[0].geometry.location);
-      }
-    });
-  }
+        function createMarker(place) {
+            var marker = new google.maps.Marker({
+                map: map,
+                position: place.geometry.location
+            });
 
-  function createMarker(place) {
-    var marker = new google.maps.Marker({
-      map: map,
-      position: place.geometry.location
-    });
-
-    google.maps.event.addListener(marker, 'click', function () {
-      infowindow.setContent(place.name);
-      infowindow.open(map, this);
-    });
-  }
+            google.maps.event.addListener(marker, 'click', function () {
+                infowindow.setContent(place.name);
+                infowindow.open(map, this);
+            });
+        }
     </script>
     <script
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBpO3zy8fmYoy5hx5ER3XKKYFKvXZg7Zws&libraries=places&callback=initMap"

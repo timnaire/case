@@ -8,6 +8,7 @@ class Case(ndb.Model):
     client = ndb.KeyProperty(kind=Client)
     case_description = ndb.StringProperty()
     case_status = ndb.StringProperty()
+    remarks = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
 
@@ -36,7 +37,8 @@ class Case(ndb.Model):
             case.case_description = kwargs.get('case_description')
         if kwargs.get('case_status'):
             case.case_status = kwargs.get('case_status')
-
+        if kwargs.get('remarks'):
+            case.remarks = kwargs.get('remarks')
         case.put()
         return case
 
@@ -50,9 +52,9 @@ class Case(ndb.Model):
                 number_of_case = number_of_case + 1
         
         if not number_of_case:
-            number_of_case = None
+            number_of_case = 0
 
-        return number_of_case
+        return int(number_of_case)
 
     @classmethod
     def get_all_cases(cls,*args,**kwargs):
@@ -161,6 +163,7 @@ class Case(ndb.Model):
         data['case_title'] = self.case_title
         data['case_description'] = self.case_description
         data['case_status'] = self.case_status
+        data['remarks'] = self.remarks
         data['created'] = self.created.isoformat() + "Z"
         data['updated'] = self.updated.isoformat() + "Z"
         return data

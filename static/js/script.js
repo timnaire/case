@@ -2,6 +2,39 @@ var pusher = new Pusher('86eb9d2db54de852df31', {
     cluster: 'ap1',
     forceTLS: true
   });
+  var acceptedFileDropzone = "image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/mspowerpoint, application/powerpoint, application/vnd.ms-powerpoint, application/x-mspowerpoint,application/excel, application/vnd.ms-excel, application/x-excel, application/x-msexcel,pplication/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  var lawyer_id = $("#uploaded_by").val();
+  Dropzone.options.myDropzone= {
+    url: '/lawyer/'+lawyer_id+'/add-file-web',
+    paramName: "case_file",
+    autoProcessQueue: false,
+    uploadMultiple: true,
+    parallelUploads: 5,
+    maxFiles: 5,
+    maxFilesize: 1,
+    acceptedFiles: acceptedFileDropzone,
+    addRemoveLinks: true,
+    init: function() {
+        dzClosure = this; // Makes sure that 'this' is understood inside the functions below.
+
+        // for Dropzone to process the queue (instead of default form behavior):
+        document.getElementById("submit-all").addEventListener("click", function(e) {
+            // Make sure that the form isn't actually being sent.
+            e.preventDefault();
+            e.stopPropagation();
+            dzClosure.processQueue();
+        });
+
+        //send all the form data along with the files:
+        this.on("sendingmultiple", function(data, xhr, formData) {
+            formData.append("uploaded_by", jQuery("#uploaded_by").val());
+            formData.append("case", jQuery("#case").val());
+            formData.append("file_name", jQuery("#file_name").val());
+            formData.append("file_privacy", jQuery("#file_privacy").val());
+        });
+    }
+}
+
 $(document).ready(function () {
     var sendInfo = {}
     // Initiate the wowjs
@@ -16,9 +49,24 @@ $(document).ready(function () {
         alert(JSON.stringify(data));
     });
 
+    var channel1 = pusher.subscribe('client');
+
     channel.bind('accepted', function(data) {
-      alert(JSON.stringify(data));
+      $("#notificationTitle").text("Pre Appointment");
+      $("#notificationMessage").text(data['message']);
+      $('#notification').modal('show');
     });
+
+    channel1.bind('accepted', function(data) {
+        $("#notificationTitle").text("Client");
+        $("#notificationMessage").text(data['message']);
+        $('#notification').modal('show');
+      });
+    channel1.bind('decline', function(data) {
+        $("#notificationTitle").text("Client");
+        $("#notificationMessage").text(data['message']);
+        $('#notification').modal('show');
+      });
 
     var sections = $('.lawyerDiv');
     function updateContentVisibility(){
@@ -94,7 +142,6 @@ $(document).ready(function () {
         var case_title = $('#add-case').val();
         var client_id = $('#client-id').val();
         var case_description = $('#case-description').val();
-        alert(client_id);
         sendInfo = {
             case_title: case_title,
             client_id: client_id,
@@ -103,6 +150,7 @@ $(document).ready(function () {
         $.post("/lawyer/" + id + "/newcase", JSON.stringify(sendInfo), function (response) {
             if (response['error'] == false) {
                 alert('Case has been added!');
+                window.location.replace("/lawyer/" + id + "/mycases");
             }
             else if (response['error'] == true) {
                 alert('Creating case failed!');
@@ -577,25 +625,44 @@ $(document).ready(function () {
     $('#btnEditCase').click(function (e) {
         e.preventDefault();
         var lawyer_id = $('#lawyer_id').val();
-        var case_title = $("#case-title").val().trim();
+        var case_title = $("#case-title").val();
         var case_id = $("#case_id").val();
+        var client_id = $("#client_id").val();
         var case_status = $('#status').val();
-        var case_description = $('#case-description').val().trim();
-        alert(lawyer_id);
+        var case_description = $('#case-description').val();
+        var remarks = $('#remarks').val();
         sendInfo = {
             case_title: case_title,
             case_id: case_id,
+            client_id : client_id,
             case_status: case_status,
-            case_description: case_description
+            case_description: case_description, 
+            remarks : remarks
         }
-        alert(sendInfo['case_title']);
         $.post("/lawyer/" + lawyer_id + "/edit-case", JSON.stringify(sendInfo), function (response) {
             if (response['error'] == false) {
                 alert('Case Updated');
+                window.location.replace("/lawyer/" + lawyer_id + "/mycases/"+case_id);
             } else if (response['error'] == true) {
                 alert('Case failed to Update');
             }
         })
+    });
+
+    $("#btnDeleteCase").click(function(){
+        if(confirm("Are you sure you want to delete this case? this cannot be undone.")) {
+            var lawyer_id = $(this).data('id');
+            var case_id = $(this).data('caseid');
+            sendInfo = {
+                case_id : case_id
+            }
+            $.post("/lawyer/"+lawyer_id+"/delete-case", JSON.stringify(sendInfo), function (response) {
+                if(response['error'] == false) {
+                    alert(response['message']);
+                    window.location.replace("/lawyer/"+lawyer_id+"/mycases");
+                }
+            }, "json");
+        }
     });
 
     $('#btnClientSaveInfo').click(function (e) {
@@ -689,7 +756,7 @@ $(document).ready(function () {
             $.post("/lawyer/" + client + "/pre-appoint", JSON.stringify(sendInfo), function (response) {
 
                 if (response['error'] == false) {
-                    $("#textHere").text("Appointment Requeset Sent, Please ensure your that phone is with you and you might receive calls from unknown number please accept it. ");
+                    $("#textHere").text(response['message']);
                     $('#preAppointModal').modal('show');
                 }
                 else if (response['error'] == true) {
@@ -767,9 +834,11 @@ $(document).ready(function () {
         var client_id = $(this).data('id');
         var lawyer_id = $(this).data('lawyerid');
         var status = $(this).data('status');
+        $(this).parent().parent().parent().fadeOut( "slow", function() {
+        });
+        sendInfo = { lawyer_id: lawyer_id , status: status}
         if(status=="decline") {
             if(confirm("Are you sure you want to decline this appointment?")) {
-                sendInfo = { lawyer_id: lawyer_id , status: status}
                 // /lawyer/<int:client_id>/pre-appoint-response
                 $.post('/lawyer/'+client_id+'/pre-appoint-response', JSON.stringify(sendInfo), function (response) {
                     if(response['error'] == false){
@@ -784,7 +853,7 @@ $(document).ready(function () {
                 });
             }
         } else {
-            sendInfo = { lawyer_id: lawyer_id , status: status}
+            
             // /lawyer/<int:client_id>/pre-appoint-response
             $.post('/lawyer/'+client_id+'/pre-appoint-response', JSON.stringify(sendInfo), function (response) {
                 if(response['error'] == false){
@@ -796,6 +865,32 @@ $(document).ready(function () {
                     $("#preappoint-decline").removeClass('d-none');
                     $(".message").text(response['message']);
                 }
+            });
+        }
+        e.preventDefault()
+    });
+
+    $(".btnIncomingClient").click(function(e){
+        var client_id = $(this).data('id');
+        var lawyer_id = $(this).data('lawyerid');
+        var status = $(this).data('status');
+        var preappoint_id = $(this).data('pa');
+        sendInfo = {
+            client_id : client_id,
+            status : status,
+            preappoint_id : preappoint_id
+        }
+        $(this).parent().parent().parent().fadeOut( "slow", function() {
+          });
+        if(status == "decline") {
+            if(confirm("Are you sure you want to decline this client?")) {
+                $.post('/lawyer/'+lawyer_id+'/incoming-client', JSON.stringify(sendInfo), function (response) {
+                    console.log(response['message']);
+                });
+            }
+        } else {
+            $.post('/lawyer/'+lawyer_id+'/incoming-client', JSON.stringify(sendInfo), function (response) {
+                console.log(response['message']);
             });
         }
         e.preventDefault()

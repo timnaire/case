@@ -30,11 +30,16 @@
 
       <div class="col-lg-8">
 
-        <div class="mb-4">
-          <center><img {% if result.profile_pic %}src="{{result.profile_pic}}"
-              {% else %}src="/static/images/default.png" {% endif %} alt="Image" width="200px" height="170px"
-              class="img d-block"></center>
+        <div class="row justify-content-center mt-5">
+          <div class="col-md-8 text-center">
+            {% if result.profile_pic %}
+            <img src="{{ result.profile_pic }}" width='160px' height='160px' class="rounded-circle" id='lawyerpic' />
+            {% else %}
+            <img src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="rounded-circle" alt="avatar">
+            {% endif %}
+          </div>
         </div>
+
         <h4 class="h5 mb-4 text-black">About me</h4>
         {% if result.aboutme %}
         <p>{{result.aboutme}}</p>

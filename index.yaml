@@ -11,25 +11,25 @@ indexes:
   - name: "email"
   - name: "status"
   - name: "password"
-- kind: "Client"
-  properties:
-  - name: "email"
-  - name: "password"
-- kind: "Lawyer"
-  properties:
-  - name: "cityOrMunicipality"
-  - name: "status"
-  - name: "password"
 - kind: "Case"
   properties:
   - name: "lawyer"
   - name: "created"
     direction: desc
+- kind: "Client"
+  properties:
+  - name: "email"
+  - name: "password"
 - kind: "Case"
   properties:
   - name: "client"
   - name: "created"
     direction: desc
+- kind: "Lawyer"
+  properties:
+  - name: "cityOrMunicipality"
+  - name: "status"
+  - name: "password"
 - kind: "Event"
   properties:
   - name: "client"

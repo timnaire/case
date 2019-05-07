@@ -34,59 +34,25 @@
             <div class="col-md-8">
 
                 <div class="row mb-3 align-items-stretch">
-
+                    {% if cases %}
+                    {% for case in cases %}
                     <div class="col-md-4 col-lg-3 mb-4 mb-lg-4">
                         <div class="h-entry">
-                            <img src="/static/images/img_1.jpg" alt="Image" class="img-fluid rounded">
-                            <h2 class="font-size-regular"><a href="#" class="text-black">Many People Selling Online</a>
+                            <a href="/client/{{client}}/cases/{{case.case_id}}"><img src="/static/images/briefcase.png" alt="Image"
+                                    class="img-fluid rounded"></a>
+                            <h2 class="font-size-regular"><a href="#" class="text-black">{{case.case_title}}</a>
                             </h2>
-                            <div class="meta mb-3">by Mark Spiker<span class="mx-1">&bullet;</span> Jan 18, 2019</div>
+                            <div class="meta mb-3">by {{case.lawyer.first_name}} {{case.lawyer.last_name}}<span
+                                    class="mx-1">&bullet;</span> <span
+                                    class="case_date">{{ moment().format('MMMM Do YYYY, h:mm a') }}</span></div>
                         </div>
                     </div>
-                    <div class="col-md-4 col-lg-3 mb-4 mb-lg-4">
-                        <div class="h-entry">
-                            <img src="/static/images/img_2.jpg" alt="Image" class="img-fluid rounded">
-                            <h2 class="font-size-regular"><a href="#" class="text-black">Many People Selling Online</a>
-                            </h2>
-                            <div class="meta mb-3">by Mark Spiker<span class="mx-1">&bullet;</span> Jan 18, 2019</div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-lg-3 mb-4 mb-lg-4">
-                        <div class="h-entry">
-                            <img src="/static/images/img_3.jpg" alt="Image" class="img-fluid rounded">
-                            <h2 class="font-size-regular"><a href="#" class="text-black">Many People Selling Online</a>
-                            </h2>
-                            <div class="meta mb-3">by Mark Spiker<span class="mx-1">&bullet;</span> Jan 18, 2019</div>
-                        </div>
-                    </div>
-
-
-                    <div class="col-md-4 col-lg-3 mb-4 mb-lg-4">
-                        <div class="h-entry">
-                            <img src="/static/images/img_4.jpg" alt="Image" class="img-fluid rounded">
-                            <h2 class="font-size-regular"><a href="#" class="text-black">Many People Selling Online</a>
-                            </h2>
-                            <div class="meta mb-3">by Mark Spiker<span class="mx-1">&bullet;</span> Jan 18, 2019</div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-lg-3 mb-4 mb-lg-4">
-                        <div class="h-entry">
-                            <img src="/static/images/img_2.jpg" alt="Image" class="img-fluid rounded">
-                            <h2 class="font-size-regular"><a href="#" class="text-black">Many People Selling Online</a>
-                            </h2>
-                            <div class="meta mb-3">by Mark Spiker<span class="mx-1">&bullet;</span> Jan 18, 2019</div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-lg-3 mb-4 mb-lg-4">
-                        <div class="h-entry">
-                            <img src="/static/images/img_3.jpg" alt="Image" class="img-fluid rounded">
-                            <h2 class="font-size-regular"><a href="#" class="text-black">Many People Selling Online</a>
-                            </h2>
-                            <div class="meta mb-3">Client: Mark Spiker<span class="mx-1">&bullet;</span> Jan 18, 2019</div>
-                        </div>
-                    </div>
-
-
+                    {% endfor %}
+                    {% else %}
+                    <center>
+                        <h2>No case found</h2>
+                    </center>
+                    {% endif %}
                 </div>
 
 
@@ -102,6 +68,7 @@
             </div>
 
             <div class="col-md-3 ml-auto">
+
                 <div class="mb-5">
                     <h3 class="h5 text-black mb-3">Search</h3>
                     <form action="#" method="post">
@@ -114,10 +81,11 @@
                 <div class="mb-5">
                     <h3 class="h5 text-black mb-3">Recent Case</h3>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#">Lorem ipsum dolor sit amet</a></li>
-                        <li class="mb-2"><a href="#">Quaerat rerum voluptatibus veritatis</a></li>
-                        <li class="mb-2"><a href="#">Maiores sapiente veritatis reprehenderit</a></li>
-                        <li class="mb-2"><a href="#">Natus eligendi nobis</a></li>
+                        {% if cases %}
+                        {% for case in cases %}
+                        <li class="mb-2"><a href="#">{{case.case_title}}</a></li>
+                        {% endfor %}
+                        {% endif %}
                     </ul>
                 </div>
 
