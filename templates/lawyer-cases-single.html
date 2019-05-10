@@ -29,11 +29,21 @@
 
             <div class="col-md-8">
 
-                {% if documents %}
+                {% if files %}
 
                 <div class="row mb-3 align-items-stretch">
-
-
+                    {% for file in files %}
+                    <div class="col-md-4 col-lg-3 mb-4 mb-lg-4">
+                        <div class="h-entry">
+                            <a href="{{file.case_file}}"><img src="/static/images/file_icon.png" alt="Image"
+                                    class="img-fluid rounded"></a>
+                            <h2 class="font-size-regular"><a href="#" class="text-black">{{file.file_name}}</a>
+                            </h2>
+                            <div class="meta mb-3">{{file.file_type}}<span class="mx-1">&bullet;</span> <span
+                                    class="case_date"></span></div>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
 
                 {% else %}
@@ -270,14 +280,14 @@
                     </div>
                     <select class="form-control rounded mb-3" id="file_privacy">
                         <option value="Public">Public</option>
-                        <option value="Research">Private</option>
+                        <option value="Private">Private</option>
                     </select>
                     <div class="dropzone" id="myDropzone"></div>
             </div>
             <div class="modal-footer">
 
                 <button id="submit-all" class="btn btn-primary" data-dismiss="modal">Save</button>
-            </form>
+                </form>
             </div>
         </div>
     </div>

@@ -3,15 +3,16 @@ var pusher = new Pusher('86eb9d2db54de852df31', {
     forceTLS: true
   });
   var acceptedFileDropzone = "image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/mspowerpoint, application/powerpoint, application/vnd.ms-powerpoint, application/x-mspowerpoint,application/excel, application/vnd.ms-excel, application/x-excel, application/x-msexcel,pplication/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-  var lawyer_id = $("#uploaded_by").val();
+  var currentUser = $("#currentUser").val();
+
   Dropzone.options.myDropzone= {
-    url: '/lawyer/'+lawyer_id+'/add-file-web',
-    paramName: "case_file",
+    url: '/lawyer/'+currentUser+'/add-file-web',
+    paramName: "file",
     autoProcessQueue: false,
     uploadMultiple: true,
     parallelUploads: 5,
     maxFiles: 5,
-    maxFilesize: 1,
+    maxFilesize: 3,
     acceptedFiles: acceptedFileDropzone,
     addRemoveLinks: true,
     init: function() {
@@ -19,6 +20,37 @@ var pusher = new Pusher('86eb9d2db54de852df31', {
 
         // for Dropzone to process the queue (instead of default form behavior):
         document.getElementById("submit-all").addEventListener("click", function(e) {
+            // Make sure that the form isn't actually being sent.
+            e.preventDefault();
+            e.stopPropagation();
+            dzClosure.processQueue();
+        });
+
+        //send all the form data along with the files:
+        this.on("sendingmultiple", function(data, xhr, formData) {
+            formData.append("uploaded_by", jQuery("#uploaded_by").val());
+            formData.append("case", jQuery("#case").val());
+            formData.append("file_name", jQuery("#file_name").val());
+            formData.append("file_privacy", jQuery("#file_privacy").val());
+        });
+    }
+}
+
+Dropzone.options.myDropzoneClient= {
+    url: '/client/'+currentUser+'/add-file-web',
+    paramName: "file",
+    autoProcessQueue: false,
+    uploadMultiple: true,
+    parallelUploads: 5,
+    maxFiles: 5,
+    maxFilesize: 3,
+    acceptedFiles: acceptedFileDropzone,
+    addRemoveLinks: true,
+    init: function() {
+        dzClosure = this; // Makes sure that 'this' is understood inside the functions below.
+
+        // for Dropzone to process the queue (instead of default form behavior):
+        document.getElementById("submit-all-client").addEventListener("click", function(e) {
             // Make sure that the form isn't actually being sent.
             e.preventDefault();
             e.stopPropagation();
@@ -46,26 +78,37 @@ $(document).ready(function () {
   
     var channel = pusher.subscribe('appointment');
     channel.bind('preappoint', function(data) {
-        alert(JSON.stringify(data));
+        if(data['lawyer'] == $('#currentUser').val()) {
+            $("#notificationTitle").text("Pre Appointment");
+            $("#notificationMessage").text(data['message']);
+            $('#notification').modal('show');
+        }
     });
+
+    channel.bind('accepted', function(data) {
+        if(data['client'] == $('#currentUser').val()) {
+          $("#notificationTitle").text("Pre Appointment");
+          $("#notificationMessage").text(data['message']);
+          $('#notification').modal('show');
+        }
+      });
 
     var channel1 = pusher.subscribe('client');
 
-    channel.bind('accepted', function(data) {
-      $("#notificationTitle").text("Pre Appointment");
-      $("#notificationMessage").text(data['message']);
-      $('#notification').modal('show');
-    });
 
     channel1.bind('accepted', function(data) {
-        $("#notificationTitle").text("Client");
-        $("#notificationMessage").text(data['message']);
-        $('#notification').modal('show');
+        if(data['client'] == $("#currentUser").val()){
+            $("#notificationTitle").text("Client Acceptance");
+            $("#notificationMessage").text(data['message']);
+            $('#notification').modal('show');
+        }
       });
     channel1.bind('decline', function(data) {
-        $("#notificationTitle").text("Client");
-        $("#notificationMessage").text(data['message']);
-        $('#notification').modal('show');
+        if(data['client'] == $("#currentUser").val()){
+            $("#notificationTitle").text("Client Rejection");
+            $("#notificationMessage").text(data['message']);
+            $('#notification').modal('show');
+        }
       });
 
     var sections = $('.lawyerDiv');
@@ -834,12 +877,13 @@ $(document).ready(function () {
         var client_id = $(this).data('id');
         var lawyer_id = $(this).data('lawyerid');
         var status = $(this).data('status');
-        $(this).parent().parent().parent().fadeOut( "slow", function() {
-        });
+        
         sendInfo = { lawyer_id: lawyer_id , status: status}
         if(status=="decline") {
             if(confirm("Are you sure you want to decline this appointment?")) {
                 // /lawyer/<int:client_id>/pre-appoint-response
+                $(this).parent().parent().parent().fadeOut( "slow", function() {
+                });
                 $.post('/lawyer/'+client_id+'/pre-appoint-response', JSON.stringify(sendInfo), function (response) {
                     if(response['error'] == false){
                         $("#preappoint-accept").removeClass('d-none');
@@ -853,13 +897,15 @@ $(document).ready(function () {
                 });
             }
         } else {
-            
+            $(this).parent().parent().parent().fadeOut( "slow", function() {
+            });
             // /lawyer/<int:client_id>/pre-appoint-response
             $.post('/lawyer/'+client_id+'/pre-appoint-response', JSON.stringify(sendInfo), function (response) {
                 if(response['error'] == false){
                     $("#preappoint-accept").removeClass('d-none');
                     $("#preappoint-decline").addClass('d-none');
                     $(".message").text(response['message']);
+                    window.location.replace("/lawyer/"+lawyer_id+"/dashboard");
                 } else {
                     $("#preappoint-accept").addClass('d-none');
                     $("#preappoint-decline").removeClass('d-none');
@@ -890,7 +936,9 @@ $(document).ready(function () {
             }
         } else {
             $.post('/lawyer/'+lawyer_id+'/incoming-client', JSON.stringify(sendInfo), function (response) {
-                console.log(response['message']);
+                if(response['error'] == false) {
+                    $("#addCase").modal('show');
+                }
             });
         }
         e.preventDefault()

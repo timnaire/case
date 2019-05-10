@@ -29,15 +29,30 @@
 
             <div class="col-md-8">
 
-                {% if documents %}
+                {% if files %}
+
 
                 <div class="row mb-3 align-items-stretch">
-                    
-                    
+                    {% for file in files %}
+                        {% if file.file_type == "Public Document" %}
+                        <div class="col-md-4 col-lg-3 mb-4 mb-lg-4">
+                                <div class="h-entry">
+                                    <a href="{{file.case_file}}"><img src="/static/images/file_icon.png" alt="Image"
+                                            class="img-fluid rounded"></a>
+                                    <h2 class="font-size-regular"><a href="#" class="text-black">{{file.file_name}}</a>
+                                    </h2>
+                                    <div class="meta mb-3">{{file.file_type}}<span class="mx-1">&bullet;</span> <span
+                                            class="case_date"></span></div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
                 </div>
 
                 {% else %}
-                    <h2><center>No documents found</center></h2>
+                <h2>
+                    <center>No documents found</center>
+                </h2>
                 {% endif %}
                 <div class="col-12 text-center mt-5">
                     <p class="custom-pagination">
@@ -55,14 +70,14 @@
                     <h3 class="h5 text-black mb-3">Add Document</h3>
                     <div class="form-group d-flex">
                         <button data-toggle="modal" data-target="#addDocument"
-                        class="btn btn-primary py-2 px-4 text-white">Add document</button>
+                            class="btn btn-primary py-2 px-4 text-white">Add document</button>
                     </div>
                     <div class="form-group d-flex">
                         <button data-toggle="modal" data-target="#deleteDocument"
-                        class="btn btn-danger py-2 px-4 text-white">Delete document</button>
+                            class="btn btn-danger py-2 px-4 text-white">Delete document</button>
                     </div>
                 </div>
-                
+
                 <div class="mb-5">
                     <h3 class="h5 text-black mb-3">Search</h3>
                     <form action="#" method="post">
@@ -76,9 +91,9 @@
                     <h3 class="h5 text-black mb-3">Recent Documents</h3>
                     <ul class="list-unstyled">
                         {% if cases %}
-                            {% for case in cases %}
-                            <li class="mb-2"><a href="#">{{case.case_title}}</a></li>
-                            {% endfor %}
+                        {% for case in cases %}
+                        <li class="mb-2"><a href="#">{{case.case_title}}</a></li>
+                        {% endfor %}
                         {% endif %}
                     </ul>
                 </div>
@@ -206,7 +221,8 @@
                     <select class="form-control rounded mb-3" id="client_id">
                         <option selected="true" disabled="disabled">Select Client</option>
                         {% for c in clients %}
-                        <option value="{{c.client_id}}" {% if c.client_id == case.client.client_id %}selected{%endif%} > {{c.client.first_name}}
+                        <option value="{{c.client_id}}" {% if c.client_id == case.client.client_id %}selected{%endif%}>
+                            {{c.client.first_name}}
                         </option>
                         {% endfor %}
                     </select>
@@ -215,9 +231,10 @@
                         <input type="text" id="case-description" value="{{case.case_description}}" class="form-control">
                     </div>
                     <select class="form-control rounded mb-3" id="status">
-                        <option value="CaseOpen" {% if case.case_status == "CaseOpen" %}selected{%endif%} > Case Open
+                        <option value="CaseOpen" {% if case.case_status == "CaseOpen" %}selected{%endif%}> Case Open
                         </option>
-                        <option value="CaseClosed" {% if case.case_status == "CaseClosed" %}selected{%endif%} > Case Closed
+                        <option value="CaseClosed" {% if case.case_status == "CaseClosed" %}selected{%endif%}> Case
+                            Closed
                         </option>
                     </select>
                     <div class="form-group">
@@ -233,4 +250,35 @@
         </div>
     </div>
 </div>
+<!-- Modal -->
+<div class="modal fade" id="addDocument" tabindex="-1" role="dialog" aria-labelledby="notification" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="notificationTitle">Add Document</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/lawyer/{{lawyer}}/add-file-web" enctype="multipart/form-data" method="POST">
+                        <input type="hidden" value="{{case.case_id}}" id="case">
+                        <input type="hidden" value="{{client}}" id="uploaded_by">
+                        <div class="form-group">
+                            <label class="text-black" for="file_name">File Name</label>
+                            <input type="text" id="file_name" class="form-control">
+                        </div>
+                        <select class="form-control rounded mb-3" id="file_privacy">
+                            <option value="Public">Public</option>
+                        </select>
+                        <div class="dropzone" id="myDropzoneClient"></div>
+                </div>
+                <div class="modal-footer">
+    
+                    <button id="submit-all-client" class="btn btn-primary" data-dismiss="modal">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

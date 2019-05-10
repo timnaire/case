@@ -36,7 +36,7 @@
 </head>
 
 <body>
-
+    <input type="hidden" id="currentUser" value="{% if lawyer %}{{lawyer}}{% else %}{{client}}{% endif %}">
     <div class="site-mobile-menu">
         <div class="site-mobile-menu-header">
             <div class="site-mobile-menu-close mt-3">
@@ -73,6 +73,8 @@
                         {% endif %}
 
                         {% if client %}
+                        <li class="{{ 'active' if active_page == 'mylawyer' else '' }}"><a
+                            href="/client/{{client}}/lawyers">My Lawyer</a></li>
                         <li class="{{ 'active' if active_page == 'cases' else '' }}"><a
                                 href="/client/{{client}}/cases">Case</a></li>
                         {% elif lawyer %}

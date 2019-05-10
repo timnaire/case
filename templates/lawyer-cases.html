@@ -41,7 +41,7 @@
                             <a href="/lawyer/{{lawyer}}/mycases/{{case.case_id}}"><img src="/static/images/briefcase.png" alt="Image" class="img-fluid rounded"></a>
                             <h2 class="font-size-regular"><a href="#" class="text-black">{{case.case_title}}</a>
                             </h2>
-                            <div class="meta mb-3">by {{case.lawyer.first_name}} {{case.lawyer.last_name}}<span class="mx-1">&bullet;</span> <span class="case_date">{{ moment().format('MMMM Do YYYY, h:mm a') }}</span></div>
+                            <div class="meta mb-3">{{case.client.first_name}} {{case.client.last_name}}<span class="mx-1">&bullet;</span> <span class="case_date">{{ moment().format('MMMM Do YYYY, h:mm a') }}</span></div>
                         </div>
                     </div>
                     {% endfor %}
@@ -212,10 +212,12 @@
                     </div>
                     <select class="form-control rounded mb-3" id="client-id">
                         <option selected="true" disabled="disabled">Select Client</option>
+                        {% if clients %}
                         {% for c in clients %}
                         <option value="{{c.client_id}}"> {{c.client.first_name}}
                         </option>
                         {% endfor %}
+                        {% endif %}
                     </select>
                     <div class="form-group">
                         <label class="text-black" for="case-description">Case Description</label>

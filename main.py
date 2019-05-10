@@ -442,7 +442,7 @@ def lawyer_clicked(client_id=None):
             requests.post(
                 'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
             )
-            pusher_client.trigger('appointment', 'preappoint', {'session' : session['lawyer'] ,'message': client.first_name + ' ' + client.last_name + ' sends Pre-Appointment request.'})
+            pusher_client.trigger('appointment', 'preappoint', {'lawyer' : lawyer.key.id() ,'message': client.first_name + ' ' + client.last_name + ' sends Pre-Appointment request.'})
             return json_response({
                 "error" : False,
                 "message" : "Pre-appointment Request has been sent!"
@@ -454,6 +454,21 @@ def lawyer_clicked(client_id=None):
             })
 
 @app.route('/lawyer/<int:lawyer_id>/preappointments',methods=['GET','POST'])
+def lawyer_preappointments(lawyer_id=None):
+    preappoints = PreAppoint.allPreAppointment(lawyer=lawyer_id)
+
+    preappoint_dict = []
+    if preappoints:
+        for preappoint in preappoints:
+            preappoint_dict.append(preappoint.to_dict())
+        
+    return json_response({
+        "error" : False,
+        "preappoints" : preappoint_dict,
+        "message" : "You have "+`len(preappoints)`+" pre appointments"
+    })
+
+@app.route('/lawyer/<int:lawyer_id>/incoming-clients',methods=['GET','POST'])
 def lawyer_preappointments(lawyer_id=None):
     preappoints = PreAppoint.allPreAppointment(lawyer=lawyer_id)
 
@@ -501,14 +516,14 @@ def pre_accepted(client_id=None):
                 'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
             )
             if status == "accept":
-                pusher_client.trigger('appointment', 'accepted', { 'id' : lawyer_id , 'message': lawyer.first_name+" "+ lawyer.last_name + " accepted your pre appointment request."})
+                pusher_client.trigger('appointment', 'accepted', { 'client' : client_id , 'message': lawyer.first_name+" "+ lawyer.last_name + " accepted your pre appointment request."})
                 return json_response({
                     "error" : False,
                     'id' : lawyer_id,
                     "message" : "You accepted "+client.first_name+" "+client.last_name+" pre appointment request."
                 })
             else:
-                pusher_client.trigger('appointment', 'accepted', { 'id' : lawyer_id , 'message': lawyer.first_name+" "+ lawyer.last_name + " accepted your pre appointment request."})
+                pusher_client.trigger('appointment', 'decline', { 'client' : client_id , 'message': lawyer.first_name+" "+ lawyer.last_name + " declined your pre appointment request."})
                 return json_response({
                     "error" : False,
                     'id' : lawyer_id,
@@ -553,7 +568,7 @@ def lawyer_incoming_client(lawyer_id=None):
                         'preappoint' : preappoint.key.id()
                     }
                 }
-                pusher_client.trigger('client', 'accepted', { 'id' : lawyer_id , 'message': lawyer.first_name+" "+ lawyer.last_name + " makes you "+title+" client"})
+                pusher_client.trigger('client', 'accepted', { 'client' : client_id , 'message': lawyer.first_name+" "+ lawyer.last_name + " makes you "+title+" client"})
                 headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
                 requests.post(
                     'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
@@ -575,7 +590,7 @@ def lawyer_incoming_client(lawyer_id=None):
                         'preappoint' : preappoint.key.id()
                     }
                 }
-                pusher_client.trigger('client', 'decline', { 'id' : lawyer_id , 'message': lawyer.first_name+" "+ lawyer.last_name + " declined you as"+title+" client"})
+                pusher_client.trigger('client', 'decline', { 'client' : client_id , 'message': lawyer.first_name+" "+ lawyer.last_name + " declined you as "+title+" client"})
                 headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
                 requests.post(
                     'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
@@ -756,10 +771,12 @@ def dashboard(lawyer_id=None):
     if preappoints:
         for preappoint in preappoints:
             preappoint_dict.append(preappoint.to_dict())
+        
+    list_of_clients = PreAppoint.accept_client(lawyer_id=lawyer_id)
 
     lawyer_id = Lawyer.get_by_id(int(lawyer_id))
     lawyer = lawyer_id.to_dict()
-    return render_template('lawyer-dashboard.html',title="Welcome to Dashboard",lawyer=session['lawyer'],results=lawyer,preappointments=preappoint_dict)
+    return render_template('lawyer-dashboard.html',title="Welcome to Dashboard",clients=list_of_clients,lawyer=session['lawyer'],results=lawyer,preappointments=preappoint_dict)
 
 #dashboard route for client
 @app.route('/client/')
@@ -805,14 +822,69 @@ def viewCase(lawyer_id=None,client_id=None):
                 "error" : True,
                 "message" : "Not Signed in"})
 
-# route for lawyer add file
+# route for lawyer add file web
 @app.route('/lawyer/<int:lawyer_id>/add-file-web',methods=['GET','POST'])
-def add_file_web(lawyer_id=None):
+def lawyer_add_file_web(lawyer_id=None):
     if request.method == "POST":
-        lawyer_id = request.form.get("uploaded_by")
-        case_file = request.form.get("case_file")
-        logging.info(lawyer_id)
-        logging.info(case_file)
+        uploaded_by = request.form.get("uploaded_by")
+        case = request.form.get("case")
+        file_name = request.form.get("file_name")
+        file_privacy = request.form.get("file_privacy")
+
+        if file_privacy == "Public":
+            file_type = "Public Document"
+        elif file_privacy == "Private":
+            file_type = "Research"
+
+        for i in range(5):
+            case_file = request.files.get("file["+str(i)+"]")
+            logging.debug(case_file)
+            if case_file and case_file.filename != '':
+                case_file_s = save_to_gcs(case_file).get("serving_url")
+
+                identity = Lawyer.get_by_id(int(uploaded_by))
+        
+                if case and case_file and file_privacy and file_type:
+                    upload = UploadFile.save(case=case,case_file=case_file_s,file_name=file_name,file_privacy=file_privacy,file_type=file_type,uploaded_by=identity.key)
+                    if upload:
+                        return json_response({
+                            "error" : False,
+                            "message" : "File uploaded !"})
+                    else:
+                        return json_response({
+                            "error" : True,
+                            "message" : "Failed upload, please try again."
+                        })
+
+# route for client add file 
+@app.route('/client/<int:client_id>/add-file-web',methods=['GET','POST'])
+def client_add_file_web(client_id=None):
+    if request.method == "POST":
+        uploaded_by = request.form.get("uploaded_by")
+        case = request.form.get("case")
+        file_name = request.form.get("file_name")
+        file_privacy = request.form.get("file_privacy")
+
+        if file_privacy == "Public":
+            file_type = "Public Document"
+        elif file_privacy == "Private":
+            file_type = "Research"
+
+        for i in range(5):
+            case_file = request.files.get("file["+str(i)+"]")
+            logging.debug(case_file)
+            if case_file and case_file.filename != '':
+                case_file_s = save_to_gcs(case_file).get("serving_url")
+
+                identity = Client.get_by_id(int(uploaded_by))
+        
+                if case and case_file and file_privacy and file_type:
+                    upload = UploadFile.save(case=case,case_file=case_file_s,file_name=file_name,file_privacy=file_privacy,file_type=file_type,uploaded_by=identity.key)
+                    if upload:
+                        return json_response({
+                            "error" : False,
+                            "message" : "File uploaded !"})
+
         return json_response({
             "error" : False,
             "message" : "Successfully uploaded"
@@ -1242,9 +1314,17 @@ def list_client_web(lawyer_id=None):
     lawyer = lawyer_id.to_dict()
     return render_template("lawyer-clients.html",clients=list_of_clients,lawyer=session['lawyer'])
 
+@app.route('/client/<int:client_id>/lawyers',methods=['GET','POST'])
+@login_required_client
+def list_lawyer_web(client_id=None):
+    list_of_lawyers = PreAppoint.my_lawyers(client_id=client_id)
+    client_id = Client.get_by_id(int(client_id))
+    client = client_id.to_dict()
+    return render_template("mylawyers.html",lawyers=list_of_lawyers,client=session['client'])
+
 @app.route('/lawyer/<int:lawyer_id>/list-client',methods=['GET','POST'])
 def list_client(lawyer_id=None):
-    list_of_clients = Relationship.my_clients(lawyer_id=lawyer_id)
+    list_of_clients = PreAppoint.my_clients(lawyer_id=lawyer_id)
     if list_of_clients:
         return json_response({
             "error" : False,
@@ -1257,7 +1337,7 @@ def list_client(lawyer_id=None):
 
 @app.route('/client/<int:client_id>/list-lawyer',methods=['GET','POST'])
 def list_lawyer(client_id=None):
-    list_of_lawyers = Relationship.my_lawyers(client_id=client_id)
+    list_of_lawyers = PreAppoint.my_lawyers(client_id=client_id)
     if list_of_lawyers:
         return json_response({
             "error" : False,
@@ -1441,9 +1521,11 @@ def lawyer_single_case(lawyer_id=None,case_id=None):
     # 1 case
     case = Case.get_by_id(int(case_id))
     case_dict_one = case.to_dict()
+        
+    files = UploadFile.get_all_files(case=case_id)
 
     lawyer = lawyer_id.to_dict()
-    return render_template('lawyer-cases-single.html',results=lawyer,lawyer=session['lawyer'],title="Case "+case.case_title,case=case_dict_one,clients=list_of_clients)
+    return render_template('lawyer-cases-single.html',files=files,results=lawyer,lawyer=session['lawyer'],title="Case "+case.case_title,case=case_dict_one,clients=list_of_clients)
 
 # route for lawyer listing all case for lawyer
 @app.route('/lawyer/<int:lawyer_id>/mycases',methods=['GET','POST'])
@@ -1486,7 +1568,9 @@ def client_case_single(client_id=None,case_id=None):
     case = Case.get_by_id(int(case_id))
     case_dict_one = case.to_dict()
 
-    return render_template('cases-single.html',client=session['client'],case=case_dict_one,title="My Cases",available_practice=available_practice)
+    files = UploadFile.get_all_files(case=case_id)
+
+    return render_template('cases-single.html',files=files,client=session['client'],case=case_dict_one,title="My Cases",available_practice=available_practice)
 
 # route for client listing all case for client
 @app.route('/client/<int:client_id>/get-case',methods=['GET','POST'])
