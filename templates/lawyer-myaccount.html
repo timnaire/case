@@ -222,6 +222,35 @@
             </label>
           </div>
 
+          <div class="row form-group">
+            <label for="" class="ml-3 mb-3">Feature your Case
+              {% if cases %}
+              <select class="form-control rounded mb-3" id="feature1">
+                <option selected="true" disabled="disabled">Select Case</option>
+                {% for c in cases %}
+                <option value="{{c.case_id}}"> {{c.case_title}}
+                </option>
+                {% endfor %}
+              </select>
+              <select class="form-control rounded mb-3" id="feature2">
+                <option selected="true" disabled="disabled">Select Case</option>
+                {% for c in cases %}
+                <option value="{{c.case_id}}"> {{c.case_title}}
+                </option>
+                {% endfor %}
+              </select>
+              <select class="form-control rounded mb-3" id="feature3">
+                <option selected="true" disabled="disabled">Select Case</option>
+                {% for c in cases %}
+                <option value="{{c.case_id}}"> {{c.case_title}}
+                </option>
+                {% endfor %}
+              </select>
+              {% endif %}
+              <button type="button" id="btnSaveFeatureCase" class="btn btn-primary py-2 px-4 text-white">Save Feature Case</button>
+            </label>
+          </div>
+
           <label for="lawpractice">Law Practice
             {% for key, value in law_practice.items()|sort %}
 
@@ -236,19 +265,20 @@
           </label>
 
           <div class="row form-group">
-            <label for="lawpractice" class="ml-3">Sub Category <br/>
+            <label for="lawpractice" class="ml-3">Sub Category <br />
               <div class="ml-3">
-                  {% for practice in practices %}
-                  {{practice.law_practice}}
-                  {% for key in subcategory[practice.law_practice] | sort %}
-                  <div class="checkbox ml-3">
-                    <label>
-                      <input type="checkbox" class="subcategory" {% for subpractice in subpractices %}
-                        {% if key in subpractice.subcategory %} checked {% endif %} {% endfor %} value="{{ key }}" > {{key}}
-                    </label>
-                  </div>
-                  {% endfor %}
-                  <br/>
+                {% for practice in practices %}
+                {{practice.law_practice}}
+                {% for key in subcategory[practice.law_practice] | sort %}
+                <div class="checkbox ml-3">
+                  <label>
+                    <input type="checkbox" class="subcategory" {% for subpractice in subpractices %}
+                      {% if key in subpractice.subcategory %} checked {% endif %} {% endfor %} value="{{ key }}">
+                    {{key}}
+                  </label>
+                </div>
+                {% endfor %}
+                <br />
                 {% endfor %}
               </div>
             </label>
@@ -460,4 +490,5 @@
     </div>
   </div>
 </div>
+
 {% endblock %}

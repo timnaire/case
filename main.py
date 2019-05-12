@@ -20,6 +20,7 @@ from models.subcategory import Subcategory
 from models.subscription import Subscription
 from models.pre_appoint import PreAppoint
 from models.incoming_client import IncomingClient
+from models.feature import Feature
 from decorators import login_required_lawyer,login_required_client
 from functions import json_response, is_email, save_to_gcs
 import pusher
@@ -455,7 +456,7 @@ def lawyer_clicked(client_id=None):
 
 @app.route('/lawyer/<int:lawyer_id>/preappointments',methods=['GET','POST'])
 def lawyer_preappointments(lawyer_id=None):
-    preappoints = PreAppoint.allPreAppointment(lawyer=lawyer_id)
+    preappoints = PreAppoint.allPreAppointmentApi(lawyer=lawyer_id)
 
     preappoint_dict = []
     if preappoints:
@@ -465,12 +466,12 @@ def lawyer_preappointments(lawyer_id=None):
     return json_response({
         "error" : False,
         "preappoints" : preappoint_dict,
-        "message" : "You have "+`len(preappoints)`+" pre appointments"
+        "message" : "You have "+`len(preappoint_dict)`+" pre appointments"
     })
 
 @app.route('/lawyer/<int:lawyer_id>/incoming-clients',methods=['GET','POST'])
-def lawyer_preappointments(lawyer_id=None):
-    preappoints = PreAppoint.allPreAppointment(lawyer=lawyer_id)
+def lawyer_incomingclients(lawyer_id=None):
+    preappoints = PreAppoint.allPendingClientApi(lawyer=lawyer_id)
 
     preappoint_dict = []
     if preappoints:
@@ -480,7 +481,7 @@ def lawyer_preappointments(lawyer_id=None):
     return json_response({
         "error" : False,
         "preappoints" : preappoint_dict,
-        "message" : "You have "+`len(preappoints)`+" pre appointments"
+        "message" : "You have "+`len(preappoint_dict)`+" pre appointments"
     })
 
 @app.route('/lawyer/<int:client_id>/pre-appoint-response',methods=['POST'])
@@ -1437,6 +1438,7 @@ def save_client_token(client_id=None):
 def edit_case(lawyer_id=None):
     case_id=request.args.get('case_id')
     if request.method == "POST":
+        remarks = ""
         req_data = request.get_json(force=True)        
         if 'case_id' in req_data:
             case_id = req_data['case_id']
@@ -1935,6 +1937,34 @@ def lawyer_update_password(lawyer_id=None):
                 "error" : True,
                 "message" : "Please dont leave the fields empty"})
 
+# feature case for lawyer
+@app.route('/lawyer/<int:lawyer_id>/feature',methods=['GET','POST'])
+def feature_case(lawyer_id=None):
+    lawyer = Lawyer.get_by_id(int(lawyer_id))
+    if request.method == 'POST':
+        req_data = request.get_json(force=True)
+        if 'feature1' in req_data:
+            feature1 = req_data['feature1']
+        if 'feature2' in req_data:
+            feature2 = req_data['feature2']
+        if 'feature3' in req_data:
+            feature3 = req_data['feature3']
+
+        features = Feature.query(Feature.lawyer == lawyer.key).fetch()
+
+        for feature in features:
+            feature.key.delete()
+        
+        Feature.save(lawyer=lawyer_id,case=feature1)
+        Feature.save(lawyer=lawyer_id,case=feature2)
+        Feature.save(lawyer=lawyer_id,case=feature3)
+
+        return json_response({
+            "error" : False,
+            "message" : "Featurd Case saved!"
+        })
+
+
 #main render template for account setting for lawyers / editing profile route
 @app.route('/lawyer/<int:lawyer_id>/myaccount',methods=['GET','POST'])
 @login_required_lawyer
@@ -1958,7 +1988,13 @@ def lawyer_account_setting(lawyer_id=None):
     for subpractice in subpractices:
         subpract_dict.append(subpractice.subpract())
 
-    return render_template("lawyer-myaccount.html",title="Account Setting",lawyer=session.get('lawyer'),law_practice=available_practice,subcategory=subcategory,practices=practice_dict,lawyer_info=lawyer_dict,subpractices=subpract_dict)
+    cases = Case.query(Case.lawyer == lawyer.key).fetch()
+    if cases != None:
+        case_dict = []
+        for case in cases:
+            case_dict.append(case.to_dict())
+
+    return render_template("lawyer-myaccount.html",cases=case_dict,title="Account Setting",lawyer=session.get('lawyer'),law_practice=available_practice,subcategory=subcategory,practices=practice_dict,lawyer_info=lawyer_dict,subpractices=subpract_dict)
     
 @app.route('/lawyer/<int:lawyer_id>/get-lawyer-practice',methods=['GET'])
 def getPractice(lawyer_id=None):
@@ -2273,6 +2309,8 @@ def see_more(lawyer_email):
             # return json_response({
             #         "error" : True,
             #         "message" : lawyer_details})
+            logging.info(lawyer.key.id())
+            features = Feature.get_all_feature(lawyer_id=lawyer.key.id())
             practices = Practice.query(Practice.lawyer == lawyer.key).fetch()
             practice_dict = []
             for practice in practices:
@@ -2282,11 +2320,11 @@ def see_more(lawyer_email):
             for subpractice in subpractices:
                 subpract_dict.append(subpractice.subpract())
             if session.get('lawyer'):
-                return render_template('lawyer-single.html',title='Lawyer Details',subcategory=subpract_dict,practices=practice_dict,lawyer=session['lawyer'],result=lawyer)
+                return render_template('lawyer-single.html',title='Lawyer Details',features=features,subcategory=subpract_dict,practices=practice_dict,lawyer=session['lawyer'],result=lawyer)
             elif session.get('client'):
-                return render_template('lawyer-single.html',title='Lawyer Details',subcategory=subpract_dict,practices=practice_dict,client=session['client'],result=lawyer)
+                return render_template('lawyer-single.html',title='Lawyer Details',features=features,subcategory=subpract_dict,practices=practice_dict,client=session['client'],result=lawyer)
             else:
-                return render_template('lawyer-single.html',title='Lawyer Details',subcategory=subpract_dict,practices=practice_dict,result=lawyer)
+                return render_template('lawyer-single.html',title='Lawyer Details',features=features,subcategory=subpract_dict,practices=practice_dict,result=lawyer)
         else:
             return json_response({
                     "error" : True,

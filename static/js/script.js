@@ -201,69 +201,6 @@ $(document).ready(function () {
         }, "json")
     });
 
-    // find a lawyer button
-    // $('#btnFindLawyer').click(function(e){
-    //     e.preventDefault();
-    //     var law_practice = $('#lawpractice').val();
-    //     var cityOrMunicipality = $('#cityOrMunicipality').val();
-    //     sendInfo = {
-    //         law_practice : law_practice,
-    //         cityOrMunicipality : cityOrMunicipality
-    //     }
-
-    //     console.log(sendInfo);
-    //     // console.log(JSON.stringify(sendInfo))
-    //     $.post("/lawyer/found", JSON.stringify(sendInfo), function(response){
-    //         var content = $();
-    //         if(response['error'] == false){
-    //             var lawyers = response['lawyers']
-    //             // looping through all found layers and displaying the info
-    //             for(var key in lawyers){
-    //                 if(lawyers.hasOwnProperty(key)){
-    //                     // setting the default info for about me
-    //                     if(lawyers[key].lawyer.aboutme == null){
-    //                         lawyers[key].lawyer.aboutme = "No overview found";
-    //                     }
-    //                     // setting default image if there is no image foundd
-    //                     if(lawyers[key].lawyer.profile_pic == null){
-    //                         lawyers[key].lawyer.profile_pic = "../static/images/default_lawyer_pic.png";
-    //                     }
-    //                     // var stateObj = { practice : law_practice, cityOrMunicipality : cityOrMunicipality }
-    //                     // window.history.pushState( stateObj, 'Find Lawyer', '/law-pactice='+law_practice+'&city-or-municipality='+cityOrMunicipality);
-    //                     content = content.add(`
-    //                                 <div class="col-md-2">&nbsp;</div>
-    //                                     <div class="col-md-8">
-    //                                         <div class="row space-16">&nbsp;</div>
-    //                                         <div class="row">
-    //                                             <div class="col-sm-4">
-    //                                                 <div class="thumbnail">
-    //                                                     <div class="caption text-center" onclick="location.href='localhost:8080/#'">
-    //                                                         <div class="position-relative">
-    //                                                             <img src="${lawyers[key].lawyer.profile_pic}" alt="profile" style="width:160px;height:160px;" />
-    //                                                         </div>
-    //                                                         <h4 id="thumbnail-label"><a href="#" target="_blank">${lawyers[key].lawyer.first_name} ${lawyers[key].lawyer.last_name}</a></h4>
-    //                                                         <p><i class="glyphicon glyphicon-envelope  light-red lighter bigger-120"></i>&nbsp;${lawyers[key].lawyer.email}</p>
-    //                                                         <div class="thumbnail-description smaller">${lawyers[key].lawyer.aboutme}</div>
-    //                                                     </div>
-    //                                                     <div class="caption card-footer text-center">
-    //                                                         <a class="btn btn-primary btn-block" href="#">View More</a>
-    //                                                     </div>
-    //                                                 </div>
-    //                                             </div>
-    //                                         </div>
-    //                                     <div class="col-md-2">&nbsp;</div>
-    //                                 </div>
-    //                             `);
-    //                 }
-    //             }
-    //             // displaying to the found-lawyer div in home.html
-    //             $('#found-lawyer').html(content)
-
-    //         } else if(response['error'] == true){
-    //             console.log(response['message']);
-    //         }
-    //     } , "json" );
-    // });
 
     // profile picture update
     $('#btnLawyerSavePicture').click(function (e) {
@@ -944,6 +881,22 @@ $(document).ready(function () {
         e.preventDefault()
     });
 
+    $("#btnSaveFeatureCase").click(function(){
+        var lawyer_id = $("#currentUser").val();
+        var feature1 = $("#feature1").val();
+        var feature2 = $("#feature2").val();
+        var feature3 = $("#feature3").val();
+
+        sendInfo = { feature1 : feature1, feature2 : feature2, feature3 : feature3 }
+        $.post("/lawyer/"+lawyer_id+"/feature",JSON.stringify(sendInfo), function(response){
+            if(response['error'] == false) {
+                console.log(response['message']);
+                window.location.replace('/lawyer/'+lawyer_id+'/myaccount');
+            }
+
+        });
+    });
+
     $("#btnPreAppoint").click(function (e) {
         $("#pre-appointment").removeClass("d-none");
         $("#incoming-client").removeClass("d-none").addClass("d-none");
@@ -985,15 +938,6 @@ $(document).ready(function () {
         $("#form-password").removeClass("d-none");
         $("#form-email").removeClass("d-none").addClass("d-none");
     });
-
-    // function getBase64(file) {
-    //     return new Promise((resolve, reject) => {
-    //     const reader = new FileReader();
-    //     reader.readAsDataURL(file);
-    //     reader.onload = () => resolve(reader.result.substr(reader.result.indexOf(',') + 1));
-    //     reader.onerror = error => reject(error);
-    //     });
-    // }
 
     $(function () {
         // var province = ["Abra","Agusan del Norte","Agusan del Sur","Aklan","Albay","Antique","Apayao","Aurora","Basilan",

@@ -69,6 +69,37 @@ class PreAppoint(ndb.Model):
 
         return preappoint
 
+    # for mobile
+    @classmethod
+    def allPreAppointmentApi(cls,*args,**kwargs):
+        preappoint = None 
+
+        lawyer_id = str(kwargs.get('lawyer'))
+        if lawyer_id.isdigit():
+            lawyer_key = ndb.Key('Lawyer',int(lawyer_id))
+            if lawyer_key:
+                preappoint = cls.query(cls.lawyer == lawyer_key, cls.status == None).fetch()
+        
+        if not preappoint:
+            preappoint = None
+
+        return preappoint
+    
+    @classmethod
+    def allPendingClientApi(cls,*args,**kwargs):
+        preappoint = None 
+
+        lawyer_id = str(kwargs.get('lawyer'))
+        if lawyer_id.isdigit():
+            lawyer_key = ndb.Key('Lawyer',int(lawyer_id))
+            if lawyer_key:
+                preappoint = cls.query(cls.lawyer == lawyer_key, cls.status == "accept").fetch()
+        
+        if not preappoint:
+            preappoint = None
+
+        return preappoint
+
     @classmethod
     def my_clients(cls,lawyer_id):
         list_of_clients = []
