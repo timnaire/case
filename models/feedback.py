@@ -37,6 +37,20 @@ class Feedback(ndb.Model):
         feedback.put()
         return feedback
 
+    @classmethod
+    def getAllFeedbacks(cls,client_id):
+        list_of_feedbacks = []
+
+        if client_id:
+            client = Client.get_by_id(int(client_id))
+            if client:
+                feedbacks = cls.query(cls.client == client.key).fetch()
+
+                for f in feedbacks:
+                    list_of_feedbacks.append(f.to_dict())
+        
+        return list_of_feedbacks
+
     def to_dict(self):
         data = {}
         
@@ -51,7 +65,7 @@ class Feedback(ndb.Model):
             client = self.client.get()
             data['client'] = client.to_dict()
 
-        data['rate'] = self.rate
+        data['rating'] = self.rating
         data['feedback'] = self.feedback
             
         data['created'] = self.created.isoformat() + 'Z'

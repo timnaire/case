@@ -800,9 +800,6 @@ def viewCase(lawyer_id=None,client_id=None):
     if case:
         case_dict.append(case.to_dict())
 
-
-    
-
     if session.get('client') is not None:
         client = Client.get_by_id(int(client_id))
         events = Event.query(Event.client == client.key).fetch()
@@ -1004,6 +1001,57 @@ def delete_file_client():
             return json_response({
                 "error": True,
                 "message": "Unauthorized, You cant delete this file."})
+
+# # route for lawyer web deleting file
+# @app.route('/delete-file-web',methods=["GET","POST"])
+# def webdelete_file_lawyer():
+#     if request.method == "POST":
+#         req_data = request.get_json(force=True)
+#         if "file_id" in req_data:
+#             file_id = req_data['file_id']
+        
+#         if file_id:
+#             for fi in file_id:
+#                 f = UploadFile.get_by_id(int(fi))
+#                 f.key.delete()
+#             return json_response({
+#                 "error" : False,
+#                 "message" : "File(s) deleted!"})
+#         else:
+#             return json_response({
+#                 "error" : True,
+#                 "message" : "No files to be deleted!"
+#             })
+
+# # route for client api deleting file
+# @app.route('/client/delete-file-web',methods=["GET","POST"])
+# def webdelete_file_client():
+#     if request.method == "POST":
+#         req_data = request.get_json(force=True)
+#         if "file_id" in req_data:
+#             file_id = req_data['file_id']
+#         if "uploaded_by" in req_data:
+#             uploaded_by = req_data['uploaded_by']
+
+#         if uploaded_by:
+#             for ub in uploaded_by:
+
+#                 client = Client.get_by_id(int(ub))
+#         if client:
+#             f = UploadFile.get_by_id(int(file_id))
+#             if f:
+#                 f.key.delete()
+#                 return json_response({
+#                     "error" : False,
+#                     "message" : "File deleted!"})
+#             else:
+#                 return json_response({
+#                     "error" : True,
+#                     "message" : "File was not deleted"}) 
+#         else:
+#             return json_response({
+#                 "error": True,
+#                 "message": "Unauthorized, You cant delete this file."})
 
 # route for lawyer api getting all documents
 @app.route('/lawyer/<int:lawyer_id>/list-all-file',methods=["GET","POST"])
@@ -1319,9 +1367,9 @@ def list_client_web(lawyer_id=None):
 @login_required_client
 def list_lawyer_web(client_id=None):
     list_of_lawyers = PreAppoint.my_lawyers(client_id=client_id)
+    feedbacks = Feedback.getAllFeedbacks(client_id)
     client_id = Client.get_by_id(int(client_id))
-    client = client_id.to_dict()
-    return render_template("mylawyers.html",lawyers=list_of_lawyers,client=session['client'])
+    return render_template("mylawyers.html",feedbacks=feedbacks,lawyers=list_of_lawyers,client=session['client'])
 
 @app.route('/lawyer/<int:lawyer_id>/list-client',methods=['GET','POST'])
 def list_client(lawyer_id=None):

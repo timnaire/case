@@ -897,6 +897,44 @@ $(document).ready(function () {
         });
     });
 
+    $(".bookmark").click(function(e){
+        $("#lawyer_id").val($(this).data('lawyerid'));
+    });
+
+    $("#saveFeedback").click(function(){
+        var client_id = $('#currentUser').val();
+        var lawyer_id = $("#lawyer_id").val();
+        var rating = $("#rating").val();
+        var feedback = $("#feedback").val();
+
+        sendInfo = { lawyer_id:lawyer_id, rating: rating , feedback : feedback }
+
+        $.post("/client/"+client_id+"/lawyer/feedback",JSON.stringify(sendInfo),function(response){
+            if(response['error'] == false) {
+                alert(response['message']);
+            } else {
+                alert(response['message']);
+            }
+        });
+
+        console.log(sendInfo)
+    });
+
+    $("#btnDeleteDocument").click(function(){
+        var documents = [];
+        var uploader = [];
+        $.each($("input[class='fileDocument']:checked"), function () {
+            uploader.push($(this).data('uploader'));
+            documents.push($(this).val());
+        });
+
+        sendInfo = { file_id : documents , uploaded_by : uploader}
+        console.log(sendInfo);
+        $.post("/client/delete-file-web", JSON.stringify(sendInfo), function(response){
+            console.log(response);
+        });
+    });
+
     $("#btnPreAppoint").click(function (e) {
         $("#pre-appointment").removeClass("d-none");
         $("#incoming-client").removeClass("d-none").addClass("d-none");

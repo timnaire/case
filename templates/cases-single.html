@@ -28,10 +28,7 @@
         <div class="row">
 
             <div class="col-md-8">
-
                 {% if files %}
-
-
                 <div class="row mb-3 align-items-stretch">
                     {% for file in files %}
                         {% if file.file_type == "Public Document" %}
@@ -42,7 +39,7 @@
                                     <h2 class="font-size-regular"><a href="#" class="text-black">{{file.file_name}}</a>
                                     </h2>
                                     <div class="meta mb-3">{{file.file_type}}<span class="mx-1">&bullet;</span> <span
-                                            class="case_date"></span></div>
+                                            class="case_date">Uploaded by {% if file.uploaded_by == client %}You{% else %}Lawyer{% endif %}</span></div>
                                 </div>
                             </div>
                         {% endif %}
@@ -104,7 +101,7 @@
     </div>
 </div>
 
-<div class="site-section bg-white">
+<div class="site-section bg-white d-none">
     <div class="container">
 
         <div class="row justify-content-center mb-5">
@@ -181,25 +178,6 @@
     </div>
 </div>
 
-
-<div class="newsletter bg-primary py-5">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <h2>Newsletter</h2>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
-            </div>
-            <div class="col-md-6">
-
-                <form class="d-flex">
-                    <input type="text" class="form-control" placeholder="Email">
-                    <input type="submit" value="Subscribe" class="btn btn-white">
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Modal -->
 <div class="modal fade" id="editCase" tabindex="-1" role="dialog" aria-labelledby="notification" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -250,6 +228,7 @@
         </div>
     </div>
 </div>
+
 <!-- Modal -->
 <div class="modal fade" id="addDocument" tabindex="-1" role="dialog" aria-labelledby="notification" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -276,6 +255,38 @@
                 <div class="modal-footer">
     
                     <button id="submit-all-client" class="btn btn-primary" data-dismiss="modal">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteDocument" tabindex="-1" role="dialog" aria-labelledby="notification" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="notificationTitle">Delete Document</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST">
+                        {% if files %}
+                            {% for f in files|sort %}
+                            <div class="checkbox ml-3">
+                                <label>
+                                    <input type="checkbox" class="fileDocument" data-uploader="{{f.uploaded_by}}" value="{{ f.file_id }}">{{f.file_name}}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                        
+                </div>
+                <div class="modal-footer">
+    
+                    <button id="btnDeleteDocument" class="btn btn-danger" data-dismiss="modal">Delete</button>
                     </form>
                 </div>
             </div>

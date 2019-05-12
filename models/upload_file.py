@@ -108,12 +108,13 @@ class UploadFile(ndb.Model):
         
     def to_dict(self):
         data = {}
-
+        
         data['case'] = None
         if self.case:
             case = self.case.get()
             data['case'] = case.to_dict()
 
+        data['file_id'] = self.key.id()
         data['file_name'] = self.file_name
         data['case_file'] = self.case_file
         data['file_privacy'] = self.file_privacy

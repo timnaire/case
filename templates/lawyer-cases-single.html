@@ -28,7 +28,6 @@
         <div class="row">
 
             <div class="col-md-8">
-
                 {% if files %}
 
                 <div class="row mb-3 align-items-stretch">
@@ -40,7 +39,7 @@
                             <h2 class="font-size-regular"><a href="#" class="text-black">{{file.file_name}}</a>
                             </h2>
                             <div class="meta mb-3">{{file.file_type}}<span class="mx-1">&bullet;</span> <span
-                                    class="case_date"></span></div>
+                                    class="case_date">Uploaded by {% if file.uploaded_by == lawyer %}You{% else %}Client{% endif %}</span></div>
                         </div>
                     </div>
                     {% endfor %}
