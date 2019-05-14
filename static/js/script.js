@@ -899,15 +899,19 @@ $(document).ready(function () {
 
     $(".bookmark").click(function(e){
         $("#lawyer_id").val($(this).data('lawyerid'));
+        $("#fid").val($(this).data('fid'));
+        $("#rating").val($(this).data('rating'));
+        $("#feedback").val($(this).data('comment'));
     });
 
     $("#saveFeedback").click(function(){
         var client_id = $('#currentUser').val();
         var lawyer_id = $("#lawyer_id").val();
         var rating = $("#rating").val();
+        var fid = $("#fid").val();
         var feedback = $("#feedback").val();
 
-        sendInfo = { lawyer_id:lawyer_id, rating: rating , feedback : feedback }
+        sendInfo = { lawyer_id: lawyer_id, rating: rating , feedback : feedback, fid: fid }
 
         $.post("/client/"+client_id+"/lawyer/feedback",JSON.stringify(sendInfo),function(response){
             if(response['error'] == false) {
@@ -916,8 +920,30 @@ $(document).ready(function () {
                 alert(response['message']);
             }
         });
+    });
 
-        console.log(sendInfo)
+    $(".viewFeedback").click(function(){
+        $("#feedback").text($(this).data('vf'));
+        $("#rate").text($(this).data('vr'));
+    });
+
+    $("#delFeedback").click(function(e){
+        if(confirm("Are you sure you want to delete this feedback? This cannot be undone.")) {
+            var client_id = $('#currentUser').val();
+            var fid = $("#fid").val();
+
+            sendInfo = { fid: fid }
+
+            $.post("/client/"+client_id+"/lawyer/feedback-delete",JSON.stringify(sendInfo),function(response){
+                if(response['error'] == false) {
+                    alert(response['message']);
+                } else {
+                    alert(response['message']);
+                }
+            });
+        } else {
+            e.preventDefault();
+        }
     });
 
     $("#btnDeleteDocument").click(function(){

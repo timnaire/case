@@ -1,6 +1,7 @@
 from google.appengine.ext import ndb
 from models.lawyer import Lawyer
 from models.client import Client
+from models.feedback import Feedback
 
 class PreAppoint(ndb.Model):
     lawyer = ndb.KeyProperty(kind=Lawyer)
@@ -179,6 +180,11 @@ class PreAppoint(ndb.Model):
             client = self.client.get()
             data['client_id'] = client.key.id()
             data['client'] = client.dict_nodate()
+            
+        data['feedback'] = None
+        feedback = Feedback.query(Feedback.client == self.client).get()
+        if feedback:
+            data['feedback'] = feedback
         return data
     
     def dict_lawyer(self):
@@ -190,4 +196,9 @@ class PreAppoint(ndb.Model):
             lawyer = self.lawyer.get()
             data['lawyer_id'] = lawyer.key.id()
             data['lawyer'] = lawyer.dict_nodate()
+
+        data['feedback'] = None
+        feedback = Feedback.query(Feedback.lawyer == self.lawyer).get()
+        if feedback:
+            data['feedback'] = feedback
         return data

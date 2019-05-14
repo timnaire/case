@@ -1765,8 +1765,14 @@ def save_feedback(client_id=None):
             rating = str(req_data['rating'])
         if 'feedback' in req_data:
             feedback = req_data['feedback']
-        
-        feedback = Feedback.save(lawyer=lawyer_id,client=client_id,rating=rating,feedback=feedback)
+        if 'fid' in req_data:
+            fid = req_data['fid']
+        logging.info(fid)
+        if not fid:
+            feedback = Feedback.save(lawyer=lawyer_id,client=client_id,rating=rating,feedback=feedback)
+        elif fid:
+            feedback = Feedback.save(id=fid,lawyer=lawyer_id,client=client_id,rating=rating,feedback=feedback)
+
         if feedback:
             return json_response({
                 "error" : False,
@@ -1775,6 +1781,27 @@ def save_feedback(client_id=None):
             return json_response({
                 "error" : True,
                 "message" : "Feedback was not saved."})
+
+# save client's feedback to lawyer
+@app.route('/client/<int:client_id>/lawyer/feedback-delete',methods=['POST'])
+def delete_feedback(client_id=None):
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'fid' in req_data:
+            fid = req_data['fid']
+
+        if fid:
+            feedback = Feedback.get_by_id(int(fid))
+            if feedback:
+                feedback.key.delete()
+                return json_response({
+                    "error" : False,
+                    "message" : "Feedback deleted!"})
+            else:
+                return json_response({
+                    "error" : True,
+                    "message" : "Feedback was not deleted."})
+
 
 # get all feedback info
 @app.route('/lawyer/total-feedback',methods=['POST'])
