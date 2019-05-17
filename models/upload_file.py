@@ -1,5 +1,8 @@
+import logging
 from google.appengine.ext import ndb
 from models.case import Case
+from models.client import Client
+from models.lawyer import Lawyer
 
 class UploadFile(ndb.Model):
     case = ndb.KeyProperty(kind=Case)
@@ -91,6 +94,32 @@ class UploadFile(ndb.Model):
             list_files = None
 
         return list_files
+    
+    @classmethod
+    def deleteFilesClient(cls,f,client_id):
+        deleted = False
+
+        if client_id:
+            fe = UploadFile.get_by_id(int(f))
+            ce = Client.get_by_id(int(client_id))
+            if ce:
+                ff = cls.query(cls.key == fe.key, cls.uploaded_by == ce.key)
+                ff.key.delete()
+                deleted = True
+        return deleted
+
+    @classmethod
+    def deleteFilesLawyer(cls,f,lawyer_id):
+        deleted = False
+
+        if lawyer_id:
+            fe = UploadFile.get_by_id(int(f))
+            le = Lawyer.get_by_id(int(lawyer_id))
+            if le:
+                ff = cls.query(cls.key == fe.key, cls.uploaded_by == le.key)
+                ff.key.delete()
+                deleted = True
+        return deleted
 
     def file_dict(self):
         data = {}

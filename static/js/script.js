@@ -32,6 +32,7 @@ var pusher = new Pusher('86eb9d2db54de852df31', {
             formData.append("case", jQuery("#case").val());
             formData.append("file_name", jQuery("#file_name").val());
             formData.append("file_privacy", jQuery("#file_privacy").val());
+            location.reload();
         });
     }
 }
@@ -63,6 +64,7 @@ Dropzone.options.myDropzoneClient= {
             formData.append("case", jQuery("#case").val());
             formData.append("file_name", jQuery("#file_name").val());
             formData.append("file_privacy", jQuery("#file_privacy").val());
+            location.reload();
         });
     }
 }
@@ -948,16 +950,35 @@ $(document).ready(function () {
 
     $("#btnDeleteDocument").click(function(){
         var documents = [];
-        var uploader = [];
+        var currentUser = $("#currentUser").val();
         $.each($("input[class='fileDocument']:checked"), function () {
-            uploader.push($(this).data('uploader'));
             documents.push($(this).val());
         });
 
-        sendInfo = { file_id : documents , uploaded_by : uploader}
-        console.log(sendInfo);
+        sendInfo = { file_id : documents , client_id : currentUser}
         $.post("/client/delete-file-web", JSON.stringify(sendInfo), function(response){
-            console.log(response);
+            if(response['error'] == false){
+                alert(response['message']);
+            } else {
+                alert(response['message']);
+            }
+        });
+    });
+
+    $("#btnDeleteDocumentLawyer").click(function(){
+        var documents = [];
+        var currentUser = $("#currentUser").val();
+        $.each($("input[class='fileDocument']:checked"), function () {
+            documents.push($(this).val());
+        });
+
+        sendInfo = { file_id : documents , lawyer_id : currentUser}
+        $.post("/lawyer/delete-file-web", JSON.stringify(sendInfo), function(response){
+            if(response['error'] == false){
+                alert(response['message']);
+            } else {
+                alert(response['message']);
+            }
         });
     });
 

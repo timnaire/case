@@ -39,7 +39,7 @@
                             <h2 class="font-size-regular"><a href="#" class="text-black">{{file.file_name}}</a>
                             </h2>
                             <div class="meta mb-3">{{file.file_type}}<span class="mx-1">&bullet;</span> <span
-                                    class="case_date">Uploaded by {% if file.uploaded_by == lawyer %}You{% else %}Client{% endif %}</span></div>
+                                    class="case_date">Uploader: {% if file.uploaded_by == lawyer %}You{% else %}Client{% endif %}</span></div>
                         </div>
                     </div>
                     {% endfor %}
@@ -63,25 +63,25 @@
 
             <div class="col-md-3 ml-auto">
                 <div class="mb-5">
-                    <h3 class="h5 text-black mb-3">Add Document</h3>
+                    <h3 class="h5 text-black mb-3">Actions for Documents</h3>
                     <div class="form-group d-flex">
                         <button data-toggle="modal" data-target="#addDocument"
-                            class="btn btn-primary py-2 px-4 text-white">Add document</button>
+                            class="btn btn-primary col-12 py-2 px-4 text-white">Add document</button>
                     </div>
                     <div class="form-group d-flex">
                         <button data-toggle="modal" data-target="#deleteDocument"
-                            class="btn btn-danger py-2 px-4 text-white">Delete document</button>
+                            class="btn btn-danger col-12 py-2 px-4 text-white">Delete document</button>
                     </div>
                 </div>
                 <div class="mb-5">
                     <h3 class="h5 text-black mb-3">Actions for Case</h3>
                     <div class="form-group d-flex">
                         <button data-toggle="modal" data-target="#editCase"
-                            class="btn btn-primary py-2 px-4 text-white">Edit Case</button>
+                            class="btn btn-primary col-12 py-2 px-4 text-white">Edit Case</button>
                     </div>
                     <div class="form-group d-flex">
                         <button id="btnDeleteCase" data-id="{{lawyer}}" data-caseid="{{case.case_id}}"
-                            class="btn btn-danger py-2 px-4 text-white">Delete Case</button>
+                            class="btn btn-danger col-12 py-2 px-4 text-white">Delete Case</button>
                     </div>
                 </div>
 
@@ -190,6 +190,40 @@
             <div class="modal-footer">
 
                 <button id="submit-all" class="btn btn-primary" data-dismiss="modal">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteDocument" tabindex="-1" role="dialog" aria-labelledby="notification"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notificationTitle">Delete Document</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST">
+                    {% if files %}
+                    {% for f in files|sort %}
+                    <div class="checkbox ml-3">
+                        <label>
+                            <input type="checkbox" class="fileDocument" data-uploader="{{f.uploaded_by}}"
+                                value="{{ f.file_id }}">{{f.file_name}}
+                        </label>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+
+            </div>
+            <div class="modal-footer">
+
+                <button id="btnDeleteDocumentLawyer" class="btn btn-danger" data-dismiss="modal">Delete</button>
                 </form>
             </div>
         </div>

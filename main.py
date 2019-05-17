@@ -1002,56 +1002,55 @@ def delete_file_client():
                 "error": True,
                 "message": "Unauthorized, You cant delete this file."})
 
-# # route for lawyer web deleting file
-# @app.route('/delete-file-web',methods=["GET","POST"])
-# def webdelete_file_lawyer():
-#     if request.method == "POST":
-#         req_data = request.get_json(force=True)
-#         if "file_id" in req_data:
-#             file_id = req_data['file_id']
+# route for client api deleting file
+@app.route('/client/delete-file-web',methods=["GET","POST"])
+def webdelete_file_client():
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if "file_id" in req_data:
+            file_id = req_data['file_id']
+        if "client_id" in req_data:
+            client_id = req_data['client_id']
+
         
-#         if file_id:
-#             for fi in file_id:
-#                 f = UploadFile.get_by_id(int(fi))
-#                 f.key.delete()
-#             return json_response({
-#                 "error" : False,
-#                 "message" : "File(s) deleted!"})
-#         else:
-#             return json_response({
-#                 "error" : True,
-#                 "message" : "No files to be deleted!"
-#             })
+        if client_id:
+            for f in file_id:
+                logging.info(f)
+                deleted = UploadFile.deleteFilesClient(f=f,client_id=client_id);
 
-# # route for client api deleting file
-# @app.route('/client/delete-file-web',methods=["GET","POST"])
-# def webdelete_file_client():
-#     if request.method == "POST":
-#         req_data = request.get_json(force=True)
-#         if "file_id" in req_data:
-#             file_id = req_data['file_id']
-#         if "uploaded_by" in req_data:
-#             uploaded_by = req_data['uploaded_by']
+            if deleted:
+                return json_response({
+                "error" : False,
+                "message" : "File deleted!"})
+            else:
+                    return json_response({
+                "error" : True,
+                "message" : "File was not deleted"})
 
-#         if uploaded_by:
-#             for ub in uploaded_by:
+# route for client api deleting file
+@app.route('/lawyer/delete-file-web',methods=["GET","POST"])
+def webdelete_file_lawyer():
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if "file_id" in req_data:
+            file_id = req_data['file_id']
+        if "lawyer_id" in req_data:
+            lawyer_id = req_data['lawyer_id']
 
-#                 client = Client.get_by_id(int(ub))
-#         if client:
-#             f = UploadFile.get_by_id(int(file_id))
-#             if f:
-#                 f.key.delete()
-#                 return json_response({
-#                     "error" : False,
-#                     "message" : "File deleted!"})
-#             else:
-#                 return json_response({
-#                     "error" : True,
-#                     "message" : "File was not deleted"}) 
-#         else:
-#             return json_response({
-#                 "error": True,
-#                 "message": "Unauthorized, You cant delete this file."})
+        
+        if lawyer_id:
+            for f in file_id:
+                logging.info(f)
+                deleted = UploadFile.deleteFilesLawyer(f=f,lawyer_id=lawyer_id);
+
+            if deleted:
+                return json_response({
+                "error" : False,
+                "message" : "File deleted!"})
+            else:
+                    return json_response({
+                "error" : True,
+                "message" : "File was not deleted"})
 
 # route for lawyer api getting all documents
 @app.route('/lawyer/<int:lawyer_id>/list-all-file',methods=["GET","POST"])
@@ -1410,6 +1409,21 @@ def get_event_lawyer(lawyer_id=None):
         return json_response({"error":False,"message": `len(event_dict)`+" events","events" : event_dict})
     else:
         return json_response({"error":True,"message": "No event(s) found"})
+
+# route for web lawyer, getting the event
+@app.route('/lawyer/<int:lawyer_id>/events',methods=['GET','POST'])
+def web_get_event_lawyer(lawyer_id=None):
+    lawyer = Lawyer.get_by_id(int(lawyer_id))
+    events = Event.query(Event.lawyer == lawyer.key).fetch()
+    event_dict = []
+    for event in events:
+        event_dict.append(event.to_dict())
+        
+        # return json_response({"error":False,"message": `len(event_dict)`+" events","events" : event_dict})
+    return render_template('lawyer-events.html',lawyer=session['lawyer'],events=event_dict)
+    # else:
+        # return json_response({"error":True,"message": "No event(s) found"})
+        # return render_template('lawyer-events.html',events=event_dict)
 
 # route for lawyer, getting the event
 @app.route('/client/<int:client_id>/get-event',methods=['GET','POST'])

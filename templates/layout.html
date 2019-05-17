@@ -70,6 +70,8 @@
                         </li>
                         <li class="{{ 'active' if active_page == 'clients' else '' }}"><a
                                 href="/lawyer/{{lawyer}}/clients">My Client</a></li>
+                        <li class="{{ 'active' if active_page == 'events' else '' }}"><a
+                                href="/lawyer/{{lawyer}}/events">Events</a></li>
                         {% endif %}
 
                         {% if client %}
