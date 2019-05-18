@@ -46,7 +46,7 @@
                             <div class="lh-content">
                                 <!-- <span class="category">Example</span> -->
                                 <!-- <a href="#" class="bookmark"><span class="icon-heart"></span></a> -->
-                                <a data-toggle="modal" {% if lawyer.feedback != None %} data-fid="{{lawyer.feedback.key.id()}}"
+                                <a data-toggle="modal" {% if lawyer.feedback != None %} data-fid="{{lawyer.feedback.feedback_id}}"
                                     data-rating="{{lawyer.feedback.rating}}" data-comment="{{lawyer.feedback.feedback}}" {% endif %}
                                     data-lawyerid="{{lawyer.lawyer_id}}" href="#feedbackModal" class="bookmark"><span
                                         class="icon-heart"></span></a>

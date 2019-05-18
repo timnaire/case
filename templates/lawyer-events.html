@@ -32,12 +32,35 @@
             <div class="col-md-8">
 
                 <div class="row mb-3 align-items-stretch">
+
+
+                        <input type="text" class="form-control"  id='event_date'>
+
+                    <div class="form-group">
+                        <div class='input-group date' id='event_date'>
+                            <input type='text' class="form-control" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                                <!-- <span class="oi oi-calendar"></span> -->
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class='input-group date' data-provide="datepicker" id='event_time'>
+                            <input data-format="LT" type='text' class="form-control" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-time"></span>
+                                <!-- <span class="oi oi-calendar"></span> -->
+                            </span>
+                        </div>
+                    </div>
+
                     {% if cases %}
                     {% for case in cases %}
                     <div class="col-md-4 col-lg-3 mb-4 mb-lg-4">
                         <div class="h-entry">
-                            <a href="/client/{{client}}/cases/{{case.case_id}}"><img src="/static/images/briefcase.png" alt="Image"
-                                    class="img-fluid rounded"></a>
+                            <a href="/client/{{client}}/cases/{{case.case_id}}"><img src="/static/images/briefcase.png"
+                                    alt="Image" class="img-fluid rounded"></a>
                             <h2 class="font-size-regular"><a href="#" class="text-black">{{case.case_title}}</a>
                             </h2>
                             <div class="meta mb-3">{{case.lawyer.first_name}} {{case.lawyer.last_name}}<span
@@ -48,7 +71,9 @@
                     {% endfor %}
                     {% else %}
                     <div class="col-lg-12">
-                        <h2><center>No case found</center></h2>
+                        <h2>
+                            <center>No case found</center>
+                        </h2>
                     </div>
                     {% endif %}
                 </div>
@@ -68,14 +93,10 @@
             <div class="col-md-3 ml-auto">
 
                 <div class="mb-5">
-                    <h3 class="h5 text-black mb-3">Action for Document</h3>
+                    <h3 class="h5 text-black mb-3">Action</h3>
                     <div class="form-group d-flex">
-                        <button data-toggle="modal" data-target="#addDocument"
-                            class="btn btn-primary py-2 px-4 text-white">Add document</button>
-                    </div>
-                    <div class="form-group d-flex">
-                        <button data-toggle="modal" data-target="#deleteDocument"
-                            class="btn btn-danger py-2 px-4 text-white">Delete document</button>
+                        <button data-toggle="modal" data-target="#createEvent"
+                            class="btn btn-primary col-12 py-2 px-4 text-white">Create Event</button>
                     </div>
                 </div>
 
@@ -89,7 +110,7 @@
                 </div>
 
                 <div class="mb-5">
-                    <h3 class="h5 text-black mb-3">Recent Case</h3>
+                    <h3 class="h5 text-black mb-3">Recent Events</h3>
                     <ul class="list-unstyled">
                         {% if cases %}
                         {% for case in cases %}
@@ -105,5 +126,58 @@
     </div>
 </div>
 
+
+<!-- Modal -->
+<div class="modal fade" id="createEvent" tabindex="-1" role="dialog" aria-labelledby="createEvent" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Create Event</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form method="POST">
+
+                    <div class="form-group">
+                        <select class="form-control rounded mb-3" id="client-id">
+                            <option selected="true" disabled="disabled">Select Client</option>
+                            {% if clients %}
+                            {% for c in clients %}
+                            <option value="{{c.client_id}}"> {{c.client.first_name}}
+                            </option>
+                            {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTitle">Title</label>
+                        <input type="text" class="form-control" id="eventTitle">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventLocation">Location</label>
+                        <input type="text" class="form-control" id="eventLocation">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDetails">Event Details</label>
+                        <input type="text" class="form-control" id="eventDetails">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDetails">Event Details</label>
+                        <input type="text" class="form-control" id="eventDetails">
+                    </div>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="delFeedback">Delete</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="saveFeedback">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

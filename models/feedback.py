@@ -42,19 +42,29 @@ class Feedback(ndb.Model):
         list_of_feedbacks = []
 
         if client_id:
-            client = Client.get_by_id(int(client_id))
-            if client:
-                feedbacks = cls.query(cls.client == client.key).fetch()
+            client_key = ndb.Key('Client',int(client_id))
+            if client_key:
+                feedbacks = cls.query(cls.client == client_key).fetch()
 
                 for f in feedbacks:
                     list_of_feedbacks.append(f.to_dict())
         
         return list_of_feedbacks
 
+    def solo_dict(self):
+        data = {}
+        data['feedback_id'] = self.key.id()
+        data['rating'] = self.rating
+        data['feedback'] = self.feedback
+            
+        data['created'] = self.created.isoformat() + 'Z'
+        data['updated'] = self.updated.isoformat() + 'Z'
+        return data
+
     def to_dict(self):
         data = {}
         
-        data['feedback_d'] = self.key.id()
+        data['feedback_id'] = self.key.id()
         data['lawyer'] = None
         if self.lawyer:
             lawyer = self.lawyer.get()

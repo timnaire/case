@@ -184,7 +184,7 @@ class PreAppoint(ndb.Model):
         data['feedback'] = None
         feedback = Feedback.query(Feedback.client == self.client).get()
         if feedback:
-            data['feedback'] = feedback
+            data['feedback'] = feedback.solo_dict()
         return data
     
     def dict_lawyer(self):
@@ -200,5 +200,5 @@ class PreAppoint(ndb.Model):
         data['feedback'] = None
         feedback = Feedback.query(Feedback.lawyer == self.lawyer).get()
         if feedback:
-            data['feedback'] = feedback
+            data['feedback'] = feedback.solo_dict()
         return data

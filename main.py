@@ -1015,7 +1015,6 @@ def webdelete_file_client():
         
         if client_id:
             for f in file_id:
-                logging.info(f)
                 deleted = UploadFile.deleteFilesClient(f=f,client_id=client_id);
 
             if deleted:
@@ -1025,7 +1024,7 @@ def webdelete_file_client():
             else:
                     return json_response({
                 "error" : True,
-                "message" : "File was not deleted"})
+                "message" : "Unauthorized, You cant delete this file."})
 
 # route for client api deleting file
 @app.route('/lawyer/delete-file-web',methods=["GET","POST"])
@@ -1040,8 +1039,7 @@ def webdelete_file_lawyer():
         
         if lawyer_id:
             for f in file_id:
-                logging.info(f)
-                deleted = UploadFile.deleteFilesLawyer(f=f,lawyer_id=lawyer_id);
+                deleted = UploadFile.deleteFilesLawyer(f=f,lawyer_id=lawyer_id)
 
             if deleted:
                 return json_response({
@@ -1050,7 +1048,7 @@ def webdelete_file_lawyer():
             else:
                     return json_response({
                 "error" : True,
-                "message" : "File was not deleted"})
+                "message" : "Unauthorized, You cant delete this file."})
 
 # route for lawyer api getting all documents
 @app.route('/lawyer/<int:lawyer_id>/list-all-file',methods=["GET","POST"])
@@ -1366,7 +1364,7 @@ def list_client_web(lawyer_id=None):
 @login_required_client
 def list_lawyer_web(client_id=None):
     list_of_lawyers = PreAppoint.my_lawyers(client_id=client_id)
-    feedbacks = Feedback.getAllFeedbacks(client_id)
+    feedbacks = Feedback.getAllFeedbacks(client_id=client_id)
     client_id = Client.get_by_id(int(client_id))
     return render_template("mylawyers.html",feedbacks=feedbacks,lawyers=list_of_lawyers,client=session['client'])
 
@@ -1386,11 +1384,17 @@ def list_client(lawyer_id=None):
 @app.route('/client/<int:client_id>/list-lawyer',methods=['GET','POST'])
 def list_lawyer(client_id=None):
     list_of_lawyers = PreAppoint.my_lawyers(client_id=client_id)
+    feedbacks = Feedback.getAllFeedbacks(client_id=client_id)
+    
+    if not feedbacks:
+        feedbacks = None
+
     if list_of_lawyers:
         return json_response({
             "error" : False,
             "message" : "Found lawyers",
-            "lawyers" : list_of_lawyers})
+            "lawyers" : list_of_lawyers,
+            "feedbacks": feedbacks})
     else:
         return json_response({
             "error" : True,
@@ -1413,6 +1417,7 @@ def get_event_lawyer(lawyer_id=None):
 # route for web lawyer, getting the event
 @app.route('/lawyer/<int:lawyer_id>/events',methods=['GET','POST'])
 def web_get_event_lawyer(lawyer_id=None):
+    list_of_clients = PreAppoint.my_clients(lawyer_id=lawyer_id)
     lawyer = Lawyer.get_by_id(int(lawyer_id))
     events = Event.query(Event.lawyer == lawyer.key).fetch()
     event_dict = []
@@ -1420,7 +1425,7 @@ def web_get_event_lawyer(lawyer_id=None):
         event_dict.append(event.to_dict())
         
         # return json_response({"error":False,"message": `len(event_dict)`+" events","events" : event_dict})
-    return render_template('lawyer-events.html',lawyer=session['lawyer'],events=event_dict)
+    return render_template('lawyer-events.html',clients=list_of_clients,lawyer=session['lawyer'],events=event_dict)
     # else:
         # return json_response({"error":True,"message": "No event(s) found"})
         # return render_template('lawyer-events.html',events=event_dict)
@@ -1781,7 +1786,6 @@ def save_feedback(client_id=None):
             feedback = req_data['feedback']
         if 'fid' in req_data:
             fid = req_data['fid']
-        logging.info(fid)
         if not fid:
             feedback = Feedback.save(lawyer=lawyer_id,client=client_id,rating=rating,feedback=feedback)
         elif fid:

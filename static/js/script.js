@@ -1,12 +1,12 @@
 var pusher = new Pusher('86eb9d2db54de852df31', {
     cluster: 'ap1',
     forceTLS: true
-  });
-  var acceptedFileDropzone = "image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/mspowerpoint, application/powerpoint, application/vnd.ms-powerpoint, application/x-mspowerpoint,application/excel, application/vnd.ms-excel, application/x-excel, application/x-msexcel,pplication/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-  var currentUser = $("#currentUser").val();
+});
+var acceptedFileDropzone = "image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/mspowerpoint, application/powerpoint, application/vnd.ms-powerpoint, application/x-mspowerpoint,application/excel, application/vnd.ms-excel, application/x-excel, application/x-msexcel,pplication/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+var currentUser = $("#currentUser").val();
 
-  Dropzone.options.myDropzone= {
-    url: '/lawyer/'+currentUser+'/add-file-web',
+Dropzone.options.myDropzone = {
+    url: '/lawyer/' + currentUser + '/add-file-web',
     paramName: "file",
     autoProcessQueue: false,
     uploadMultiple: true,
@@ -15,11 +15,11 @@ var pusher = new Pusher('86eb9d2db54de852df31', {
     maxFilesize: 3,
     acceptedFiles: acceptedFileDropzone,
     addRemoveLinks: true,
-    init: function() {
+    init: function () {
         dzClosure = this; // Makes sure that 'this' is understood inside the functions below.
 
         // for Dropzone to process the queue (instead of default form behavior):
-        document.getElementById("submit-all").addEventListener("click", function(e) {
+        document.getElementById("submit-all").addEventListener("click", function (e) {
             // Make sure that the form isn't actually being sent.
             e.preventDefault();
             e.stopPropagation();
@@ -27,7 +27,7 @@ var pusher = new Pusher('86eb9d2db54de852df31', {
         });
 
         //send all the form data along with the files:
-        this.on("sendingmultiple", function(data, xhr, formData) {
+        this.on("sendingmultiple", function (data, xhr, formData) {
             formData.append("uploaded_by", jQuery("#uploaded_by").val());
             formData.append("case", jQuery("#case").val());
             formData.append("file_name", jQuery("#file_name").val());
@@ -37,8 +37,8 @@ var pusher = new Pusher('86eb9d2db54de852df31', {
     }
 }
 
-Dropzone.options.myDropzoneClient= {
-    url: '/client/'+currentUser+'/add-file-web',
+Dropzone.options.myDropzoneClient = {
+    url: '/client/' + currentUser + '/add-file-web',
     paramName: "file",
     autoProcessQueue: false,
     uploadMultiple: true,
@@ -47,11 +47,11 @@ Dropzone.options.myDropzoneClient= {
     maxFilesize: 3,
     acceptedFiles: acceptedFileDropzone,
     addRemoveLinks: true,
-    init: function() {
+    init: function () {
         dzClosure = this; // Makes sure that 'this' is understood inside the functions below.
 
         // for Dropzone to process the queue (instead of default form behavior):
-        document.getElementById("submit-all-client").addEventListener("click", function(e) {
+        document.getElementById("submit-all-client").addEventListener("click", function (e) {
             // Make sure that the form isn't actually being sent.
             e.preventDefault();
             e.stopPropagation();
@@ -59,7 +59,7 @@ Dropzone.options.myDropzoneClient= {
         });
 
         //send all the form data along with the files:
-        this.on("sendingmultiple", function(data, xhr, formData) {
+        this.on("sendingmultiple", function (data, xhr, formData) {
             formData.append("uploaded_by", jQuery("#uploaded_by").val());
             formData.append("case", jQuery("#case").val());
             formData.append("file_name", jQuery("#file_name").val());
@@ -77,48 +77,56 @@ $(document).ready(function () {
     //     $('#login-container-div').show(1000);
     //   $('#findlawyer').fadeIn(1000);
     //   $('#card-result-container').fadeIn(1000);
-  
+
+    $('#event_date input').datetimepicker({
+        format: "DD, MM dd, yyyy"
+    });
+    
+    $('#event_time input').datetimepicker({
+        format: 'LT'
+    });
+
     var channel = pusher.subscribe('appointment');
-    channel.bind('preappoint', function(data) {
-        if(data['lawyer'] == $('#currentUser').val()) {
+    channel.bind('preappoint', function (data) {
+        if (data['lawyer'] == $('#currentUser').val()) {
             $("#notificationTitle").text("Pre Appointment");
             $("#notificationMessage").text(data['message']);
             $('#notification').modal('show');
         }
     });
 
-    channel.bind('accepted', function(data) {
-        if(data['client'] == $('#currentUser').val()) {
-          $("#notificationTitle").text("Pre Appointment");
-          $("#notificationMessage").text(data['message']);
-          $('#notification').modal('show');
+    channel.bind('accepted', function (data) {
+        if (data['client'] == $('#currentUser').val()) {
+            $("#notificationTitle").text("Pre Appointment");
+            $("#notificationMessage").text(data['message']);
+            $('#notification').modal('show');
         }
-      });
+    });
 
     var channel1 = pusher.subscribe('client');
 
 
-    channel1.bind('accepted', function(data) {
-        if(data['client'] == $("#currentUser").val()){
+    channel1.bind('accepted', function (data) {
+        if (data['client'] == $("#currentUser").val()) {
             $("#notificationTitle").text("Client Acceptance");
             $("#notificationMessage").text(data['message']);
             $('#notification').modal('show');
         }
-      });
-    channel1.bind('decline', function(data) {
-        if(data['client'] == $("#currentUser").val()){
+    });
+    channel1.bind('decline', function (data) {
+        if (data['client'] == $("#currentUser").val()) {
             $("#notificationTitle").text("Client Rejection");
             $("#notificationMessage").text(data['message']);
             $('#notification').modal('show');
         }
-      });
+    });
 
     var sections = $('.lawyerDiv');
-    function updateContentVisibility(){
+    function updateContentVisibility() {
         var checked = $("#filterControls :checkbox:checked");
-        if(checked.length){
+        if (checked.length) {
             sections.hide();
-            checked.each(function(){
+            checked.each(function () {
                 $("." + $(this).val()).show();
             });
         } else {
@@ -265,7 +273,7 @@ $(document).ready(function () {
             law_practice: practice,
             firm: firm,
             sex: sex,
-            subcategory : subcategory,
+            subcategory: subcategory,
         }
         $.post("/lawyer/" + id + "/account-setting/profile-information", JSON.stringify(sendInfo), function (response) {
             if (response['error'] == false) {
@@ -355,7 +363,7 @@ $(document).ready(function () {
             var m = response['message'];
             var email = response['email'];
             if (response['error'] == false) {
-                window.location.replace('/lawyer/'+response['lawyer']+'/dashboard');
+                window.location.replace('/lawyer/' + response['lawyer'] + '/dashboard');
             }
             else if (response['error'] == true) {
                 window.location.replace('/lawyer/signin?err=' + err + "&m=" + m + "&email=" + email)
@@ -500,10 +508,10 @@ $(document).ready(function () {
         var confirm = $('#confirm-password').val();
         sendInfo = { password: password, confirm: confirm }
         $.post('/lawyer/reset-password/' + token, JSON.stringify(sendInfo), function (response) {
-            if(response['error'] == false){
-                window.location.replace("/lawyer/reset-password?succ="+1+"&m="+response['message']);
+            if (response['error'] == false) {
+                window.location.replace("/lawyer/reset-password?succ=" + 1 + "&m=" + response['message']);
             } else {
-                window.location.replace("/lawyer/reset-password?err="+1+"&m="+response['message']);
+                window.location.replace("/lawyer/reset-password?err=" + 1 + "&m=" + response['message']);
             }
         });
     })
@@ -512,16 +520,16 @@ $(document).ready(function () {
         var email = $('#email').val();
         sendInfo = { email: email }
         $.post('/lawyer/reset-password', JSON.stringify(sendInfo), function (response) {
-            if(response['error'] == false){
-                window.location.replace("/lawyer/reset-password?succ="+1+"&m="+response['message']);
+            if (response['error'] == false) {
+                window.location.replace("/lawyer/reset-password?succ=" + 1 + "&m=" + response['message']);
             } else {
-                window.location.replace("/lawyer/reset-password?err="+1+"&m="+response['message']);
+                window.location.replace("/lawyer/reset-password?err=" + 1 + "&m=" + response['message']);
             }
         });
         e.preventDefault()
     });
 
-    
+
     // FOR THE ACCOUNT SETTINGS CLIENT
 
     $('#btnClientSavePicture').click(function (e) {
@@ -616,32 +624,32 @@ $(document).ready(function () {
         sendInfo = {
             case_title: case_title,
             case_id: case_id,
-            client_id : client_id,
+            client_id: client_id,
             case_status: case_status,
-            case_description: case_description, 
-            remarks : remarks
+            case_description: case_description,
+            remarks: remarks
         }
         $.post("/lawyer/" + lawyer_id + "/edit-case", JSON.stringify(sendInfo), function (response) {
             if (response['error'] == false) {
                 alert('Case Updated');
-                window.location.replace("/lawyer/" + lawyer_id + "/mycases/"+case_id);
+                window.location.replace("/lawyer/" + lawyer_id + "/mycases/" + case_id);
             } else if (response['error'] == true) {
                 alert('Case failed to Update');
             }
         })
     });
 
-    $("#btnDeleteCase").click(function(){
-        if(confirm("Are you sure you want to delete this case? this cannot be undone.")) {
+    $("#btnDeleteCase").click(function () {
+        if (confirm("Are you sure you want to delete this case? this cannot be undone.")) {
             var lawyer_id = $(this).data('id');
             var case_id = $(this).data('caseid');
             sendInfo = {
-                case_id : case_id
+                case_id: case_id
             }
-            $.post("/lawyer/"+lawyer_id+"/delete-case", JSON.stringify(sendInfo), function (response) {
-                if(response['error'] == false) {
+            $.post("/lawyer/" + lawyer_id + "/delete-case", JSON.stringify(sendInfo), function (response) {
+                if (response['error'] == false) {
                     alert(response['message']);
-                    window.location.replace("/lawyer/"+lawyer_id+"/mycases");
+                    window.location.replace("/lawyer/" + lawyer_id + "/mycases");
                 }
             }, "json");
         }
@@ -759,10 +767,10 @@ $(document).ready(function () {
         var confirm = $('#confirm-password').val();
         sendInfo = { password: password, confirm: confirm }
         $.post('/client/reset-password/' + token, JSON.stringify(sendInfo), function (response) {
-            if(response['error'] == false){
-                window.location.replace("/client/reset-password?succ="+1+"&m="+response['message']);
+            if (response['error'] == false) {
+                window.location.replace("/client/reset-password?succ=" + 1 + "&m=" + response['message']);
             } else {
-                window.location.replace("/client/reset-password?err="+1+"&m="+response['message']);
+                window.location.replace("/client/reset-password?err=" + 1 + "&m=" + response['message']);
             }
         });
     })
@@ -771,15 +779,15 @@ $(document).ready(function () {
         var email = $('#email').val();
         sendInfo = { email: email }
         $.post('/client/reset-password', JSON.stringify(sendInfo), function (response) {
-            if(response['error'] == false){
-                window.location.replace("/client/reset-password?succ="+1+"&m="+response['message']);
+            if (response['error'] == false) {
+                window.location.replace("/client/reset-password?succ=" + 1 + "&m=" + response['message']);
             } else {
-                window.location.replace("/client/reset-password?err="+1+"&m="+response['message']);
+                window.location.replace("/client/reset-password?err=" + 1 + "&m=" + response['message']);
             }
         });
         e.preventDefault()
     });
-    
+
     // if(image){
     //     getBase64(image).then(
     //     data => {
@@ -812,19 +820,19 @@ $(document).ready(function () {
         }
     }
 
-    $(".btnPreAppoint").click(function(e){
+    $(".btnPreAppoint").click(function (e) {
         var client_id = $(this).data('id');
         var lawyer_id = $(this).data('lawyerid');
         var status = $(this).data('status');
-        
-        sendInfo = { lawyer_id: lawyer_id , status: status}
-        if(status=="decline") {
-            if(confirm("Are you sure you want to decline this appointment?")) {
+
+        sendInfo = { lawyer_id: lawyer_id, status: status }
+        if (status == "decline") {
+            if (confirm("Are you sure you want to decline this appointment?")) {
                 // /lawyer/<int:client_id>/pre-appoint-response
-                $(this).parent().parent().parent().fadeOut( "slow", function() {
+                $(this).parent().parent().parent().fadeOut("slow", function () {
                 });
-                $.post('/lawyer/'+client_id+'/pre-appoint-response', JSON.stringify(sendInfo), function (response) {
-                    if(response['error'] == false){
+                $.post('/lawyer/' + client_id + '/pre-appoint-response', JSON.stringify(sendInfo), function (response) {
+                    if (response['error'] == false) {
                         $("#preappoint-accept").removeClass('d-none');
                         $("#preappoint-decline").addClass('d-none');
                         $(".message").text(response['message']);
@@ -836,15 +844,15 @@ $(document).ready(function () {
                 });
             }
         } else {
-            $(this).parent().parent().parent().fadeOut( "slow", function() {
+            $(this).parent().parent().parent().fadeOut("slow", function () {
             });
             // /lawyer/<int:client_id>/pre-appoint-response
-            $.post('/lawyer/'+client_id+'/pre-appoint-response', JSON.stringify(sendInfo), function (response) {
-                if(response['error'] == false){
+            $.post('/lawyer/' + client_id + '/pre-appoint-response', JSON.stringify(sendInfo), function (response) {
+                if (response['error'] == false) {
                     $("#preappoint-accept").removeClass('d-none');
                     $("#preappoint-decline").addClass('d-none');
                     $(".message").text(response['message']);
-                    window.location.replace("/lawyer/"+lawyer_id+"/dashboard");
+                    window.location.replace("/lawyer/" + lawyer_id + "/dashboard");
                 } else {
                     $("#preappoint-accept").addClass('d-none');
                     $("#preappoint-decline").removeClass('d-none');
@@ -855,27 +863,27 @@ $(document).ready(function () {
         e.preventDefault()
     });
 
-    $(".btnIncomingClient").click(function(e){
+    $(".btnIncomingClient").click(function (e) {
         var client_id = $(this).data('id');
         var lawyer_id = $(this).data('lawyerid');
         var status = $(this).data('status');
         var preappoint_id = $(this).data('pa');
         sendInfo = {
-            client_id : client_id,
-            status : status,
-            preappoint_id : preappoint_id
+            client_id: client_id,
+            status: status,
+            preappoint_id: preappoint_id
         }
-        $(this).parent().parent().parent().fadeOut( "slow", function() {
-          });
-        if(status == "decline") {
-            if(confirm("Are you sure you want to decline this client?")) {
-                $.post('/lawyer/'+lawyer_id+'/incoming-client', JSON.stringify(sendInfo), function (response) {
+        $(this).parent().parent().parent().fadeOut("slow", function () {
+        });
+        if (status == "decline") {
+            if (confirm("Are you sure you want to decline this client?")) {
+                $.post('/lawyer/' + lawyer_id + '/incoming-client', JSON.stringify(sendInfo), function (response) {
                     console.log(response['message']);
                 });
             }
         } else {
-            $.post('/lawyer/'+lawyer_id+'/incoming-client', JSON.stringify(sendInfo), function (response) {
-                if(response['error'] == false) {
+            $.post('/lawyer/' + lawyer_id + '/incoming-client', JSON.stringify(sendInfo), function (response) {
+                if (response['error'] == false) {
                     $("#addCase").modal('show');
                 }
             });
@@ -883,62 +891,64 @@ $(document).ready(function () {
         e.preventDefault()
     });
 
-    $("#btnSaveFeatureCase").click(function(){
+    $("#btnSaveFeatureCase").click(function () {
         var lawyer_id = $("#currentUser").val();
         var feature1 = $("#feature1").val();
         var feature2 = $("#feature2").val();
         var feature3 = $("#feature3").val();
 
-        sendInfo = { feature1 : feature1, feature2 : feature2, feature3 : feature3 }
-        $.post("/lawyer/"+lawyer_id+"/feature",JSON.stringify(sendInfo), function(response){
-            if(response['error'] == false) {
+        sendInfo = { feature1: feature1, feature2: feature2, feature3: feature3 }
+        $.post("/lawyer/" + lawyer_id + "/feature", JSON.stringify(sendInfo), function (response) {
+            if (response['error'] == false) {
                 console.log(response['message']);
-                window.location.replace('/lawyer/'+lawyer_id+'/myaccount');
+                window.location.replace('/lawyer/' + lawyer_id + '/myaccount');
             }
 
         });
     });
 
-    $(".bookmark").click(function(e){
+    $(".bookmark").click(function (e) {
         $("#lawyer_id").val($(this).data('lawyerid'));
         $("#fid").val($(this).data('fid'));
         $("#rating").val($(this).data('rating'));
         $("#feedback").val($(this).data('comment'));
     });
 
-    $("#saveFeedback").click(function(){
+    $("#saveFeedback").click(function () {
         var client_id = $('#currentUser').val();
         var lawyer_id = $("#lawyer_id").val();
         var rating = $("#rating").val();
         var fid = $("#fid").val();
         var feedback = $("#feedback").val();
 
-        sendInfo = { lawyer_id: lawyer_id, rating: rating , feedback : feedback, fid: fid }
+        sendInfo = { lawyer_id: lawyer_id, rating: rating, feedback: feedback, fid: fid }
 
-        $.post("/client/"+client_id+"/lawyer/feedback",JSON.stringify(sendInfo),function(response){
-            if(response['error'] == false) {
+        $.post("/client/" + client_id + "/lawyer/feedback", JSON.stringify(sendInfo), function (response) {
+            if (response['error'] == false) {
                 alert(response['message']);
+                location.reload();
             } else {
                 alert(response['message']);
             }
         });
     });
 
-    $(".viewFeedback").click(function(){
+    $(".viewFeedback").click(function () {
         $("#feedback").text($(this).data('vf'));
         $("#rate").text($(this).data('vr'));
     });
 
-    $("#delFeedback").click(function(e){
-        if(confirm("Are you sure you want to delete this feedback? This cannot be undone.")) {
+    $("#delFeedback").click(function (e) {
+        if (confirm("Are you sure you want to delete this feedback? This cannot be undone.")) {
             var client_id = $('#currentUser').val();
             var fid = $("#fid").val();
 
             sendInfo = { fid: fid }
 
-            $.post("/client/"+client_id+"/lawyer/feedback-delete",JSON.stringify(sendInfo),function(response){
-                if(response['error'] == false) {
+            $.post("/client/" + client_id + "/lawyer/feedback-delete", JSON.stringify(sendInfo), function (response) {
+                if (response['error'] == false) {
                     alert(response['message']);
+                    location.reload();
                 } else {
                     alert(response['message']);
                 }
@@ -948,34 +958,36 @@ $(document).ready(function () {
         }
     });
 
-    $("#btnDeleteDocument").click(function(){
+    $("#btnDeleteDocument").click(function () {
         var documents = [];
         var currentUser = $("#currentUser").val();
         $.each($("input[class='fileDocument']:checked"), function () {
             documents.push($(this).val());
         });
 
-        sendInfo = { file_id : documents , client_id : currentUser}
-        $.post("/client/delete-file-web", JSON.stringify(sendInfo), function(response){
-            if(response['error'] == false){
+        sendInfo = { file_id: documents, client_id: currentUser }
+        $.post("/client/delete-file-web", JSON.stringify(sendInfo), function (response) {
+            if (response['error'] == false) {
                 alert(response['message']);
+                location.reload();
             } else {
                 alert(response['message']);
             }
         });
     });
 
-    $("#btnDeleteDocumentLawyer").click(function(){
+    $("#btnDeleteDocumentLawyer").click(function () {
         var documents = [];
         var currentUser = $("#currentUser").val();
         $.each($("input[class='fileDocument']:checked"), function () {
             documents.push($(this).val());
         });
 
-        sendInfo = { file_id : documents , lawyer_id : currentUser}
-        $.post("/lawyer/delete-file-web", JSON.stringify(sendInfo), function(response){
-            if(response['error'] == false){
+        sendInfo = { file_id: documents, lawyer_id: currentUser }
+        $.post("/lawyer/delete-file-web", JSON.stringify(sendInfo), function (response) {
+            if (response['error'] == false) {
                 alert(response['message']);
+                location.reload();
             } else {
                 alert(response['message']);
             }

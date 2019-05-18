@@ -101,10 +101,9 @@ class UploadFile(ndb.Model):
 
         if client_id:
             fe = UploadFile.get_by_id(int(f))
-            ce = Client.get_by_id(int(client_id))
-            if ce:
-                ff = cls.query(cls.key == fe.key, cls.uploaded_by == ce.key)
-                ff.key.delete()
+            ce = ndb.Key('Client',int(client_id))
+            if fe.uploaded_by == ce:
+                fe.key.delete()
                 deleted = True
         return deleted
 
@@ -114,10 +113,9 @@ class UploadFile(ndb.Model):
 
         if lawyer_id:
             fe = UploadFile.get_by_id(int(f))
-            le = Lawyer.get_by_id(int(lawyer_id))
-            if le:
-                ff = cls.query(cls.key == fe.key, cls.uploaded_by == le.key)
-                ff.key.delete()
+            le = ndb.Key('Lawyer',int(lawyer_id))
+            if fe.uploaded_by == le:
+                fe.key.delete()
                 deleted = True
         return deleted
 
