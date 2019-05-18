@@ -43,10 +43,18 @@ mail = Mail(app)
 # Geocoding an address
 # geocode_result = gmaps.geocode('1600 Amphitheatre Parkway, Mountain View, CA')
 
+# pusher_client = pusher.Pusher(
+#   app_id='777012',
+#   key='86eb9d2db54de852df31',
+#   secret='12fe5725a66c8463c2d5',
+#   cluster='ap1',
+#   ssl=True
+# )
+
 pusher_client = pusher.Pusher(
-  app_id='777012',
-  key='86eb9d2db54de852df31',
-  secret='12fe5725a66c8463c2d5',
+  app_id='785330',
+  key='468204a1ab0afbc0b5e0',
+  secret='c6e39bf35aefc89142c4',
   cluster='ap1',
   ssl=True
 )
@@ -501,7 +509,7 @@ def pre_accepted(client_id=None):
             PreAppoint.save(id=preappoint_id,lawyer=lawyer_id,client=client_id,status=status)
             lawyer = Lawyer.get_by_id(int(lawyer_id))
             json_data = {
-                "to": client.fcm_token,     
+                "to": client.fcm_token,
                 "notification":{
                     'click_action' : '.MainActivity',
                     'title': 'Pre-Appointment', 

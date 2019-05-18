@@ -78,13 +78,13 @@ $(document).ready(function () {
     //   $('#findlawyer').fadeIn(1000);
     //   $('#card-result-container').fadeIn(1000);
 
-    $('#event_date input').datetimepicker({
-        format: "DD, MM dd, yyyy"
-    });
+    // $('#event_date input').datetimepicker({
+    //     format: "DD, MM dd, yyyy"
+    // });
     
-    $('#event_time input').datetimepicker({
-        format: 'LT'
-    });
+    // $('#event_time input').datetimepicker({
+    //     format: 'LT'
+    // });
 
     var channel = pusher.subscribe('appointment');
     channel.bind('preappoint', function (data) {

@@ -173,7 +173,7 @@ class PreAppoint(ndb.Model):
 
     def dict_client(self):
         data = {}
-        data['relation_id'] = self.key.id()
+        data['id'] = self.key.id()
         data['case_id'] = self.key.id()
         data['client'] = None
         if self.client:
@@ -189,7 +189,7 @@ class PreAppoint(ndb.Model):
     
     def dict_lawyer(self):
         data = {}
-        data['relation_id'] = self.key.id()
+        data['id'] = self.key.id()
         data['case_id'] = self.key.id()
         data['lawyer'] = None
         if self.lawyer:
