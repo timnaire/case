@@ -78,13 +78,12 @@ $(document).ready(function () {
     //   $('#findlawyer').fadeIn(1000);
     //   $('#card-result-container').fadeIn(1000);
 
-    // $('#event_date input').datetimepicker({
-    //     format: "DD, MM dd, yyyy"
-    // });
-    
-    // $('#event_time input').datetimepicker({
-    //     format: 'LT'
-    // });
+    $('#event_date').datetimepicker({
+        format: 'dddd, MMMM DD, YYYY'
+    });
+    $('#event_time').datetimepicker({
+        format: 'LT'
+    });
 
     var channel = pusher.subscribe('appointment');
     channel.bind('preappoint', function (data) {
@@ -683,54 +682,6 @@ $(document).ready(function () {
             }
         }, "json");
     });
-    $('#createEvent').click(function (e) {
-        e.preventDefault();
-
-        var lawyer_id = $("#lawyer_id").val();
-        var client_id = $("#client_id").val();
-        var event_title = $('#event_title').val().trim();
-        var event_location = $('#event_location').val().trim();
-        var event_details = $('#event_details').val().trim();
-        var event_date = $('#event_date').data("DateTimePicker").date();
-        var event_time = $('#event_time').data("DateTimePicker").date();
-        var event_type = $('#event_type').val().trim();
-        var event_owner = $('#owner_id').val().trim();
-        var owner = $('#owner').val().trim();
-        sendInfo = {
-            lawyer_id: lawyer_id,
-            client_id: client_id,
-            event_title: event_title,
-            event_location: event_location,
-            event_details: event_details,
-            event_date: event_date,
-            event_time: event_time,
-            event_type: event_type,
-            event_owner: event_owner
-        }
-        var succ = 1;
-        var err = 1;
-
-        if (owner == 'client') {
-            $.post("/client/" + client_id + "/add-event", JSON.stringify(sendInfo), function (response) {
-                var m = response['message']
-                if (response['error'] == false) {
-                    alert(m);
-                } else if (response['error'] == true) {
-                    alert(m);
-                }
-            }, "json");
-        }
-        else if (owner == 'lawyer') {
-            $.post("/lawyer/" + lawyer_id + "/add-event", JSON.stringify(sendInfo), function (response) {
-                var m = response['message']
-                if (response['error'] == false) {
-                    alert(m);
-                } else if (response['error'] == true) {
-                    alert(m);
-                }
-            }, "json");
-        }
-    });
 
     $('#preAppointLawyer').click(function (e) {
 
@@ -994,6 +945,78 @@ $(document).ready(function () {
         });
     });
 
+    $('#createEventLawyer').click(function (e) {
+        e.preventDefault();
+        var lawyer_id = $("#currentUser").val();
+        var client_id = $("#client_id").val();
+        var event_title = $('#eventTitle').val()
+        var event_location = $('#eventLocation').val()
+        var event_details = $('#eventDetails').val()
+        var event_date = $('#event_date').data("DateTimePicker").date().toDate();
+        var event_time = $('#event_time').data("DateTimePicker").date().toDate();
+        var eventTime = getMyTime(event_time.getHours(),event_time.getMinutes());
+        var eventDate = getMyDate(event_date.getDay(), event_date.getMonth(), event_date.getDate(), event_date.getFullYear());
+        var event_type = $('#eventType').val()
+        var event_owner = $('#owner_id').val()
+        var owner = $('#owner').val()
+        sendInfo = {
+            lawyer_id: lawyer_id,
+            client_id: client_id,
+            event_title: event_title,
+            event_location: event_location,
+            event_details: event_details,
+            event_date: eventDate,
+            event_time: eventTime,
+            event_type: event_type,
+            event_owner: event_owner
+        }
+        console.log(sendInfo);
+        $.post("/lawyer/"+lawyer_id+"/add-event",JSON.stringfy(sendInfo),function(respose){
+            if(response["error"] != false) {
+                alert(respose['message']);
+            } else {
+                alert(respose['message']);
+            }
+        })
+    });
+
+    $('#createEventClient').click(function (e) {
+        e.preventDefault();
+        var client_id = $("#currentUser").val();
+        var lawyer_id = $("#lawyer_id").val();
+        var event_title = $('#eventTitle').val()
+        var event_location = $('#eventLocation').val()
+        var event_details = $('#eventDetails').val()
+        var event_date = $('#event_date').data("DateTimePicker").date().toDate();
+        var event_time = $('#event_time').data("DateTimePicker").date().toDate();
+        var eventTime = getMyTime(event_time.getHours(),event_time.getMinutes());
+        var eventDate = getMyDate(event_date.getDay(), event_date.getMonth(), event_date.getDate(), event_date.getFullYear());
+        var event_type = $('#eventType').val()
+        var event_owner = $('#owner_id').val()
+        var owner = $('#owner').val()
+        sendInfo = {
+            lawyer_id: lawyer_id,
+            client_id: client_id,
+            event_title: event_title,
+            event_location: event_location,
+            event_details: event_details,
+            event_date: eventDate,
+            event_time: eventTime,
+            event_type: event_type,
+            event_owner: event_owner
+        }
+        console.log(sendInfo);
+        $.post("/client/"+client_id+"/add-event",JSON.stringfy(sendInfo),function(respose){
+            if(response["error"] != false) {
+                alert(respose['message']);
+            } else {
+                alert(respose['message']);
+            }
+        })
+    });
+
+
+
     $("#btnPreAppoint").click(function (e) {
         $("#pre-appointment").removeClass("d-none");
         $("#incoming-client").removeClass("d-none").addClass("d-none");
@@ -1063,4 +1086,91 @@ $(document).ready(function () {
     $("#danger-alert").fadeTo(2000, 500).slideUp(500, function () {
         $("#danger-alert").slideUp(500);
     });
+
+    function getMyTime(h,m) {
+        var l = "AM";
+        if (h >= 12) {
+            l = "PM"
+        } else {
+            l = "AM"
+        }
+        if (h > 12) {
+            h = h - 12;
+        }
+        if(h == 0){
+            h = 12;
+        }
+        
+        if (m < 10) {
+            m = '0' + m;
+        }
+
+        return h + ':' + m + ' ' + l;
+    }
+
+    function getMyDate(day, month, date, year) {
+        var wordDay = wordMonth = "";
+        switch (day) {
+            case 0:
+                wordDay = "Sunday";
+                break;
+            case 1:
+                wordDay = "Monday";
+                break;
+            case 2:
+                wordDay = "Tuesday";
+                break;
+            case 3:
+                wordDay = "Wednesday";
+                break;
+            case 4:
+                wordDay = "Thursday";
+                break;
+            case 5:
+                wordDay = "Friday";
+                break;
+            case 6:
+                wordDay = "Saturday";
+                break;
+        }
+        switch (month) {
+            case 0:
+                wordMonth = "January";
+                break;
+            case 1:
+                wordMonth = "February";
+                break;
+            case 2:
+                wordMonth = "March";
+                break;
+            case 3:
+                wordMonth = "April";
+                break;
+            case 4:
+                wordMonth = "May";
+                break;
+            case 5:
+                wordMonth = "June";
+                break;
+            case 6:
+                wordMonth = "July";
+                break;
+            case 7:
+                wordMonth = "August";
+                break;
+            case 8:
+                wordMonth = "September";
+                break;
+            case 9:
+                wordMonth = "October";
+                break;
+            case 10:
+                wordMonth = "November";
+                break;
+            case 11:
+                wordMonth = "December";
+                break;
+        }
+        return wordDay + ", " + wordMonth + " " + date + ", " + year;
+    }
 });

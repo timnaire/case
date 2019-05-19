@@ -474,7 +474,7 @@ def lawyer_preappointments(lawyer_id=None):
     return json_response({
         "error" : False,
         "preappoints" : preappoint_dict,
-        "message" : "You have "+`len(preappoint_dict)`+" pre appointments"
+        "message" : "You have "+`len(preappoint_dict)`+" pre appointment(s)"
     })
 
 @app.route('/lawyer/<int:lawyer_id>/incoming-clients',methods=['GET','POST'])
@@ -489,7 +489,7 @@ def lawyer_incomingclients(lawyer_id=None):
     return json_response({
         "error" : False,
         "preappoints" : preappoint_dict,
-        "message" : "You have "+`len(preappoint_dict)`+" pre appointments"
+        "message" : "You have "+`len(preappoint_dict)`+" pending client(s)"
     })
 
 @app.route('/lawyer/<int:client_id>/pre-appoint-response',methods=['POST'])
@@ -1438,6 +1438,19 @@ def web_get_event_lawyer(lawyer_id=None):
         # return json_response({"error":True,"message": "No event(s) found"})
         # return render_template('lawyer-events.html',events=event_dict)
 
+# route for web client, getting the event
+@app.route('/client/<int:client_id>/events',methods=['GET','POST'])
+def web_get_event_client(client_id=None):
+    list_of_lawyers = PreAppoint.my_lawyers(client_id=client_id)
+    client = Client.get_by_id(int(client_id))
+    events = Event.query(Event.client == client.key).fetch()
+    event_dict = []
+    for event in events:
+        event_dict.append(event.to_dict())
+        
+        # return json_response({"error":False,"message": `len(event_dict)`+" events","events" : event_dict})
+    return render_template('events.html',lawyers=list_of_lawyers,client=session['client'],events=event_dict)
+
 # route for lawyer, getting the event
 @app.route('/client/<int:client_id>/get-event',methods=['GET','POST'])
 def get_event_client(client_id=None):
@@ -1808,7 +1821,7 @@ def save_feedback(client_id=None):
                 "error" : True,
                 "message" : "Feedback was not saved."})
 
-# save client's feedback to lawyer
+# delete client's feedback to lawyer
 @app.route('/client/<int:client_id>/lawyer/feedback-delete',methods=['POST'])
 def delete_feedback(client_id=None):
     if request.method == "POST":
@@ -1827,6 +1840,20 @@ def delete_feedback(client_id=None):
                 return json_response({
                     "error" : True,
                     "message" : "Feedback was not deleted."})
+
+# get client's feedback to lawyer
+@app.route('/client/<int:client_id>/lawyer/feedback/<int:fid>',methods=['GET','POST'])
+def solo_feedback(client_id=None,fid=None):
+    feedback = Feedback.get_by_id(int(fid))
+    if feedback:
+        return json_response({
+            "error" : False,
+            "message" : "Feedback deleted!",
+            "feedback": feedback.to_dict()})
+    else:
+        return json_response({
+            "error" : True,
+            "message" : "No feedback found."})
 
 
 # get all feedback info
