@@ -945,6 +945,18 @@ $(document).ready(function () {
         });
     });
 
+    $(".eventInstance").click(function(){
+        var client = $(this).data("client");
+        var type = $(this).data("type");
+        $("select#Editclient_id option[value='"+client+"']").attr("selected",true);
+        $("select#EditeventType option[value='"+type+"']").attr("selected",true);
+        $("#EditeventTitle").val(($(this).data("title")));
+        $("#EditeventLocation").val(($(this).data("location")));
+        $("#EditeventDetails").val(($(this).data("details")));
+        $("#Editevent_date").val(($(this).data("date")));
+        $("#Editevent_time").val(($(this).data("time")));
+    });
+
     $('#createEventLawyer').click(function (e) {
         e.preventDefault();
         var lawyer_id = $("#currentUser").val();
@@ -956,9 +968,8 @@ $(document).ready(function () {
         var event_time = $('#event_time').data("DateTimePicker").date().toDate();
         var eventTime = getMyTime(event_time.getHours(),event_time.getMinutes());
         var eventDate = getMyDate(event_date.getDay(), event_date.getMonth(), event_date.getDate(), event_date.getFullYear());
-        var event_type = $('#eventType').val()
-        var event_owner = $('#owner_id').val()
-        var owner = $('#owner').val()
+        var event_type = $('#eventType').val();
+        var event_owner = $("#currentUser").val();
         sendInfo = {
             lawyer_id: lawyer_id,
             client_id: client_id,
@@ -971,13 +982,49 @@ $(document).ready(function () {
             event_owner: event_owner
         }
         console.log(sendInfo);
-        $.post("/lawyer/"+lawyer_id+"/add-event",JSON.stringfy(sendInfo),function(respose){
+        $.post("/lawyer/"+lawyer_id+"/add-event",JSON.stringify(sendInfo),function(response){
             if(response["error"] != false) {
-                alert(respose['message']);
+                alert(response['message']);
+                location.reload();
             } else {
-                alert(respose['message']);
+                alert(response['message']);
             }
-        })
+        });
+    });
+
+    $('#EditEventLawyer').click(function (e) {
+        e.preventDefault();
+        var lawyer_id = $("#currentUser").val();
+        var client_id = $("#client_id").val();
+        var event_title = $('#eventTitle').val()
+        var event_location = $('#eventLocation').val()
+        var event_details = $('#eventDetails').val()
+        var event_date = $('#event_date').data("DateTimePicker").date().toDate();
+        var event_time = $('#event_time').data("DateTimePicker").date().toDate();
+        var eventTime = getMyTime(event_time.getHours(),event_time.getMinutes());
+        var eventDate = getMyDate(event_date.getDay(), event_date.getMonth(), event_date.getDate(), event_date.getFullYear());
+        var event_type = $('#eventType').val();
+        var event_owner = $("#currentUser").val();
+        sendInfo = {
+            lawyer_id: lawyer_id,
+            client_id: client_id,
+            event_title: event_title,
+            event_location: event_location,
+            event_details: event_details,
+            event_date: eventDate,
+            event_time: eventTime,
+            event_type: event_type,
+            event_owner: event_owner
+        }
+        console.log(sendInfo);
+        $.post("/lawyer/"+lawyer_id+"/add-event",JSON.stringify(sendInfo),function(response){
+            if(response["error"] != false) {
+                alert(response['message']);
+                location.reload();
+            } else {
+                alert(response['message']);
+            }
+        });
     });
 
     $('#createEventClient').click(function (e) {
@@ -991,9 +1038,8 @@ $(document).ready(function () {
         var event_time = $('#event_time').data("DateTimePicker").date().toDate();
         var eventTime = getMyTime(event_time.getHours(),event_time.getMinutes());
         var eventDate = getMyDate(event_date.getDay(), event_date.getMonth(), event_date.getDate(), event_date.getFullYear());
-        var event_type = $('#eventType').val()
-        var event_owner = $('#owner_id').val()
-        var owner = $('#owner').val()
+        var event_type = $('#eventType').val();
+        var event_owner = $("#currentUser").val();
         sendInfo = {
             lawyer_id: lawyer_id,
             client_id: client_id,
@@ -1006,13 +1052,14 @@ $(document).ready(function () {
             event_owner: event_owner
         }
         console.log(sendInfo);
-        $.post("/client/"+client_id+"/add-event",JSON.stringfy(sendInfo),function(respose){
+        $.post("/client/"+client_id+"/add-event",JSON.stringify(sendInfo),function(response){
             if(response["error"] != false) {
-                alert(respose['message']);
+                alert(response['message']);
+                location.reload();
             } else {
-                alert(respose['message']);
+                alert(response['message']);
             }
-        })
+        });
     });
 
 
