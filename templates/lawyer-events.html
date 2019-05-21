@@ -36,7 +36,8 @@
                     {% for event in events %}
                     <div class="col-md-4 col-lg-3 mb-4 mb-lg-4">
                         <div class="h-entry">
-                            <a href="#editEventModal" data-client="{{event.client.client_id}}" data-title="{{event.event_title}}"
+                            <a href="#editEventModal" data-owner="{{event.event_owner}}" data-event="{{event.event_id}}"
+                                data-client="{{event.client.client_id}}" data-title="{{event.event_title}}"
                                 data-time="{{event.event_time}}" data-date="{{event.event_date}}"
                                 data-location="{{event.event_location}}" data-details="{{event.event_details}}"
                                 data-type="{{event.event_type}}" data-toggle="modal" class="eventInstance"><img
@@ -199,13 +200,14 @@
             <div class="modal-body">
 
                 <form method="POST">
-
+                    <input type="hidden" id="Editevent_id" value="">
+                    <input type="hidden" id="Editowner_id" value="">
                     <div class="form-group">
                         <select class="form-control rounded mb-3" id="Editclient_id">
                             <option selected="true" disabled="disabled">Select Client</option>
                             {% if clients %}
                             {% for c in clients %}
-                            <option value="{{c.client_id}}"> {{c.client.first_name}}
+                            <option value="{{c.client_id}}"> {{c.client.first_name}} {{c.client.last_name}}
                             </option>
                             {% endfor %}
                             {% endif %}
@@ -224,7 +226,7 @@
                         <input type="text" class="form-control" id="EditeventDetails">
                     </div>
                     <div class="form-group">
-                        <div class='input-group date' id='event_date'>
+                        <div class='input-group date' id='Editevent_datee'>
                             <input type='text' class="form-control" id="Editevent_date" />
                             <span class="input-group-addon d-flex align-items-stretch">
                                 <div class="input-group-text d-flex align-items-center"><i class=" fa fa-calendar"></i>
@@ -235,7 +237,7 @@
                     </div>
 
                     <div class="form-group">
-                        <div class='input-group date' id='event_time'>
+                        <div class='input-group date' id='Editevent_timee'>
                             <input data-format="HH:mm" type='text' class="form-control" id="Editevent_time" />
                             <span class="input-group-addon d-flex align-items-stretch">
                                 <div class="input-group-text d-flex align-items-center"><i class="fa fa-clock-o"></i>
@@ -252,6 +254,7 @@
 
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="DeleteEventLawyer">Delete</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" id="EditEventLawyer">Save</button>
                 </form>

@@ -47,7 +47,7 @@
 
           <!-- change picture -->
           <div class="col-md-9 mb-5" id="pre-appointment" data-aos="fade">
-
+            
             <div class="row d-none" id="preappoint-accept">
               <div class="col-md-12">
                 <div class="alert alert-success alert-dismissible">
@@ -104,8 +104,13 @@
               </div>
 
             </div>
+            {% else %}
+            <h5>
+              <center>No pre appointment</center>
+            </h5>
             {% endif %}
             {% endfor %}
+          
             {% endif %}
 
           </div>
@@ -118,7 +123,7 @@
             </center>
             {% if preappointments %}
             {% for appointment in preappointments %}
-            
+
             {% if appointment.status == "accept" %}
             <div class="col-lg-12">
               <div class="d-block d-md-flex listing ">
@@ -139,18 +144,24 @@
                     {{appointment.client.phone}}
                   </address>
 
-                  <button data-id="{{appointment.client.client_id}}" data-pa="{{appointment.id}}" data-status="client" data-lawyerid="{{lawyer}}"
-                    class="btn btn-primary py-2 px-4 text-white btnIncomingClient">Make a Client</button>
-                  <button data-id="{{appointment.client.client_id}}" data-pa="{{appointment.id}}" data-status="decline" data-lawyerid="{{lawyer}}"
+                  <button data-id="{{appointment.client.client_id}}" data-pa="{{appointment.id}}" data-status="client"
+                    data-lawyerid="{{lawyer}}" class="btn btn-primary py-2 px-4 text-white btnIncomingClient">Make a
+                    Client</button>
+                  <button data-id="{{appointment.client.client_id}}" data-pa="{{appointment.id}}" data-status="decline"
+                    data-lawyerid="{{lawyer}}"
                     class="btn btn-danger py-2 px-4 text-white btnIncomingClient">Decline</button>
                 </div>
               </div>
 
             </div>
+            {% else %}
+            <h5>
+              <center>No incoming client</center>
+            </h5>
             {% endif %}
             {% endfor %}
             {% endif %}
-            
+
           </div>
 
         </div>
@@ -161,42 +172,42 @@
 </div>
 
 
-  <div class="modal fade" id="addCase" tabindex="-1" role="dialog" aria-labelledby="notification" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="notificationTitle">Add new Case</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <input type="hidden" value="{{lawyer}}" id="lawyer_id">
-                    <div class="form-group">
-                        <label class="text-black" for="add-case">Case Title</label>
-                        <input type="text" id="add-case" class="form-control">
-                    </div>
-                    <select class="form-control rounded mb-3" id="client-id">
-                        <option selected="true" disabled="disabled">Select Client</option>
-                        {% if clients %}
-                        {% for c in clients %}
-                        <option value="{{c.client_id}}"> {{c.client.first_name}}
-                        </option>
-                        {% endfor %}
-                        {% endif %}
-                    </select>
-                    <div class="form-group">
-                        <label class="text-black" for="case-description">Case Description</label>
-                        <input type="text" id="case-description" class="form-control">
-                    </div>
-                    <button type="button" id="btnAddCase" class="btn btn-primary" data-dismiss="modal">Add</button>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
+<div class="modal fade" id="addCase" tabindex="-1" role="dialog" aria-labelledby="notification" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="notificationTitle">Add new Case</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <input type="hidden" value="{{lawyer}}" id="lawyer_id">
+          <div class="form-group">
+            <label class="text-black" for="add-case">Case Title</label>
+            <input type="text" id="add-case" class="form-control">
+          </div>
+          <select class="form-control rounded mb-3" id="client-id">
+            <option selected="true" disabled="disabled">Select Client</option>
+            {% if clients %}
+            {% for c in clients %}
+            <option value="{{c.client_id}}"> {{c.client.first_name}}
+            </option>
+            {% endfor %}
+            {% endif %}
+          </select>
+          <div class="form-group">
+            <label class="text-black" for="case-description">Case Description</label>
+            <input type="text" id="case-description" class="form-control">
+          </div>
+          <button type="button" id="btnAddCase" class="btn btn-primary" data-dismiss="modal">Add</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
     </div>
+  </div>
 </div>
-  {% endblock %}
+{% endblock %}

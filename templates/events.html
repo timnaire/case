@@ -36,8 +36,12 @@
                     {% for event in events %}
                     <div class="col-md-4 col-lg-3 mb-4 mb-lg-4">
                         <div class="h-entry">
-                            <a href="#editEventModal" data-toggle="modal"><img src="/static/images/briefcase.png"
-                                    alt="Image" class="img-fluid rounded"></a>
+                            <a href="#editEventModal" data-owner="{{event.event_owner}}" data-event="{{event.event_id}}"
+                                data-lawyer="{{event.lawyer.lawyer_id}}" data-title="{{event.event_title}}"
+                                data-time="{{event.event_time}}" data-date="{{event.event_date}}"
+                                data-location="{{event.event_location}}" data-details="{{event.event_details}}"
+                                data-type="{{event.event_type}}" data-toggle="modal" class="eventInstance"><img
+                                    src="/static/images/briefcase.png" alt="Image" class="img-fluid rounded"></a>
                             <h2 class="font-size-regular"><a href="#" class="text-black">{{event.event_title}} -
                                     {{event.event_type}}</a>
                             </h2>
@@ -177,6 +181,83 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" id="createEventClient">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="editEventModal" tabindex="-1" role="dialog" aria-labelledby="editEventModal"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit Event</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form method="POST">
+                    <input type="hidden" id="Editevent_id" value="">
+                    <input type="hidden" id="Editowner_id" value="">
+                    <div class="form-group">
+                        <select class="form-control rounded mb-3" id="Editlawyer_id">
+                            <option selected="true" disabled="disabled">Select Lawyer</option>
+                            {% if lawyers %}
+                            {% for l in lawyers %}
+                            <option value="{{l.lawyer_id}}"> {{l.lawyer.first_name}} {{l.lawyer.last_name}}
+                            </option>
+                            {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTitle">Title</label>
+                        <input type="text" class="form-control" id="EditeventTitle">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventLocation">Location</label>
+                        <input type="text" class="form-control" id="EditeventLocation">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDetails">Event Details</label>
+                        <input type="text" class="form-control" id="EditeventDetails">
+                    </div>
+                    <div class="form-group">
+                        <div class='input-group date' id='Editevent_datee'>
+                            <input type='text' class="form-control" id="Editevent_date" />
+                            <span class="input-group-addon d-flex align-items-stretch">
+                                <div class="input-group-text d-flex align-items-center"><i class=" fa fa-calendar"></i>
+                                </div>
+                            </span>
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class='input-group date' id='Editevent_timee'>
+                            <input data-format="HH:mm" type='text' class="form-control" id="Editevent_time" />
+                            <span class="input-group-addon d-flex align-items-stretch">
+                                <div class="input-group-text d-flex align-items-center"><i class="fa fa-clock-o"></i>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control rounded mb-3" id="EditeventType">
+                            <option value="Meeting">Meeting</option>
+                            <option value="Trial">Trial</option>
+                        </select>
+                    </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="DeleteEventClient">Delete</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="EditEventClient">Save</button>
                 </form>
             </div>
         </div>

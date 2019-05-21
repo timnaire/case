@@ -85,6 +85,13 @@ $(document).ready(function () {
         format: 'LT'
     });
 
+    $('#Editevent_datee').datetimepicker({
+        format: 'dddd, MMMM DD, YYYY'
+    });
+    $('#Editevent_timee').datetimepicker({
+        format: 'LT'
+    });
+
     var channel = pusher.subscribe('appointment');
     channel.bind('preappoint', function (data) {
         if (data['lawyer'] == $('#currentUser').val()) {
@@ -945,11 +952,15 @@ $(document).ready(function () {
         });
     });
 
-    $(".eventInstance").click(function(){
+    $(".eventInstance").click(function () {
         var client = $(this).data("client");
+        var lawyer = $(this).data("lawyer");
         var type = $(this).data("type");
-        $("select#Editclient_id option[value='"+client+"']").attr("selected",true);
-        $("select#EditeventType option[value='"+type+"']").attr("selected",true);
+        $("#Editowner_id").val($(this).data("owner"));
+        $("#Editevent_id").val($(this).data("event"));
+        $("select#Editclient_id option[value='" + client + "']").attr("selected", true);
+        $("select#Editlawyer_id option[value='" + lawyer + "']").attr("selected", true);
+        $("select#EditeventType option[value='" + type + "']").attr("selected", true);
         $("#EditeventTitle").val(($(this).data("title")));
         $("#EditeventLocation").val(($(this).data("location")));
         $("#EditeventDetails").val(($(this).data("details")));
@@ -966,7 +977,7 @@ $(document).ready(function () {
         var event_details = $('#eventDetails').val()
         var event_date = $('#event_date').data("DateTimePicker").date().toDate();
         var event_time = $('#event_time').data("DateTimePicker").date().toDate();
-        var eventTime = getMyTime(event_time.getHours(),event_time.getMinutes());
+        var eventTime = getMyTime(event_time.getHours(), event_time.getMinutes());
         var eventDate = getMyDate(event_date.getDay(), event_date.getMonth(), event_date.getDate(), event_date.getFullYear());
         var event_type = $('#eventType').val();
         var event_owner = $("#currentUser").val();
@@ -982,8 +993,8 @@ $(document).ready(function () {
             event_owner: event_owner
         }
         console.log(sendInfo);
-        $.post("/lawyer/"+lawyer_id+"/add-event",JSON.stringify(sendInfo),function(response){
-            if(response["error"] != false) {
+        $.post("/lawyer/" + lawyer_id + "/add-event", JSON.stringify(sendInfo), function (response) {
+            if (response["error"] == false) {
                 alert(response['message']);
                 location.reload();
             } else {
@@ -994,18 +1005,20 @@ $(document).ready(function () {
 
     $('#EditEventLawyer').click(function (e) {
         e.preventDefault();
+        var event_id = $("#Editevent_id").val();
         var lawyer_id = $("#currentUser").val();
-        var client_id = $("#client_id").val();
-        var event_title = $('#eventTitle').val()
-        var event_location = $('#eventLocation').val()
-        var event_details = $('#eventDetails').val()
-        var event_date = $('#event_date').data("DateTimePicker").date().toDate();
-        var event_time = $('#event_time').data("DateTimePicker").date().toDate();
-        var eventTime = getMyTime(event_time.getHours(),event_time.getMinutes());
+        var client_id = $("#Editclient_id").val();
+        var event_title = $('#EditeventTitle').val()
+        var event_location = $('#EditeventLocation').val()
+        var event_details = $('#EditeventDetails').val()
+        var event_date = $('#Editevent_datee').data("DateTimePicker").date().toDate();
+        var event_time = $('#Editevent_timee').data("DateTimePicker").date().toDate();
+        var eventTime = getMyTime(event_time.getHours(), event_time.getMinutes());
         var eventDate = getMyDate(event_date.getDay(), event_date.getMonth(), event_date.getDate(), event_date.getFullYear());
         var event_type = $('#eventType').val();
-        var event_owner = $("#currentUser").val();
+        var event_owner = $("#Editowner_id").val();
         sendInfo = {
+            event_id: event_id,
             lawyer_id: lawyer_id,
             client_id: client_id,
             event_title: event_title,
@@ -1016,15 +1029,19 @@ $(document).ready(function () {
             event_type: event_type,
             event_owner: event_owner
         }
-        console.log(sendInfo);
-        $.post("/lawyer/"+lawyer_id+"/add-event",JSON.stringify(sendInfo),function(response){
-            if(response["error"] != false) {
-                alert(response['message']);
-                location.reload();
-            } else {
-                alert(response['message']);
-            }
-        });
+        if (event_owner == lawyer_id) {
+            $.post("/lawyer/" + lawyer_id + "/update-event", JSON.stringify(sendInfo), function (response) {
+                if (response["error"] == false) {
+                    alert(response['message']);
+                    location.reload();
+                } else {
+                    alert(response['message']);
+                }
+            });
+        } else {
+            alert("Unauthorized!, Only the owner of this can update the event.");
+        }
+
     });
 
     $('#createEventClient').click(function (e) {
@@ -1036,7 +1053,7 @@ $(document).ready(function () {
         var event_details = $('#eventDetails').val()
         var event_date = $('#event_date').data("DateTimePicker").date().toDate();
         var event_time = $('#event_time').data("DateTimePicker").date().toDate();
-        var eventTime = getMyTime(event_time.getHours(),event_time.getMinutes());
+        var eventTime = getMyTime(event_time.getHours(), event_time.getMinutes());
         var eventDate = getMyDate(event_date.getDay(), event_date.getMonth(), event_date.getDate(), event_date.getFullYear());
         var event_type = $('#eventType').val();
         var event_owner = $("#currentUser").val();
@@ -1052,8 +1069,8 @@ $(document).ready(function () {
             event_owner: event_owner
         }
         console.log(sendInfo);
-        $.post("/client/"+client_id+"/add-event",JSON.stringify(sendInfo),function(response){
-            if(response["error"] != false) {
+        $.post("/client/" + client_id + "/add-event", JSON.stringify(sendInfo), function (response) {
+            if (response["error"] == false) {
                 alert(response['message']);
                 location.reload();
             } else {
@@ -1062,7 +1079,82 @@ $(document).ready(function () {
         });
     });
 
+    $('#EditEventClient').click(function (e) {
+        e.preventDefault();
+        var event_id = $("#Editevent_id").val();
+        var client_id = $("#currentUser").val();
+        var lawyer_id = $("#Editlawyer_id").val();
+        var event_title = $('#EditeventTitle').val()
+        var event_location = $('#EditeventLocation').val()
+        var event_details = $('#EditeventDetails').val()
+        var event_date = $('#Editevent_datee').data("DateTimePicker").date().toDate();
+        var event_time = $('#Editevent_timee').data("DateTimePicker").date().toDate();
+        var eventTime = getMyTime(event_time.getHours(), event_time.getMinutes());
+        var eventDate = getMyDate(event_date.getDay(), event_date.getMonth(), event_date.getDate(), event_date.getFullYear());
+        var event_type = $('#EditeventType').val();
+        var event_owner = $("#Editowner_id").val();
+        sendInfo = {
+            event_id: event_id,
+            lawyer_id: lawyer_id,
+            client_id: client_id,
+            event_title: event_title,
+            event_location: event_location,
+            event_details: event_details,
+            event_date: eventDate,
+            event_time: eventTime,
+            event_type: event_type,
+            event_owner: event_owner
+        }
+        console.log(sendInfo);
+        if (event_owner == client_id) {
+            $.post("/client/" + client_id + "/update-event", JSON.stringify(sendInfo), function (response) {
+                if (response["error"] == false) {
+                    alert(response['message']);
+                    location.reload();
+                } else {
+                    alert(response['message']);
+                }
+            });
+        } else {
+            alert("Unauthorized!, Only the owner of this can update the event.");
+        }
+    });
 
+    $("#DeleteEventLawyer").click(function () {
+        if (confirm("Are you sure you want to delete this event? this cannot be undone.")) {
+            var event_id = $("#Editevent_id").val();
+            var lawyer_id = $("#currentUser").val();
+            sendInfo = {
+                event_id: event_id
+            }
+            $.post("/lawyer/" + lawyer_id + "/delete-event", JSON.stringify(sendInfo), function (response) {
+                if (response["error"] == false) {
+                    alert(response["message"]);
+                    location.reload();
+                } else {
+                    alert(response["message"]);
+                }
+            });
+        }
+    });
+
+    $("#DeleteEventClient").click(function () {
+        if (confirm("Are you sure you want to delete this event? this cannot be undone.")) {
+            var event_id = $("#Editevent_id").val();
+            var client_id = $("#currentUser").val();
+            sendInfo = {
+                event_id: event_id
+            }
+            $.post("/client/" + client_id + "/delete-event", JSON.stringify(sendInfo), function (response) {
+                if (response["error"] == false) {
+                    alert(response["message"]);
+                    location.reload();
+                } else {
+                    alert(response["message"]);
+                }
+            });
+        }
+    });
 
     $("#btnPreAppoint").click(function (e) {
         $("#pre-appointment").removeClass("d-none");
@@ -1134,7 +1226,7 @@ $(document).ready(function () {
         $("#danger-alert").slideUp(500);
     });
 
-    function getMyTime(h,m) {
+    function getMyTime(h, m) {
         var l = "AM";
         if (h >= 12) {
             l = "PM"
@@ -1144,10 +1236,10 @@ $(document).ready(function () {
         if (h > 12) {
             h = h - 12;
         }
-        if(h == 0){
+        if (h == 0) {
             h = 12;
         }
-        
+
         if (m < 10) {
             m = '0' + m;
         }
