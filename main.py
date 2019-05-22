@@ -21,7 +21,9 @@ from models.subscription import Subscription
 from models.pre_appoint import PreAppoint
 from models.incoming_client import IncomingClient
 from models.feature import Feature
-from decorators import login_required_lawyer,login_required_client
+from models.practice_list import PracticeList
+from models.admin import Admin
+from decorators import login_required_lawyer,login_required_client,login_required_admin
 from functions import json_response, is_email, save_to_gcs
 import pusher
 from flask_moment import Moment
@@ -51,10 +53,18 @@ mail = Mail(app)
 #   ssl=True
 # )
 
+# pusher_client = pusher.Pusher(
+#   app_id='785330',
+#   key='468204a1ab0afbc0b5e0',
+#   secret='c6e39bf35aefc89142c4',
+#   cluster='ap1',
+#   ssl=True
+# )
+
 pusher_client = pusher.Pusher(
-  app_id='785330',
-  key='468204a1ab0afbc0b5e0',
-  secret='c6e39bf35aefc89142c4',
+  app_id='787910',
+  key='609f784fb411565752ef',
+  secret='03c8f1236b6df18d55a5',
   cluster='ap1',
   ssl=True
 )
@@ -335,8 +345,9 @@ def client_update_password(client_id=None):
                 "message" : "Please dont leave the fields empty"})
 
 
-available_practice = {'Constitutional Law':"Constitutional Law", 'Criminal Law': 'Criminal Law', 'Business Law': 'Business Law',
-        'Labor Law': 'Labor Law', 'Civil Law' : 'Civil Law', 'Taxation Law': 'Taxation Law' ,'Family Law': 'Family Law'}
+# available_practice = {'Constitutional Law':"Constitutional Law", 'Criminal Law': 'Criminal Law', 'Business Law': 'Business Law',
+#         'Labor Law': 'Labor Law', 'Civil Law' : 'Civil Law', 'Taxation Law': 'Taxation Law' ,'Family Law': 'Family Law'}
+available_practice = PracticeList.list_of_practices()
 subcategory = { 'Family Law' : {'Adoptions','Child Custody and Visitation','Child Support','Annulment','Guardianship','Paternity','Separations','Spousal Support or Alimony'},
                 'Labor Law' : {'Disabilities','Employment Contracts','Employment Discrimination','Pensions and Benefits','Sexual Harassment','Wages and Overtime Pay','Workplace','Wrongful Termination'},
                 'Criminal Law' : {'Drug Crimes','Drunk Driving / DUI / DWI','Felonies','Misdemeanors','Speeding and Moving Violations'},
@@ -345,6 +356,119 @@ subcategory = { 'Family Law' : {'Adoptions','Child Custody and Visitation','Chil
                 'Taxation Law': {'Corporate Tax','Income Tax','Internation Tax','Property Tax','Tax Evasion'},
                 'Civil Law' : {'Defamtion','Breach of Contract','Negligence Resulting in Injury or Death','Property Damage'}
 } 
+
+@app.route('/admin', methods=['GET','POST'])
+def admin():
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'option' in req_data:
+            option = req_data['option']
+
+        if option == "add":
+            if 'username' in req_data:
+                username = req_data['username']
+            if 'password' in req_data:
+                password = req_data['password']
+            if 'confirm' in req_data:
+                confirm = req_data['confirm']
+
+            if password == confirm:
+                admin = Admin.save(username=username,password=password)
+                if admin:
+                    return json_response({
+                        "error" : False,
+                        "message" : "Successfully added new admin."
+                    })
+                else:
+                    return json_response({
+                        "error" : True,
+                        "message" : "Failed to add new admin."
+                    })
+        elif option == "login":
+            if 'username' in req_data:
+                username = req_data['username']
+            if 'password' in req_data:
+                password = req_data['password']
+
+            if username and password:
+                admin = Admin.sign_in(username=username,password=password)
+                session['admin'] = admin.key.id()
+                if admin:
+                    return json_response({
+                        "error" : False,
+                        "message" : "Successfully signed in."
+                    })
+                else:
+                    return json_response({
+                        "error" : True,
+                        "message" : "Failed to signed in."
+                    })
+            
+    return render_template("admin.html")
+
+@app.route("/admin-dashboard",methods=['GET','POST'])
+@login_required_admin
+def admin_dashboard():
+    admin_id = session['admin']
+    admin = Admin.get_by_id(int(admin_id))
+
+    return render_template("admin-dashboard.html",username=admin.username)
+
+@app.route("/admin-practices",methods=['GET','POST'])
+@login_required_admin
+def admin_practice():
+    admin_id = session['admin']
+    admin = Admin.get_by_id(int(admin_id))
+
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'practice' in req_data:
+            practice = req_data['practice']
+
+        practice = PracticeList.save(practice=practice)
+        if practice:
+            return json_response({
+                "error" : False,
+                "message" : "Successfully added new law practice."
+            })
+        else:
+            return json_response({
+                "error" : True,
+                "message" : "Failed to add law practice."
+            })
+
+    return render_template("admin-lawpractice.html",username=admin.username, available_practice=available_practice)
+
+@app.route("/admin-subpractices",methods=['GET','POST'])
+@login_required_admin
+def admin_subpractice():
+    admin_id = session['admin']
+    admin = Admin.get_by_id(int(admin_id))
+
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'practice' in req_data:
+            practice = req_data['practice']
+
+        practice = PracticeList.save(practice=practice)
+        if practice:
+            return json_response({
+                "error" : False,
+                "message" : "Successfully added new law practice."
+            })
+        else:
+            return json_response({
+                "error" : True,
+                "message" : "Failed to add law practice."
+            })
+
+    return render_template("admin-subpractice.html",username=admin.username, available_practice=available_practice)
+
+@app.route("/admin-signout",methods=['GET','POST'])
+def admin_signout():
+    if session.get('admin') is not None:
+        del session['admin']
+        return redirect(url_for('admin'))
 
 # home page for client
 @app.route('/', methods=['GET','POST'])
@@ -363,61 +487,6 @@ def home():
 
 #####################################################################################################################################
 # for lawyers and below
-
-# see more lawyer details
-
-
-
-# appoint lawyer 
-# @app.route('/lawyer/<int:client_id>/pre-appoint',methods=['POST'])
-# def lawyer_clicked(client_id=None):
-#     if request.method == "POST":
-#         lawyer_id=None
-#         req_data = request.get_json(force=True)
-#         if 'id' in req_data:
-#             lawyer_id = req_data['id']
-#         # first relationship status will be stranger for both
-#         status = ""
-
-#         relation = Relationship.client_exist(client_id)
-#         lawyer = Lawyer.get_by_id(int(lawyer_id))
-#         client = Client.get_by_id(int(client_id))
-        
-#         if relation:
-#             relation = Relationship.save(id=relation.key.id(),lawyer=lawyer.key.id(),client=client.key.id(),status=status)
-#         else:
-#             relation = Relationship.save(lawyer=lawyer.key.id(),client=client.key.id(),status=status)
-
-#         json_data = {
-#             "to": lawyer.fcm_token,     
-#             "notification":{
-#                 'click_action' : '.MainActivity',
-#                 'title': 'Pre-Appointment', 
-#                 'body': client.first_name + ' ' + client.last_name + ' sends Pre-Appointment request.'
-#             },
-#             "data":{
-#                 'client_id': client_id,
-#                 'relation_id' : relation.id()
-#             }
-#         }
-
-#         headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
-#         requests.post(
-#             'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
-#         )
-#         msg = client.first_name + " " + client.last_name + " sends Pre-Appointment request."
-#         notification = Notification.save(notif_to=lawyer.key,notif_from=client.key,msg=msg,sent="1",received="0")
-#         if notification:
-#             return json_response({
-#                 "error" : False,
-#                 "message" : "You have now set a pre appointment with "+lawyer.first_name+" "+lawyer.last_name,
-#                 "client_name": client.first_name+ " " +client.last_name,
-#                 "client_phone" : client.phone,
-#                 "client_email" : client.email})
-#         else:
-#             return json_response({
-#                 "error" : True,
-#                 "message" : "Pre-appointment was not made, please try again."})
 
 @app.route('/lawyer/<int:client_id>/pre-appoint',methods=['POST'])
 def lawyer_clicked(client_id=None):
@@ -614,66 +683,6 @@ def lawyer_incoming_client(lawyer_id=None):
                 "message" : "Something went wrong please"
             })
 
-# pre-appoint response from lawyer mobile
-# @app.route('/lawyer/<int:client_id>/pre-appoint-response',methods=['POST'])
-# def pre_accepted(client_id=None):
-#     if request.method == "POST":
-#         req_data = request.get_json(force=True)
-#         if 'lawyer_id' in req_data:
-#             lawyer_id = req_data['lawyer_id']
-#         if 'relation_id' in req_data:
-#             relation_id = req_data['relation_id']
-#         if 'status' in req_data:
-#             status = req_data['status']
-
-#         lawyer = Lawyer.get_by_id(int(lawyer_id))
-#         client = Client.get_by_id(int(client_id))
-        
-#         # if lawyer accepts the pre appointment, send notification to the client mobile app.
-#         if status == "Accepted":
-#             relation = Relationship.save(id=relation_id,lawyer=lawyer_id,client=client_id,status=status)
-#             if relation:
-#                 json_data = {
-#                     "to": client.fcm_token,     
-#                     "notification":{
-#                         'click_action' : '.MainActivity',
-#                         'title': 'Pre-Appointment', 
-#                         'body': lawyer.first_name + ' ' + lawyer.last_name + ' accepted your Pre-Appointment request.'
-#                     },
-#                     "data":{
-#                         'lawyer_id': lawyer.key.id(),
-#                         'relation_id' : relation_id
-#                     }
-#                 }
-#                 headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
-#                 requests.post(
-#                     'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
-#                 )
-#                 lawyer = Lawyer.get_by_id(int(lawyer_id))
-#                 msg = lawyer.first_name + " " + lawyer.last_name + " accepted your Pre-Appointment request."
-#                 notification = Notification.save(notif_from=lawyer_id,notif_to=client_id,msg=msg,received="",sent="sent")
-#         else:
-#             relation = Relationship.save(id=relation_id,lawyer=lawyer_id,client=client_id,status=status)
-#             if relation:
-#                 json_data = {
-#                     "to": client.fcm_token,     
-#                     "notification":{
-#                         'click_action' : '.MainActivity',
-#                         'title': 'Pre-Appointment', 
-#                         'body': lawyer.first_name + ' ' + lawyer.last_name + ' declined your Pre-Appointment request.'
-#                     },
-#                     "data":{
-#                         'lawyer_id': lawyer.key.id(),
-#                         'relation_id' : relation_id
-#                     }
-#                 }
-#                 headers = {'content-type': 'application/json', "Authorization": "key="+app.config['FCM_APP_TOKEN']}
-#                 requests.post(
-#                     'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
-#                 )
-#                 lawyer = Lawyer.get_by_id(int(lawyer_id))
-#                 msg = lawyer.first_name + " " + lawyer.last_name + " declined your Pre-Appointment request."
-#                 notification = Notification.save(notif_from=lawyer_id,notif_to=client_id,msg=msg,received="",sent="sent")
 
 # auto notify lawyer to unresponded client pre appointment request
 @app.route('/lawyer/<int:lawyer_id>/pre-appoint-notification',methods=['GET','POST'])
@@ -2077,15 +2086,17 @@ def feature_case(lawyer_id=None):
             feature2 = req_data['feature2']
         if 'feature3' in req_data:
             feature3 = req_data['feature3']
-
-        features = Feature.query(Feature.lawyer == lawyer.key).fetch()
-
-        for feature in features:
-            feature.key.delete()
         
-        Feature.save(lawyer=lawyer_id,case=feature1)
-        Feature.save(lawyer=lawyer_id,case=feature2)
-        Feature.save(lawyer=lawyer_id,case=feature3)
+        if feature1 and feature2 and feature3:
+
+            features = Feature.query(Feature.lawyer == lawyer.key).fetch()
+
+            for feature in features:
+                feature.key.delete()
+            
+            Feature.save(lawyer=lawyer_id,case=feature1)
+            Feature.save(lawyer=lawyer_id,case=feature2)
+            Feature.save(lawyer=lawyer_id,case=feature3)
 
         return json_response({
             "error" : False,

@@ -1,4 +1,4 @@
-var pusher = new Pusher('86eb9d2db54de852df31', {
+var pusher = new Pusher('609f784fb411565752ef', {
     cluster: 'ap1',
     forceTLS: true
 });
@@ -32,7 +32,7 @@ Dropzone.options.myDropzone = {
             formData.append("case", jQuery("#case").val());
             formData.append("file_name", jQuery("#file_name").val());
             formData.append("file_privacy", jQuery("#file_privacy").val());
-            location.reload();
+            window.location.reload();
         });
     }
 }
@@ -64,7 +64,7 @@ Dropzone.options.myDropzoneClient = {
             formData.append("case", jQuery("#case").val());
             formData.append("file_name", jQuery("#file_name").val());
             formData.append("file_privacy", jQuery("#file_privacy").val());
-            location.reload();
+            window.location.reload();
         });
     }
 }
@@ -1199,16 +1199,6 @@ $(document).ready(function () {
     });
 
     $(function () {
-        // var province = ["Abra","Agusan del Norte","Agusan del Sur","Aklan","Albay","Antique","Apayao","Aurora","Basilan",
-        // "Bataan","Batanes","Batangas","Benguet","Biliran","Bohol","Bukidnon","Bulacan","Camarines Norte","Camarines Sur",
-        // "Camiguin","Capiz","Catandunes","Cavite","Cebu","Compostela Valley","Cotabato","Davao del Norte","Davao del Sur",
-        // "Davao Occidental","Davao Oriental","Dinagat Island","Estern Samar","Guimaras","Ifugao","Ilocos Norte","Ilocos Sur",
-        // "Iloilo","Isabela","Kalinga","La Union","Laguna","Lanao del Norte","Lanao del Sur","Leyte","Maguindanao","Manila",
-        // "Marinduque","Masbate","Misamis Occidental","Misamis Oriental","Mountain Province","Negros Occidental","Negros Oriental"
-        // ,"Northern Samar","Nueva Ecija","Occidental Mindoro","Oriental Mindoro","Palawan","Pampanga","Pangasinan","Quezon",
-        // "Quirino","Rizal","Romblon","Samar","Sarangani","Siquijor","Sorsogon","South Cotabato","Southern Leyte","Sultan Kudarat",
-        // "Sulu","Surigao del Norte","Surigao del Sur","Tarlac","Tawi-Tawi","Zambales","Zamboanga del Norte","Zamboanga del Sur",
-        // "Zamboanga Sibugay"]
         var city = ["Alcantara", "Alcoy", "Alegria", "Aloguinsan", "Argao", "Asturias", "Badian", "Balamban", "Bantayan", "Barili", "Bogo", "Boljoon", "Borbon",
             "Carcar", "Carmen", "Catmon", "Cebu City", "Compostela", "Consolacion", "Cordova", "Daanbantayan", "Dalaguete", "Danao", "Dumanjug", "Ginatilan",
             "Lapu-Lapu", "Liloan", "Madridejos", "Malabuyoc", "Mandaue", "Medellin", "Minglanilla", "Moalboal", "Naga", "Oslob", "Pilar", "Pinamungajan",
@@ -1312,4 +1302,5 @@ $(document).ready(function () {
         }
         return wordDay + ", " + wordMonth + " " + date + ", " + year;
     }
+
 });
