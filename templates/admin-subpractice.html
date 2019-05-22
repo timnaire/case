@@ -75,11 +75,11 @@
                 <h1 class="h2">Welcome to Sub Practice {{username}}!</h1>
             </div>
 
-            <form method="POST" action="#">
+            <form method="POST">
                 <div class="row">
                     <div class="col-4">
                         <div class="form-group">
-                            <select name="" id="" class="form-control">
+                            <select id="law_practice" class="form-control">
                                 <option selected disabled="true">Select Law Practice</option>
                                 {% if available_practice %}
                                 {% for value in available_practice | sort %}
@@ -95,11 +95,11 @@
                         </div>
                     </div>
                     <div class="col-4">
-                        <button id="btnAddPractice" class="btn btn-primary">Add Practice</button>
+                        <button id="btnAddSubPractice" class="btn btn-primary">Add Practice</button>
                     </div>
                 </div>
             </form>
-
+            
             <table class="table">
                 <thead>
                     <tr>

@@ -23,6 +23,7 @@ from models.incoming_client import IncomingClient
 from models.feature import Feature
 from models.practice_list import PracticeList
 from models.admin import Admin
+from models.subpractice_list import SubPracticeList
 from decorators import login_required_lawyer,login_required_client,login_required_admin
 from functions import json_response, is_email, save_to_gcs
 import pusher
@@ -348,14 +349,15 @@ def client_update_password(client_id=None):
 # available_practice = {'Constitutional Law':"Constitutional Law", 'Criminal Law': 'Criminal Law', 'Business Law': 'Business Law',
 #         'Labor Law': 'Labor Law', 'Civil Law' : 'Civil Law', 'Taxation Law': 'Taxation Law' ,'Family Law': 'Family Law'}
 available_practice = PracticeList.list_of_practices()
-subcategory = { 'Family Law' : {'Adoptions','Child Custody and Visitation','Child Support','Annulment','Guardianship','Paternity','Separations','Spousal Support or Alimony'},
-                'Labor Law' : {'Disabilities','Employment Contracts','Employment Discrimination','Pensions and Benefits','Sexual Harassment','Wages and Overtime Pay','Workplace','Wrongful Termination'},
-                'Criminal Law' : {'Drug Crimes','Drunk Driving / DUI / DWI','Felonies','Misdemeanors','Speeding and Moving Violations'},
-                'Business Law' : {'Breach of Contract','Business Disputes','Buying and Selling a Business','Contract Drafting and Review','Corps, LLCs, Partnerships, etc.','Entertainment Law'},
-                'Constitutional Law' : {'Free Speech and Press','Libel and Slander','Right to Bear Arms'},
-                'Taxation Law': {'Corporate Tax','Income Tax','Internation Tax','Property Tax','Tax Evasion'},
-                'Civil Law' : {'Defamtion','Breach of Contract','Negligence Resulting in Injury or Death','Property Damage'}
-} 
+# subcategory = { 'Family Law' : {'Adoptions','Child Custody and Visitation','Child Support','Annulment','Guardianship','Paternity','Separations','Spousal Support or Alimony'},
+#                 'Labor Law' : {'Disabilities','Employment Contracts','Employment Discrimination','Pensions and Benefits','Sexual Harassment','Wages and Overtime Pay','Workplace','Wrongful Termination'},
+#                 'Criminal Law' : {'Drug Crimes','Drunk Driving / DUI / DWI','Felonies','Misdemeanors','Speeding and Moving Violations'},
+#                 'Business Law' : {'Breach of Contract','Business Disputes','Buying and Selling a Business','Contract Drafting and Review','Corps, LLCs, Partnerships, etc.','Entertainment Law'},
+#                 'Constitutional Law' : {'Free Speech and Press','Libel and Slander','Right to Bear Arms'},
+#                 'Taxation Law': {'Corporate Tax','Income Tax','Internation Tax','Property Tax','Tax Evasion'},
+#                 'Civil Law' : {'Defamtion','Breach of Contract','Negligence Resulting in Injury or Death','Property Damage'}
+# } 
+subcategory = SubPracticeList.list_of_subpractices()
 
 @app.route('/admin', methods=['GET','POST'])
 def admin():
@@ -444,25 +446,40 @@ def admin_practice():
 def admin_subpractice():
     admin_id = session['admin']
     admin = Admin.get_by_id(int(admin_id))
+    list_of_subpractices = SubPracticeList.list_of_subpractices()
 
     if request.method == "POST":
         req_data = request.get_json(force=True)
         if 'practice' in req_data:
             practice = req_data['practice']
-
-        practice = PracticeList.save(practice=practice)
+        if 'subpractice' in req_data:
+            subpractice = req_data['subpractice']
+     
         if practice:
-            return json_response({
-                "error" : False,
-                "message" : "Successfully added new law practice."
-            })
+            if subpractice:
+                law_practice = PracticeList.query(PracticeList.law_practice == practice).get()
+                sb = SubPracticeList.save(practice=law_practice.key.id(),spractice=subpractice)
+                if sb:
+                    return json_response({
+                        "error" : False,
+                        "message" : "Successfully added new sub practice."
+                    })
+                else:
+                    return json_response({
+                        "error" : True,
+                        "message" : "Failed to add sub practice."
+                    })
+            else:
+                return json_response({
+                        "error" : True,
+                        "message" : "Please enter the name of sub practice."
+                    })
         else:
             return json_response({
-                "error" : True,
-                "message" : "Failed to add law practice."
-            })
-
-    return render_template("admin-subpractice.html",username=admin.username, available_practice=available_practice)
+                    "error" : True,
+                    "message" : "Please select a Law Practice."
+                })
+    return render_template("admin-subpractice.html",subpractices=list_of_subpractices,username=admin.username, available_practice=available_practice)
 
 @app.route("/admin-signout",methods=['GET','POST'])
 def admin_signout():

@@ -49,15 +49,30 @@
         <p>Law Firm: {{result.firm}}</p>
         <p>Law School: University of Cebu - Main Campus</p>
         <p>Recognized Since: 2005</p>
-        <p>Phone: (232) 123- 231-231</p>
-        <p>Language(s): English and Filipino</p>
+        <p>Language: English and Filipino</p>
         <p>Location: {{result.office}}</p>
-        <p>Practice(s): <span>{% for p in practices %}{{p.law_practice}}, {%endfor%}</span></p>
-        <p>Subcategory Practice(s): <span>{% for s in subcategory %}{{s.subcategory}}, {%endfor%}</span></p>
+        <p>Practice: <span>{% for p in practices %}{{p.law_practice}}, {%endfor%}</span></p>
+        <p>Subcategory Practice: <span>{% for s in subcategory %}{{s.subcategory}}, {%endfor%}</span></p>
+        <p>Win Case: <span></span></p>
         <br />
-        <h4>Feature Case:</h4>
-        {{features}}
-        
+        <h4>Featured Case's:</h4>
+        {% if features %}
+        <div class="row mt-4 justify-content-center">
+        {% for feature in features %}
+        <div class="col-md-4 col-lg-3 mb-4 mb-lg-4">
+          <div class="h-entry">
+            <a href="#"><img src="/static/images/briefcase.png" alt="Image"
+                class="img-fluid rounded"></a>
+            <h2 class="font-size-regular"><a href="#" class="text-black">{{feature.case.case_title}}</a>
+            </h2>
+            <div class="meta mb-3">Client: {{feature.case.client.first_name}} {{feature.case.client.last_name}}<span
+                class="mx-1">&bullet;</span> <span
+                class="case_date">{{ moment().format('MMMM Do YYYY, h:mm a') }}</span></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+        {% endif %}
         <br />
         <input type="hidden" id="lawyerAddress" value="{{result.office}}">
         <div id="map_canvas" style="width:100%;height:250px;"></div>
