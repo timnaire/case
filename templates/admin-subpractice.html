@@ -99,7 +99,7 @@
                     </div>
                 </div>
             </form>
-            
+
             <table class="table">
                 <thead>
                     <tr>
@@ -109,13 +109,13 @@
                     </tr>
                 </thead>
                 <tbody>
-
+                    <!-- {{subpractices}} -->
                     {% if available_practice %}
                     {% for value in available_practice | sort %}
                     <tr>
                         <td>{{ loop.index }}</td>
                         <td>{{value}}</td>
-                        <td>{{value}}</td>
+                        <td>subpractice here</td>
                     </tr>
                     {% endfor %}
                     {% endif %}

@@ -72,7 +72,10 @@
         </div>
         {% endfor %}
       </div>
-        {% endif %}
+        {% else %}
+        <div class="row col-12"> <h5><center>This lawyer didn't put his featured case.</center></h5></div>  
+      {% endif %}
+        
         <br />
         <input type="hidden" id="lawyerAddress" value="{{result.office}}">
         <div id="map_canvas" style="width:100%;height:250px;"></div>

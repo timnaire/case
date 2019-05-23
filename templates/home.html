@@ -36,7 +36,6 @@
           </div>
         </div>
         {% endif %}
-
         <div class="form-search-wrap" data-aos="fade-up" data-aos-delay="200">
           <form id="find-lawyer-form" action="{{url_for('find_lawyer')}}" method="post">
             <div class="row align-items-center">
@@ -51,10 +50,12 @@
                   <span class="icon"><span class="icon-keyboard_arrow_down"></span></span>
                   <select id="lawpractice" class="form-control rounded" name="lawpractice">
                     <option selected="true" disabled="disabled" >Select a Legal Issue</option>
+                    {% if law_practice %}
                     {% for key, value in law_practice.items()|sort %}
                         <option value="{{key}}" {% if request.args.get("practice") == value %} selected {% endif %} > {{value}}
                     </option>
                     {% endfor %}
+                    {% endif %}
                 </select>
                 </div>
               </div>

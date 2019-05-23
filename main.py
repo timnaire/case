@@ -492,7 +492,7 @@ def admin_signout():
 @app.route('/home', methods=['GET','POST'])
 def home():
     # del session['client']
-    global available_practice
+    available_practice = PracticeList.list_of_practices()
     if session.get('lawyer') is not None:
         lawyer = Lawyer.get_by_id(int(session['lawyer']))
         return render_template('home.html',title='Home',lawyer=session['lawyer'],law_practice=available_practice,lawyer_first=lawyer.first_name)
@@ -749,6 +749,7 @@ def number_of_case(lawyer_id=None):
 def find_lawyer(practice=None,cityOrMunicipality=None):
     lawyers = None
     found_lawyers = []
+    subcategory = SubPracticeList.list_of_subpractices()
     if request.method == "POST":        
 
         law_practice = request.form.get('lawpractice')
@@ -1579,7 +1580,7 @@ def edit_case(lawyer_id=None):
 # mycase route for lawyers 
 @app.route('/lawyer/<int:lawyer_id>/newcase', methods=['GET','POST'])
 def addcase(lawyer_id=None):
-    global available_practice
+    available_practice = PracticeList.list_of_practices()
     if request.method == "POST":
         req_data = request.get_json(force=True)
         if 'case_title' in req_data:
@@ -1631,7 +1632,7 @@ def addcase(lawyer_id=None):
 
 @app.route('/lawyer/<int:lawyer_id>/mycases/<int:case_id>',methods=['GET','POST'])
 def lawyer_single_case(lawyer_id=None,case_id=None):
-    global available_practice
+    available_practice = PracticeList.list_of_practices()
     list_of_clients = PreAppoint.my_clients(lawyer_id=lawyer_id)
     lawyer_id = Lawyer.get_by_id(int(lawyer_id))
     # 1 case
@@ -1646,7 +1647,7 @@ def lawyer_single_case(lawyer_id=None,case_id=None):
 # route for lawyer listing all case for lawyer
 @app.route('/lawyer/<int:lawyer_id>/mycases',methods=['GET','POST'])
 def getAllCase(lawyer_id=None):
-    global available_practice
+    available_practice = PracticeList.list_of_practices()
     lawyer = Lawyer.get_by_id(int(lawyer_id))
     cases = Case.query(Case.lawyer == lawyer.key).order(-Case.created).fetch()
     if cases != None:
@@ -1665,7 +1666,7 @@ def getAllCase(lawyer_id=None):
 # route for lawyer listing all case for lawyer
 @app.route('/client/<int:client_id>/cases',methods=['GET','POST'])
 def getAllCase_web(client_id=None):
-    global available_practice
+    available_practice = PracticeList.list_of_practices()
     client = Client.get_by_id(int(client_id))
     cases = Case.query(Case.client == client.key).order(-Case.created).fetch()
     if cases != None:
@@ -1678,7 +1679,7 @@ def getAllCase_web(client_id=None):
 
 @app.route('/client/<int:client_id>/cases/<int:case_id>',methods=['GET','POST'])
 def client_case_single(client_id=None,case_id=None):
-    global available_practice
+    available_practice = PracticeList.list_of_practices()
     client = Client.get_by_id(int(client_id))
 
     case = Case.get_by_id(int(case_id))
@@ -2126,7 +2127,8 @@ def feature_case(lawyer_id=None):
 @login_required_lawyer
 def lawyer_account_setting(lawyer_id=None):
     # get the lawyer details in a dictionary format
-    global available_practice
+    available_practice = PracticeList.list_of_practices()
+    subcategory = SubPracticeList.list_of_subpractices()
     if lawyer_id:
         lawyer_dict = Lawyer.get_by_id(int(lawyer_id))
         if lawyer_dict:
@@ -2300,7 +2302,7 @@ def lawyer_signup():
 
     if session.get('lawyer') is not None:
         return redirect(url_for('dashboard'))
-    global available_practice
+    available_practice = PracticeList.list_of_practices()
     
     return render_template('lawyer-signup.html',title='Lawyer Sign Up',law_practice=available_practice)
 
