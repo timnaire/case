@@ -33,6 +33,18 @@
                             Sub Practice
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin-court">
+                            <span data-feather="shopping-cart"></span>
+                            Court
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin-client-type">
+                            <span data-feather="shopping-cart"></span>
+                            Client Type
+                        </a>
+                    </li>
 
                     <!-- <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
             <span>Saved reports</span>
@@ -83,7 +95,7 @@
                                 <option selected disabled="true">Select Law Practice</option>
                                 {% if available_practice %}
                                 {% for value in available_practice | sort %}
-                                <option value="{{value}}" >{{value}}</option>
+                                <option value="{{value}}">{{value}}</option>
                                 {% endfor %}
                                 {% endif %}
                             </select>

@@ -39,7 +39,8 @@
                             <h2 class="font-size-regular"><a href="#" class="text-black">{{file.file_name}}</a>
                             </h2>
                             <div class="meta mb-3">{{file.file_type}}<span class="mx-1">&bullet;</span> <span
-                                    class="case_date">Uploader: {% if file.uploaded_by == lawyer %}You{% else %}Client{% endif %}</span></div>
+                                    class="case_date">Uploader:
+                                    {% if file.uploaded_by == lawyer %}You{% else %}Client{% endif %}</span></div>
                         </div>
                     </div>
                     {% endfor %}
@@ -83,6 +84,28 @@
                         <button id="btnDeleteCase" data-id="{{lawyer}}" data-caseid="{{case.case_id}}"
                             class="btn btn-danger col-12 py-2 px-4 text-white">Delete Case</button>
                     </div>
+                </div>
+
+                <div class="mb-5">
+                    <h3 class="h5 text-black mb-3">Case Status</h3>
+                    {% if case %}
+                    <p>Status:
+                        <span>
+                            {% if case.case_status == "CaseOpen" %}
+                            <span style="color:green">Active</span>
+                            {% elif case.case_status == "CaseClosed" %}
+                            <span style="color:red">Closed</span>
+                            {% elif case.case_status == "CasePending" %}
+                            <span style="color:yellow">Pending</span>
+                            {% elif case.case_status == "CaseMoved" %}
+                            <span style="color:skyblue">Moved</span>
+                            {% endif %}
+                        </span>
+                    </p>
+                    <p>Current Court: <span>{{case.court_status}}</span></p>
+                    <p>Date Created: <span>{{ moment().format('MMMM Do YYYY') }}</span></p>
+                    <p>Last Updated: <span>{{ moment().format('MMMM Do YYYY') }}</span></p>
+                    {% endif %}
                 </div>
 
 
@@ -142,12 +165,33 @@
                         <label class="text-black" for="case-description">Case Description</label>
                         <input type="text" id="case-description" value="{{case.case_description}}" class="form-control">
                     </div>
+                    <select class="form-control rounded mb-3" id="client_type">
+                        <option selected="true" disabled="disabled">Select Court</option>
+                        {% if client_type %}
+                        {% for key, value in client_type.items()|sort %}
+                        <option value="{{key}}" {% if case.client_type == value %} selected {% endif %}>{{value}}
+                        </option>
+                        {% endfor %}
+                        {% endif %}
+                    </select>
                     <select class="form-control rounded mb-3" id="status">
                         <option value="CaseOpen" {% if case.case_status == "CaseOpen" %}selected{%endif%}> Case Open
                         </option>
-                        <option value="CaseClosed" {% if case.case_status == "CaseClosed" %}selected{%endif%}> Case
-                            Closed
+                        <option value="CasePending" {% if case.case_status == "CasePending" %}selected{%endif%}> Case Pending
                         </option>
+                        <option value="CaseMoved" {% if case.case_status == "CaseMoved" %}selected{%endif%}> Case Moved
+                        </option>
+                        <option value="CaseClosed" {% if case.case_status == "CaseClosed" %}selected{%endif%}> Case Closed
+                        </option>
+                    </select>
+                    <select class="form-control rounded mb-3" id="court_status">
+                        <option selected="true" disabled="disabled">Select Court</option>
+                        {% if courts %}
+                        {% for key, value in courts.items() %}
+                        <option value="{{key}}" {% if case.court_status == value %} selected {% endif %}>{{value}}
+                        </option>
+                        {% endfor %}
+                        {% endif %}
                     </select>
                     <div class="form-group">
                         <label class="text-black" for="remarks">Remarks</label>

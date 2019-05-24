@@ -32,24 +32,29 @@
         <div class="row">
 
             <div class="col-md-8">
-                    {% if cases %}
+                {% if cases %}
                 <div class="row mb-3 align-items-stretch">
-                    
+
                     {% for case in cases %}
                     <div class="col-md-4 col-lg-3 mb-4 mb-lg-4">
                         <div class="h-entry">
-                            <a href="/lawyer/{{lawyer}}/mycases/{{case.case_id}}"><img src="/static/images/briefcase.png" alt="Image" class="img-fluid rounded"></a>
+                            <a href="/lawyer/{{lawyer}}/mycases/{{case.case_id}}"><img
+                                    src="/static/images/briefcase.png" alt="Image" class="img-fluid rounded"></a>
                             <h2 class="font-size-regular"><a href="#" class="text-black">{{case.case_title}}</a>
                             </h2>
-                            <div class="meta mb-3">{{case.client.first_name}} {{case.client.last_name}}<span class="mx-1">&bullet;</span> <span class="case_date">{{ moment().format('MMMM Do YYYY, h:mm a') }}</span></div>
+                            <div class="meta mb-3">{{case.client.first_name}} {{case.client.last_name}}<span
+                                    class="mx-1">&bullet;</span> <span
+                                    class="case_date">{{ moment().format('MMMM Do YYYY, h:mm a') }}</span></div>
                         </div>
                     </div>
                     {% endfor %}
-                   
+
                 </div>
 
                 {% else %}
-                <h2><center>No case found</center></h2>
+                <h2>
+                    <center>No case found</center>
+                </h2>
                 {% endif %}
                 <div class="col-12 text-center mt-5">
                     <p class="custom-pagination">
@@ -84,9 +89,9 @@
                     <h3 class="h5 text-black mb-3">Recent Case</h3>
                     <ul class="list-unstyled">
                         {% if cases %}
-                            {% for case in cases %}
-                            <li class="mb-2"><a href="#">{{case.case_title}}</a></li>
-                            {% endfor %}
+                        {% for case in cases %}
+                        <li class="mb-2"><a href="#">{{case.case_title}}</a></li>
+                        {% endfor %}
                         {% endif %}
                     </ul>
                 </div>
@@ -114,12 +119,28 @@
                         <label class="text-black" for="add-case">Case Title</label>
                         <input type="text" id="add-case" class="form-control">
                     </div>
+                    <select class="form-control rounded mb-3" id="client_type">
+                        <option selected="true" disabled="disabled">Client Type</option>
+                        {% if client_type %}
+                        {% for key, value in client_type.items()|sort %}
+                        <option value="{{key}}">{{value}}</option>
+                        {% endfor %}
+                        {% endif %}
+                    </select>
                     <select class="form-control rounded mb-3" id="client-id">
                         <option selected="true" disabled="disabled">Select Client</option>
                         {% if clients %}
                         {% for c in clients %}
                         <option value="{{c.client_id}}"> {{c.client.first_name}}
                         </option>
+                        {% endfor %}
+                        {% endif %}
+                    </select>
+                    <select class="form-control rounded mb-3" id="court_status">
+                        <option selected="true" disabled="disabled">Select Court</option>
+                        {% if courts %}
+                        {% for key, value in courts.items() %}
+                        <option value="{{key}}">{{value}}</option>
                         {% endfor %}
                         {% endif %}
                     </select>

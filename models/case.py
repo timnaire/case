@@ -8,6 +8,8 @@ class Case(ndb.Model):
     client = ndb.KeyProperty(kind=Client)
     case_description = ndb.StringProperty()
     case_status = ndb.StringProperty()
+    court_status = ndb.StringProperty()
+    client_type = ndb.StringProperty()
     remarks = ndb.StringProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
     updated = ndb.DateTimeProperty(auto_now=True)
@@ -39,6 +41,10 @@ class Case(ndb.Model):
             case.case_status = kwargs.get('case_status')
         if kwargs.get('remarks'):
             case.remarks = kwargs.get('remarks')
+        if kwargs.get('court_status'):
+            case.court_status = kwargs.get('court_status')
+        if kwargs.get('client_type'):
+            case.client_type = kwargs.get('client_type')
         case.put()
         return case
 
@@ -164,6 +170,8 @@ class Case(ndb.Model):
         data['case_description'] = self.case_description
         data['case_status'] = self.case_status
         data['remarks'] = self.remarks
+        data['court_status'] = self.court_status
+        data['client_type'] = self.client_type
         data['created'] = self.created.isoformat() + "Z"
         data['updated'] = self.updated.isoformat() + "Z"
         return data

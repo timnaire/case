@@ -98,6 +98,9 @@ $(document).ready(function () {
             $("#notificationTitle").text("Pre Appointment");
             $("#notificationMessage").text(data['message']);
             $('#notification').modal('show');
+            setTimeout(function(){
+                window.location.reload();
+            },3000);
         }
     });
 
@@ -105,6 +108,13 @@ $(document).ready(function () {
         if (data['client'] == $('#currentUser').val()) {
             $("#notificationTitle").text("Pre Appointment");
             $("#notificationMessage").text(data['message']);
+            $('#notification').modal('show');
+            setTimeout(function(){
+                window.location.reload();
+            },5000);
+        } else if(data['lawyer'] != $('#currentUser').val()){
+            $("#notificationTitle").text("Pre Appointment");
+            $("#notificationMessage").text("Someone already accepted "+data['last_name']+" "+data['first_name']+"'s request.");
             $('#notification').modal('show');
         }
     });
@@ -201,10 +211,15 @@ $(document).ready(function () {
         var case_title = $('#add-case').val();
         var client_id = $('#client-id').val();
         var case_description = $('#case-description').val();
+        var client_type = $('#client_type').val();
+        var court_status = $('#court_status').val();
         sendInfo = {
             case_title: case_title,
             client_id: client_id,
-            case_description: case_description
+            case_description: case_description,
+            client_type:client_type,
+            court_status:court_status
+
         }
         $.post("/lawyer/" + id + "/newcase", JSON.stringify(sendInfo), function (response) {
             if (response['error'] == false) {
@@ -627,13 +642,17 @@ $(document).ready(function () {
         var case_status = $('#status').val();
         var case_description = $('#case-description').val();
         var remarks = $('#remarks').val();
+        var court_status = $('#court_status').val();
+        var client_type = $('#client_type').val();
         sendInfo = {
             case_title: case_title,
             case_id: case_id,
             client_id: client_id,
             case_status: case_status,
             case_description: case_description,
-            remarks: remarks
+            remarks: remarks,
+            court_status:court_status,
+            client_type:client_type
         }
         $.post("/lawyer/" + lawyer_id + "/edit-case", JSON.stringify(sendInfo), function (response) {
             if (response['error'] == false) {

@@ -24,6 +24,8 @@ from models.feature import Feature
 from models.practice_list import PracticeList
 from models.admin import Admin
 from models.subpractice_list import SubPracticeList
+from models.court import Court
+from models.client_type import ClientType
 from decorators import login_required_lawyer,login_required_client,login_required_admin
 from functions import json_response, is_email, save_to_gcs
 import pusher
@@ -481,6 +483,56 @@ def admin_subpractice():
                 })
     return render_template("admin-subpractice.html",subpractices=list_of_subpractices,username=admin.username, available_practice=available_practice)
 
+@app.route("/admin-client-type",methods=['GET','POST'])
+@login_required_admin
+def admin_client_type():
+    admin_id = session['admin']
+    admin = Admin.get_by_id(int(admin_id))
+    list_of_cts = ClientType.list_of_cts()
+
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'client_type' in req_data:
+            client_type = req_data['client_type']
+
+        client_type = ClientType.save(client_type=client_type)
+        if client_type:
+            return json_response({
+                "error" : False,
+                "message" : "Successfully added new client type."
+            })
+        else:
+            return json_response({
+                "error" : True,
+                "message" : "Failed to add client type."
+            })
+    return render_template("admin-client-type.html",client_type=list_of_cts,username=admin.username)
+
+@app.route("/admin-court",methods=['GET','POST'])
+@login_required_admin
+def admin_court():
+    admin_id = session['admin']
+    admin = Admin.get_by_id(int(admin_id))
+    list_of_courts = Court.list_of_courts()
+
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if 'court' in req_data:
+            court = req_data['court']
+
+        court = Court.save(court=court)
+        if court:
+            return json_response({
+                "error" : False,
+                "message" : "Successfully added new court."
+            })
+        else:
+            return json_response({
+                "error" : True,
+                "message" : "Failed to add court."
+            })
+    return render_template("admin-court.html",courts=list_of_courts,username=admin.username)
+
 @app.route("/admin-signout",methods=['GET','POST'])
 def admin_signout():
     if session.get('admin') is not None:
@@ -611,7 +663,10 @@ def pre_accepted(client_id=None):
                 'https://fcm.googleapis.com/fcm/send', headers=headers, data=json.dumps(json_data)
             )
             if status == "accept":
-                pusher_client.trigger('appointment', 'accepted', { 'client' : client_id , 'message': lawyer.first_name+" "+ lawyer.last_name + " accepted your pre appointment request."})
+                preappoints = PreAppoint.query(PreAppoint.client == client.key, PreAppoint.status == None).fetch()
+                for p in preappoints:
+                    p.key.delete()
+                pusher_client.trigger('appointment', 'accepted', { 'first_name': client.first_name, 'last_name': client.last_name , 'lawyer': lawyer_id , 'client' : client_id , 'message': lawyer.first_name+" "+ lawyer.last_name + " accepted your pre appointment request."})
                 return json_response({
                     "error" : False,
                     'id' : lawyer_id,
@@ -809,10 +864,12 @@ def dashboard(lawyer_id=None):
             preappoint_dict.append(preappoint.to_dict())
         
     list_of_clients = PreAppoint.accept_client(lawyer_id=lawyer_id)
+    list_of_courts = Court.list_of_courts()
+    list_of_cts = ClientType.list_of_cts()
 
     lawyer_id = Lawyer.get_by_id(int(lawyer_id))
     lawyer = lawyer_id.to_dict()
-    return render_template('lawyer-dashboard.html',title="Welcome to Dashboard",clients=list_of_clients,lawyer=session['lawyer'],results=lawyer,preappointments=preappoint_dict)
+    return render_template('lawyer-dashboard.html',title="Welcome to Dashboard",client_type=list_of_cts,courts=list_of_courts,clients=list_of_clients,lawyer=session['lawyer'],results=lawyer,preappointments=preappoint_dict)
 
 #dashboard route for client
 @app.route('/client/')
@@ -1565,9 +1622,13 @@ def edit_case(lawyer_id=None):
             case_status = req_data['case_status']
         if 'remarks' in req_data:
             remarks = req_data['remarks']
+        if 'court_status' in req_data:
+            court_status = req_data['court_status']
+        if 'client_type' in req_data:
+            client_type = req_data['client_type']
         
         if case_title and case_description:
-            case = Case.save(id=case_id,case_title=case_title,case_description=case_description,case_status=case_status,remarks=remarks)
+            case = Case.save(id=case_id,case_title=case_title,case_description=case_description,court_status=court_status,client_type=client_type,case_status=case_status,remarks=remarks)
             if case:
                 return json_response({
                     "error" : False,
@@ -1589,6 +1650,10 @@ def addcase(lawyer_id=None):
             client_id = req_data['client_id']
         if 'case_description' in req_data:
             case_description = req_data['case_description']
+        if 'client_type' in req_data:
+            client_type = req_data['client_type']
+        if 'court_status' in req_data:
+            court_status = req_data['court_status']
         
         # payment = Payment.lawyer_subscribed(lawyer_id=lawyer_id)
         mycases = Case.my_case(lawyer_id=lawyer_id)
@@ -1601,7 +1666,7 @@ def addcase(lawyer_id=None):
             if case_title and client_id and case_description:
                 case = Client.get_client(client_id=client_id)
                 if case:
-                    case = Case.save(lawyer=lawyer_id,case_title=case_title,client_id=client_id,case_description=case_description,case_status='CaseOpen',remarks='')
+                    case = Case.save(lawyer=lawyer_id,case_title=case_title,client_id=client_id,case_description=case_description,client_type=client_type,court_status=court_status,case_status='CaseOpen',remarks='')
                     if case:
                         return json_response({
                             "error" : False,
@@ -1640,9 +1705,11 @@ def lawyer_single_case(lawyer_id=None,case_id=None):
     case_dict_one = case.to_dict()
         
     files = UploadFile.get_all_files(case=case_id)
+    list_of_courts = Court.list_of_courts()
+    list_of_cts = ClientType.list_of_cts()
 
     lawyer = lawyer_id.to_dict()
-    return render_template('lawyer-cases-single.html',files=files,results=lawyer,lawyer=session['lawyer'],title="Case "+case.case_title,case=case_dict_one,clients=list_of_clients)
+    return render_template('lawyer-cases-single.html',courts=list_of_courts,client_type=list_of_cts,files=files,results=lawyer,lawyer=session['lawyer'],title="Case "+case.case_title,case=case_dict_one,clients=list_of_clients)
 
 # route for lawyer listing all case for lawyer
 @app.route('/lawyer/<int:lawyer_id>/mycases',methods=['GET','POST'])
@@ -1658,10 +1725,12 @@ def getAllCase(lawyer_id=None):
         case_dict="Empty"
 
     list_of_clients = PreAppoint.my_clients(lawyer_id=lawyer_id)
+    list_of_courts = Court.list_of_courts()
+    list_of_cts = ClientType.list_of_cts()
 
     lawyer_id = Lawyer.get_by_id(int(lawyer_id))
     lawyer = lawyer_id.to_dict()
-    return render_template('lawyer-cases.html',clients=list_of_clients,lawyer=session['lawyer'],cases=case_dict,title="My Cases",available_practice=available_practice,results=lawyer)
+    return render_template('lawyer-cases.html',courts=list_of_courts,client_type=list_of_cts,clients=list_of_clients,lawyer=session['lawyer'],cases=case_dict,title="My Cases",available_practice=available_practice,results=lawyer)
 
 # route for lawyer listing all case for lawyer
 @app.route('/client/<int:client_id>/cases',methods=['GET','POST'])

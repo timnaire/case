@@ -70,4 +70,38 @@ $(document).ready(function(){
             }
         });
     });
+
+    $("#btnAddCourt").click(function(e){
+        e.preventDefault();
+        var court = $("#newCourt").val();
+        sendInfo = {
+            court: court,
+        }
+        console.log(sendInfo);
+        $.post("/admin-court",JSON.stringify(sendInfo), function(response){
+            if(response['error'] == false){
+                alert(response['message']);
+                location.reload();
+            } else {
+                alert(response['error']);
+            }
+        });
+    });
+    
+    $("#btnAddClientType").click(function(e){
+        e.preventDefault();
+        var client_type = $("#newClientType").val();
+        sendInfo = {
+            client_type: client_type
+        }
+        console.log(sendInfo);
+        $.post("/admin-client-type",JSON.stringify(sendInfo), function(response){
+            if(response['error'] == false){
+                alert(response['message']);
+                location.reload();
+            } else {
+                alert(response['error']);
+            }
+        });
+    });
 });
