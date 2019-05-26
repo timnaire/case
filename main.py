@@ -1643,6 +1643,7 @@ def edit_case(lawyer_id=None):
 def addcase(lawyer_id=None):
     available_practice = PracticeList.list_of_practices()
     if request.method == "POST":
+        court_status = client_type = ""
         req_data = request.get_json(force=True)
         if 'case_title' in req_data:
             case_title = req_data['case_title']
