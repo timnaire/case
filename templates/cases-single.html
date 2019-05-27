@@ -77,6 +77,29 @@
                 </div>
 
                 <div class="mb-5">
+                    <h3 class="h5 text-black mb-3">Case Status</h3>
+                    {% if case %}
+                    <p>Status:
+                        <span>
+                            {% if case.case_status == "CaseOpen" %}
+                            <span style="color:green">Active</span>
+                            {% elif case.case_status == "CaseClosed" %}
+                            <span style="color:red">Closed</span>
+                            {% elif case.case_status == "CasePending" %}
+                            <span style="color:yellow">Pending</span>
+                            {% elif case.case_status == "CaseMoved" %}
+                            <span style="color:skyblue">Moved</span>
+                            {% endif %}
+                        </span>
+                    </p>
+                    <p>Type of Client: <span>{{case.client_type}}</span></p>
+                    <p>Current Court: <span>{{case.court_status}}</span></p>
+                    <p>Date Created: <span>{{ moment().format('MMMM Do YYYY') }}</span></p>
+                    <p>Last Updated: <span>{{ moment().format('MMMM Do YYYY') }}</span></p>
+                    {% endif %}
+                </div>
+
+                <div class="mb-5">
                     <h3 class="h5 text-black mb-3">Search</h3>
                     <form action="#" method="post">
                         <div class="form-group d-flex">
@@ -102,82 +125,6 @@
     </div>
 </div>
 
-<div class="site-section bg-white d-none">
-    <div class="container">
-
-        <div class="row justify-content-center mb-5">
-            <div class="col-md-7 text-center border-primary">
-                <h2 class="font-weight-light text-primary">Testimonials</h2>
-            </div>
-        </div>
-
-        <div class="slide-one-item home-slider owl-carousel">
-            <div>
-                <div class="testimonial">
-                    <figure class="mb-4">
-                        <img src="/static/images/person_3.jpg" alt="Image" class="img-fluid mb-3">
-                        <p>John Smith</p>
-                    </figure>
-                    <blockquote>
-                        <p>&ldquo;Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur unde
-                            reprehenderit aperiam
-                            quaerat fugiat repudiandae explicabo animi minima fuga beatae illum eligendi incidunt
-                            consequatur. Amet
-                            dolores excepturi earum unde iusto.&rdquo;</p>
-                    </blockquote>
-                </div>
-            </div>
-            <div>
-                <div class="testimonial">
-                    <figure class="mb-4">
-                        <img src="/static/images/person_2.jpg" alt="Image" class="img-fluid mb-3">
-                        <p>Christine Aguilar</p>
-                    </figure>
-                    <blockquote>
-                        <p>&ldquo;Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur unde
-                            reprehenderit aperiam
-                            quaerat fugiat repudiandae explicabo animi minima fuga beatae illum eligendi incidunt
-                            consequatur. Amet
-                            dolores excepturi earum unde iusto.&rdquo;</p>
-                    </blockquote>
-                </div>
-            </div>
-
-            <div>
-                <div class="testimonial">
-                    <figure class="mb-4">
-                        <img src="/static/images/person_4.jpg" alt="Image" class="img-fluid mb-3">
-                        <p>Robert Spears</p>
-                    </figure>
-                    <blockquote>
-                        <p>&ldquo;Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur unde
-                            reprehenderit aperiam
-                            quaerat fugiat repudiandae explicabo animi minima fuga beatae illum eligendi incidunt
-                            consequatur. Amet
-                            dolores excepturi earum unde iusto.&rdquo;</p>
-                    </blockquote>
-                </div>
-            </div>
-
-            <div>
-                <div class="testimonial">
-                    <figure class="mb-4">
-                        <img src="/static/images/person_5.jpg" alt="Image" class="img-fluid mb-3">
-                        <p>Bruce Rogers</p>
-                    </figure>
-                    <blockquote>
-                        <p>&ldquo;Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur unde
-                            reprehenderit aperiam
-                            quaerat fugiat repudiandae explicabo animi minima fuga beatae illum eligendi incidunt
-                            consequatur. Amet
-                            dolores excepturi earum unde iusto.&rdquo;</p>
-                    </blockquote>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
 
 <!-- Modal -->
 <div class="modal fade" id="editCase" tabindex="-1" role="dialog" aria-labelledby="notification" aria-hidden="true">
@@ -279,8 +226,7 @@
                     {% for f in files|sort %}
                     <div class="checkbox ml-3">
                         <label>
-                            <input type="checkbox" class="fileDocument"
-                                value="{{ f.file_id }}">{{f.file_name}}
+                            <input type="checkbox" class="fileDocument" value="{{ f.file_id }}">{{f.file_name}}
                         </label>
                     </div>
                     {% endfor %}

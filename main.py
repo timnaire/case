@@ -1666,7 +1666,7 @@ def addcase(lawyer_id=None):
             if case_title and client_id and case_description:
                 case = Client.get_client(client_id=client_id)
                 if case:
-                    case = Case.save(lawyer=lawyer_id,case_title=case_title,client_id=client_id,case_description=case_description,client_type=client_type,court_status=court_status,case_status='CaseOpen',remarks='')
+                    case = Case.save(lawyer=lawyer_id,case_title=case_title,client_id=client_id,case_description=case_description,client_type=client_type,court_status=court_status,case_status='Case Open',remarks='')
                     if case:
                         return json_response({
                             "error" : False,

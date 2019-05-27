@@ -102,12 +102,12 @@
                             {% endif %}
                         </span>
                     </p>
+                    <p>Type of Client: <span>{{case.client_type}}</span></p>
                     <p>Current Court: <span>{{case.court_status}}</span></p>
                     <p>Date Created: <span>{{ moment().format('MMMM Do YYYY') }}</span></p>
                     <p>Last Updated: <span>{{ moment().format('MMMM Do YYYY') }}</span></p>
                     {% endif %}
                 </div>
-
 
                 <div class="mb-5">
                     <h3 class="h5 text-black mb-3">Search</h3>
@@ -175,13 +175,13 @@
                         {% endif %}
                     </select>
                     <select class="form-control rounded mb-3" id="status">
-                        <option value="CaseOpen" {% if case.case_status == "CaseOpen" %}selected{%endif%}> Case Open
+                        <option value="Case Open" {% if case.case_status == "Case Open" %}selected{%endif%}> Case Open
                         </option>
-                        <option value="CasePending" {% if case.case_status == "CasePending" %}selected{%endif%}> Case Pending
+                        <option value="Case Pending" {% if case.case_status == "Case Pending" %}selected{%endif%}> Case Pending
                         </option>
-                        <option value="CaseMoved" {% if case.case_status == "CaseMoved" %}selected{%endif%}> Case Moved
+                        <option value="Case Moved" {% if case.case_status == "Case Moved" %}selected{%endif%}> Case Moved
                         </option>
-                        <option value="CaseClosed" {% if case.case_status == "CaseClosed" %}selected{%endif%}> Case Closed
+                        <option value="Case Closed" {% if case.case_status == "Case Closed" %}selected{%endif%}> Case Closed
                         </option>
                     </select>
                     <select class="form-control rounded mb-3" id="court_status">
