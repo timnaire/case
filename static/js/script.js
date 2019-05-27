@@ -1175,6 +1175,67 @@ $(document).ready(function () {
         }
     });
 
+    $("#btnaddnote").click(function(){
+        $("case_id").val($(this).data('caseid'));
+        $("uploaded_by").val($("#currentUser").val());
+    });
+
+    $("#btnSaveNote").click(function(){
+        var case_id = $("#case_id").val();
+        var note = $("#note").val();
+        var title = $("#title").val();
+        var uploaded_by = $("#uploaded_by").val();
+        sendInfo = {
+            case_id: case_id,
+            note: note,
+            title:title,
+            uploaded_by:uploaded_by
+        }
+        $.post("/lawyer/addnote",JSON.stringify(sendInfo),function(response){
+            if(response['error'] == false){
+                alert(response['message']);
+                window.location.reload();
+            } else {
+                alert(response['message']);
+            }
+        });
+    });
+
+    $("#btnSaveNoteClient").click(function(){
+        var case_id = $("#case_id").val();
+        var note = $("#note").val();
+        var title = $("#title").val();
+        var uploaded_by = $("#uploaded_by").val();
+        sendInfo = {
+            case_id: case_id,
+            note: note,
+            title:title,
+            uploaded_by:uploaded_by
+        }
+        $.post("/client/addnote",JSON.stringify(sendInfo),function(response){
+            if(response['error'] == false){
+                alert(response['message']);
+                window.location.reload();
+            } else {
+                alert(response['message']);
+            }
+        });
+    });
+
+    $("#showDocuments").click(function (e) {
+        $("#showNotes").removeClass("active");
+        $(this).addClass("active");
+        $("#showDocumentsDiv").removeClass("d-none").addClass("d-block");
+        $("#showNotesDiv").removeClass("d-block").addClass("d-none");
+    });
+
+    $("#showNotes").click(function (e) {
+        $("#showDocuments").removeClass("active");
+        $(this).addClass("active");
+        $("#showNotesDiv").removeClass("d-none").addClass("d-block");
+        $("#showDocumentsDiv").removeClass("d-block").addClass("d-none");
+    });
+
     $("#btnPreAppoint").click(function (e) {
         $("#pre-appointment").removeClass("d-none");
         $("#incoming-client").removeClass("d-none").addClass("d-none");

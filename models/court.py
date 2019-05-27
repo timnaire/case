@@ -35,3 +35,25 @@ class Court(ndb.Model):
             list_of_courts = None
 
         return list_of_courts
+
+    @classmethod
+    def list_court_status(cls):
+        list_of_courts = []
+
+        courts = cls.query().fetch()
+
+        if courts:
+            for court in courts:
+                list_of_courts.append(court.to_dict())
+        
+        if not list_of_courts:
+            list_of_courts = None
+
+        return list_of_courts
+    
+    def to_dict(self):
+        data = {}
+
+        data['court_staus'] = self.court
+
+        return data

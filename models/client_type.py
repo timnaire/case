@@ -35,3 +35,25 @@ class ClientType(ndb.Model):
             list_of_ct = None
 
         return list_of_ct
+
+    @classmethod
+    def list_client_type(cls):
+        list_of_ct = []
+
+        cts = cls.query().fetch()
+
+        if cts:
+            for ct in cts:
+                list_of_ct.append(ct.to_dict())
+        
+        if not list_of_ct:
+            list_of_ct = None
+
+        return list_of_ct
+
+    def to_dict(self):
+        data = {}
+
+        data['clien_type'] = self.client_type
+
+        return data

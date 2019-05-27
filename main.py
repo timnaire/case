@@ -26,6 +26,7 @@ from models.admin import Admin
 from models.subpractice_list import SubPracticeList
 from models.court import Court
 from models.client_type import ClientType
+from models.note import Note
 from decorators import login_required_lawyer,login_required_client,login_required_admin
 from functions import json_response, is_email, save_to_gcs
 import pusher
@@ -1492,6 +1493,32 @@ def list_lawyer(client_id=None):
             "error" : True,
             "message" : "No lawyers found.",})
 
+@app.route('/court-status',methods=['GET','POST'])
+def list_court_status(lawyer_id=None):
+    list_of_courts = Court.list_court_status()
+    if list_of_courts:
+        return json_response({
+            "error" : False,
+            "message" : "Found clients",
+            "court_status" : list_of_courts})
+    else:
+        return json_response({
+            "error" : True,
+            "message" : "No clients found.",})
+
+@app.route('/client-type',methods=['GET','POST'])
+def list_client_type(lawyer_id=None):
+    list_of_cts = ClientType.list_client_type()
+    if list_of_cts:
+        return json_response({
+            "error" : False,
+            "message" : "Found clients",
+            "client_type" : list_of_cts})
+    else:
+        return json_response({
+            "error" : True,
+            "message" : "No clients found.",})
+
 # route for lawyer, getting the event
 @app.route('/lawyer/<int:lawyer_id>/get-event',methods=['GET','POST'])
 def get_event_lawyer(lawyer_id=None):
@@ -1696,6 +1723,60 @@ def addcase(lawyer_id=None):
 
     return render_template('lawyer/lawyer-createCase.html',title="My Case",lawyer=session['lawyer'],cases=case_dict,clients=clients,available_practice=available_practice)
 
+@app.route("/lawyer/addnote",methods=['GET','POST'])
+def lawyer_add_note():
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if "case_id" in req_data:
+            case_id = req_data['case_id']
+        if "note" in req_data:
+            note = req_data['note']
+        if "title" in req_data:
+            title = req_data['title']
+        if "uploaded_by" in req_data:
+            uploaded_by = req_data['uploaded_by']
+        uploaded_by = Lawyer.get_by_id(int(uploaded_by))
+        if note:
+            note = Note.save(case=case_id,note=note,title=title,uploaded_by=uploaded_by.key)
+
+            if note:
+                return json_response({
+                    "error" : False,
+                    "message" : "Note has been added!"
+                })
+            else:
+                return json_response({
+                    "error" : False,
+                    "message" : "Note was not added!"
+                })
+
+@app.route("/client/addnote",methods=['GET','POST'])
+def client_add_note():
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if "case_id" in req_data:
+            case_id = req_data['case_id']
+        if "note" in req_data:
+            note = req_data['note']
+        if "title" in req_data:
+            title = req_data['title']
+        if "uploaded_by" in req_data:
+            uploaded_by = req_data['uploaded_by']
+        uploaded_by = Client.get_by_id(int(uploaded_by))
+        if note:
+            note = Note.save(case=case_id,note=note,title=title,uploaded_by=uploaded_by.key)
+
+            if note:
+                return json_response({
+                    "error" : False,
+                    "message" : "Note has been added!"
+                })
+            else:
+                return json_response({
+                    "error" : False,
+                    "message" : "Note was not added!"
+                })
+
 @app.route('/lawyer/<int:lawyer_id>/mycases/<int:case_id>',methods=['GET','POST'])
 def lawyer_single_case(lawyer_id=None,case_id=None):
     available_practice = PracticeList.list_of_practices()
@@ -1708,9 +1789,10 @@ def lawyer_single_case(lawyer_id=None,case_id=None):
     files = UploadFile.get_all_files(case=case_id)
     list_of_courts = Court.list_of_courts()
     list_of_cts = ClientType.list_of_cts()
+    list_of_notes = Note.list_of_notes()
 
     lawyer = lawyer_id.to_dict()
-    return render_template('lawyer-cases-single.html',courts=list_of_courts,client_type=list_of_cts,files=files,results=lawyer,lawyer=session['lawyer'],title="Case "+case.case_title,case=case_dict_one,clients=list_of_clients)
+    return render_template('lawyer-cases-single.html',notes=list_of_notes,courts=list_of_courts,client_type=list_of_cts,files=files,results=lawyer,lawyer=session['lawyer'],title="Case "+case.case_title,case=case_dict_one,clients=list_of_clients)
 
 # route for lawyer listing all case for lawyer
 @app.route('/lawyer/<int:lawyer_id>/mycases',methods=['GET','POST'])
@@ -1754,10 +1836,11 @@ def client_case_single(client_id=None,case_id=None):
 
     case = Case.get_by_id(int(case_id))
     case_dict_one = case.to_dict()
+    list_of_notes = Note.list_of_notes()
 
     files = UploadFile.get_all_files(case=case_id)
 
-    return render_template('cases-single.html',files=files,client=session['client'],case=case_dict_one,title="My Cases",available_practice=available_practice)
+    return render_template('cases-single.html',notes=list_of_notes,files=files,client=session['client'],case=case_dict_one,title="My Cases",available_practice=available_practice)
 
 # route for client listing all case for client
 @app.route('/client/<int:client_id>/get-case',methods=['GET','POST'])

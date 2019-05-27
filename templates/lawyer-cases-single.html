@@ -26,8 +26,17 @@
 <div class="site-section">
     <div class="container">
         <div class="row">
+            <div class="row col-8 mb-5">
+                <div class="col-6">
+                    <button id="showDocuments"
+                        class="btn btn-primary col-12 py-2 px-4 text-white active">Documents</button>
+                </div>
+                <div class="col-6">
+                    <button id="showNotes" class="btn btn-primary col-12 py-2 px-4 text-white">Notes</button>
+                </div>
+            </div>
+            <div class="col-md-8 d-block" id="showDocumentsDiv">
 
-            <div class="col-md-8">
                 {% if files %}
 
                 <div class="row mb-3 align-items-stretch">
@@ -45,12 +54,6 @@
                     </div>
                     {% endfor %}
                 </div>
-
-                {% else %}
-                <h2>
-                    <center>No documents found</center>
-                </h2>
-                {% endif %}
                 <div class="col-12 text-center mt-5">
                     <p class="custom-pagination">
                         <span>1</span>
@@ -60,6 +63,46 @@
                         <a href="#">20</a>
                     </p>
                 </div>
+                {% else %}
+                <h2>
+                    <center>No documents found</center>
+                </h2>
+                {% endif %}
+
+            </div>
+            
+            <div class="col-md-8 d-none" id="showNotesDiv">
+                
+                {% if notes %}
+
+                <div class="row mb-3 align-items-stretch">
+                    {% for note in notes %}
+                    <div class="col-md-4 col-lg-3 mb-4 mb-lg-4">
+                        <div class="h-entry">
+                            <a href="#"><img src="/static/images/file_icon.png" alt="Image"
+                                    class="img-fluid rounded"></a>
+                            <h2 class="font-size-regular"><a href="#" class="text-black">{{note.title}}</a>
+                            </h2>
+                            <div class="meta mb-3">Uploaded by: {% if note.uploaded_by.lawyer_id == lawyer %}You{% else %}Client{% endif %}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="col-12 text-center mt-5">
+                    <p class="custom-pagination">
+                        <span>1</span>
+                        <a href="#">2</a>
+                        <a href="#">3</a>
+                        <span>...</span>
+                        <a href="#">20</a>
+                    </p>
+                </div>
+                {% else %}
+                <h2>
+                    <center>No notes found</center>
+                </h2>
+                {% endif %}
+
             </div>
 
             <div class="col-md-3 ml-auto">
@@ -68,6 +111,11 @@
                     <div class="form-group d-flex">
                         <button data-toggle="modal" data-target="#addDocument"
                             class="btn btn-primary col-12 py-2 px-4 text-white">Add document</button>
+                    </div>
+                    <div class="form-group d-flex">
+                        <button data-toggle="modal" data-target="#addNote"
+                            class="btn btn-primary col-12 py-2 px-4 text-white" id="btnaddnote"
+                            data-caseid="{{case.case_id}}">Add Note</button>
                     </div>
                     <div class="form-group d-flex">
                         <button data-toggle="modal" data-target="#deleteDocument"
@@ -91,13 +139,13 @@
                     {% if case %}
                     <p>Status:
                         <span>
-                            {% if case.case_status == "CaseOpen" %}
+                            {% if case.case_status == "Case Open" %}
                             <span style="color:green">Active</span>
-                            {% elif case.case_status == "CaseClosed" %}
+                            {% elif case.case_status == "Case Closed" %}
                             <span style="color:red">Closed</span>
-                            {% elif case.case_status == "CasePending" %}
+                            {% elif case.case_status == "Case Pending" %}
                             <span style="color:yellow">Pending</span>
-                            {% elif case.case_status == "CaseMoved" %}
+                            {% elif case.case_status == "Case Moved" %}
                             <span style="color:skyblue">Moved</span>
                             {% endif %}
                         </span>
@@ -177,11 +225,14 @@
                     <select class="form-control rounded mb-3" id="status">
                         <option value="Case Open" {% if case.case_status == "Case Open" %}selected{%endif%}> Case Open
                         </option>
-                        <option value="Case Pending" {% if case.case_status == "Case Pending" %}selected{%endif%}> Case Pending
+                        <option value="Case Pending" {% if case.case_status == "Case Pending" %}selected{%endif%}> Case
+                            Pending
                         </option>
-                        <option value="Case Moved" {% if case.case_status == "Case Moved" %}selected{%endif%}> Case Moved
+                        <option value="Case Moved" {% if case.case_status == "Case Moved" %}selected{%endif%}> Case
+                            Moved
                         </option>
-                        <option value="Case Closed" {% if case.case_status == "Case Closed" %}selected{%endif%}> Case Closed
+                        <option value="Case Closed" {% if case.case_status == "Case Closed" %}selected{%endif%}> Case
+                            Closed
                         </option>
                     </select>
                     <select class="form-control rounded mb-3" id="court_status">
@@ -268,6 +319,39 @@
             <div class="modal-footer">
 
                 <button id="btnDeleteDocumentLawyer" class="btn btn-danger" data-dismiss="modal">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="addNote" tabindex="-1" role="dialog" aria-labelledby="addNote" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Rate your Lawyer</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST">
+                    <input type="hidden" id="case_id" value="">
+                    <input type="hidden" id="uploaded_by" value="">
+                    <div class="form-group">
+                        <label class="text-black" for="title">Title</label>
+                        <input type="text" id="title" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="note">Note:</label>
+                        <textarea class="form-control" rows="5" id="note"></textarea>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="delFeedback">Delete</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="btnSaveNote">Save</button>
                 </form>
             </div>
         </div>
