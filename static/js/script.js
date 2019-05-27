@@ -98,9 +98,9 @@ $(document).ready(function () {
             $("#notificationTitle").text("Pre Appointment");
             $("#notificationMessage").text(data['message']);
             $('#notification').modal('show');
-            setTimeout(function(){
+            setTimeout(function () {
                 window.location.reload();
-            },3000);
+            }, 3000);
         }
     });
 
@@ -109,12 +109,12 @@ $(document).ready(function () {
             $("#notificationTitle").text("Pre Appointment");
             $("#notificationMessage").text(data['message']);
             $('#notification').modal('show');
-            setTimeout(function(){
+            setTimeout(function () {
                 window.location.reload();
-            },5000);
-        } else if(data['lawyer'] != $('#currentUser').val()){
+            }, 5000);
+        } else if (data['lawyer'] != $('#currentUser').val()) {
             $("#notificationTitle").text("Pre Appointment");
-            $("#notificationMessage").text("Someone already accepted "+data['last_name']+" "+data['first_name']+"'s request.");
+            $("#notificationMessage").text("Someone already accepted " + data['last_name'] + " " + data['first_name'] + "'s request.");
             $('#notification').modal('show');
         }
     });
@@ -217,8 +217,8 @@ $(document).ready(function () {
             case_title: case_title,
             client_id: client_id,
             case_description: case_description,
-            client_type:client_type,
-            court_status:court_status
+            client_type: client_type,
+            court_status: court_status
 
         }
         $.post("/lawyer/" + id + "/newcase", JSON.stringify(sendInfo), function (response) {
@@ -651,8 +651,8 @@ $(document).ready(function () {
             case_status: case_status,
             case_description: case_description,
             remarks: remarks,
-            court_status:court_status,
-            client_type:client_type
+            court_status: court_status,
+            client_type: client_type
         }
         $.post("/lawyer/" + lawyer_id + "/edit-case", JSON.stringify(sendInfo), function (response) {
             if (response['error'] == false) {
@@ -1153,52 +1153,114 @@ $(document).ready(function () {
         }
     });
 
-    $("#btnaddnote").click(function(){
-        $("case_id").val($(this).data('caseid'));
-        $("uploaded_by").val($("#currentUser").val());
+    $("#btnaddnote").click(function () {
+        $("#case_id").val($(this).data('caseid'));
+        $("#uploaded_by").val($("#currentUser").val());
     });
 
-    // $("#btnSaveNote").click(function(){
-    //     var case_id = $("#case_id").val();
-    //     var note = $("#note").val();
-    //     var title = $("#title").val();
-    //     var uploaded_by = $("#uploaded_by").val();
-    //     sendInfo = {
-    //         case_id: case_id,
-    //         note: note,
-    //         title:title,
-    //         uploaded_by:uploaded_by
-    //     }
-    //     $.post("/lawyer/addnote",JSON.stringify(sendInfo),function(response){
-    //         if(response['error'] == false){
-    //             alert(response['message']);
-    //             window.location.reload();
-    //         } else {
-    //             alert(response['message']);
-    //         }
-    //     });
-    // });
+    $(".viewNote").click(function () {
+        $("#title_edit").val($(this).data('title'));
+        $("#note_edit").val($(this).data('note'));
+        $("#lawyer_id_edit").val($(this).data('lawyerid'));
+        $("#client_id_edit").val($(this).data('clientid'));
+        $("#note_id_edit").val($(this).data('noteid'));
+    });
 
-    // $("#btnSaveNoteClient").click(function(){
-    //     var case_id = $("#case_id").val();
-    //     var note = $("#note").val();
-    //     var title = $("#title").val();
-    //     var uploaded_by = $("#uploaded_by").val();
-    //     sendInfo = {
-    //         case_id: case_id,
-    //         note: note,
-    //         title:title,
-    //         uploaded_by:uploaded_by
-    //     }
-    //     $.post("/client/addnote",JSON.stringify(sendInfo),function(response){
-    //         if(response['error'] == false){
-    //             alert(response['message']);
-    //             window.location.reload();
-    //         } else {
-    //             alert(response['message']);
-    //         }
-    //     });
-    // });
+    $("#btnSaveNote").click(function (e) {
+        e.preventDefault();
+        var case_id = $("#case_id").val();
+        var note = $("#note").val();
+        var title = $("#title").val();
+        var uploaded_by = $("#uploaded_by").val();
+        sendInfo = {
+            case_id: case_id,
+            note: note,
+            title: title,
+            uploaded_by: uploaded_by
+        }
+        $.post("/lawyer/addnote", JSON.stringify(sendInfo), function (response) {
+            if (response['error'] == false) {
+                alert(response['message']);
+                window.location.reload();
+            } else {
+                alert(response['message']);
+            }
+        });
+    });
+
+    $("#btnEditNote").click(function (e) {
+        e.preventDefault();
+        var note_id = $("#note_id_edit").val();
+        var note = $("#note_edit").val();
+        var title = $("#title_edit").val();
+        var uploaded_by = $("#lawyer_id_edit").val();
+        sendInfo = {
+            note_id:note_id,
+            note: note,
+            title: title
+        }
+        if(uploaded_by == $("#currentUser").val()){
+            $.post("/lawyer/editnote", JSON.stringify(sendInfo), function (response) {
+                if (response['error'] == false) {
+                    alert(response['message']);
+                    window.location.reload();
+                } else {
+                    alert(response['message']);
+                }
+            });
+        } else {
+            alert("You cannot edit client's note.");
+        }
+        
+    });
+
+    $("#btnEditNoteClient").click(function (e) {
+        e.preventDefault();
+        var note_id = $("#note_id_edit").val();
+        var note = $("#note_edit").val();
+        var title = $("#title_edit").val();
+        var uploaded_by = $("#client_id_edit").val();
+        sendInfo = {
+            note_id:note_id,
+            note: note,
+            title: title
+        }
+        if(uploaded_by == $("#currentUser").val()){
+            $.post("/client/editnote", JSON.stringify(sendInfo), function (response) {
+                if (response['error'] == false) {
+                    alert(response['message']);
+                    window.location.reload();
+                } else {
+                    alert(response['message']);
+                }
+            });
+        } else {
+            alert("You cannot edit lawyer's note.");
+        }
+        
+    });
+
+    $("#btnSaveNoteClient").click(function (e) {
+        e.preventDefault();
+        var case_id = $("#case_id").val();
+        var note = $("#note").val();
+        var title = $("#title").val();
+        var uploaded_by = $("#uploaded_by").val();
+        sendInfo = {
+            case_id: case_id,
+            note: note,
+            title: title,
+            uploaded_by: uploaded_by
+        }
+        $.post("/client/addnote", JSON.stringify(sendInfo), function (response) {
+            if (response['error'] == false) {
+                alert(response['message']);
+                window.location.reload();
+            } else {
+                alert(response['message']);
+            }
+        });
+    });
 
     $("#showDocuments").click(function (e) {
         $("#showNotes").removeClass("active");

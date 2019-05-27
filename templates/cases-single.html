@@ -56,12 +56,6 @@
                     {% endif %}
                     {% endfor %}
                 </div>
-
-                {% else %}
-                <h2>
-                    <center>No documents found</center>
-                </h2>
-                {% endif %}
                 <div class="col-12 text-center mt-5">
                     <p class="custom-pagination">
                         <span>1</span>
@@ -71,17 +65,25 @@
                         <a href="#">20</a>
                     </p>
                 </div>
+                {% else %}
+                <h2>
+                    <center>No documents found</center>
+                </h2>
+                {% endif %}
+
             </div>
 
             <div class="col-md-8 d-none" id="showNotesDiv">
-                
+
                 {% if notes %}
 
                 <div class="row mb-3 align-items-stretch">
                     {% for note in notes %}
                     <div class="col-md-4 col-lg-3 mb-4 mb-lg-4">
                         <div class="h-entry">
-                            <a href="#"><img src="/static/images/file_icon.png" alt="Image"
+                            <a href="#editNote" class="viewNote" data-toggle="modal" data-noteid="{{note.note_id}}"
+                                data-clientid="{{note.uploaded_by.client_id}}" data-title="{{note.title}}"
+                                data-note="{{note.note}}"><img src="/static/images/file_icon.png" alt="Image"
                                     class="img-fluid rounded"></a>
                             <h2 class="font-size-regular"><a href="#" class="text-black">{{note.title}}</a>
                             </h2>
@@ -293,34 +295,67 @@
 
 <!-- Modal -->
 <div class="modal fade" id="addNote" tabindex="-1" role="dialog" aria-labelledby="addNote" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Rate your Lawyer</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form method="POST">
-                        <input type="hidden" id="case_id" value="">
-                        <input type="hidden" id="uploaded_by" value="">
-                        <div class="form-group">
-                            <label class="text-black" for="title">Title</label>
-                            <input type="text" id="title" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="note">Note:</label>
-                            <textarea class="form-control" rows="5" id="note"></textarea>
-                        </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-danger" id="delFeedback">Delete</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="btnSaveNoteClient">Save</button>
-                    </form>
-                </div>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add note</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST">
+                    <input type="hidden" id="case_id" value="">
+                    <input type="hidden" id="uploaded_by" value="">
+                    <div class="form-group">
+                        <label class="text-black" for="title">Title</label>
+                        <input type="text" id="title" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="note">Note:</label>
+                        <textarea class="form-control" rows="5" id="note"></textarea>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="btnSaveNoteClient">Save</button>
+                </form>
             </div>
         </div>
     </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="editNote" tabindex="-1" role="dialog" aria-labelledby="editNote" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit note</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST">
+                    <input type="hidden" id="client_id_edit" value="">
+                    <input type="hidden" id="note_id_edit" value="">
+                    <div class="form-group">
+                        <label class="text-black" for="title_edit">Title</label>
+                        <input type="text" id="title_edit" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="note_edit">Note:</label>
+                        <textarea class="form-control" rows="5" id="note_edit"></textarea>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" >Delete</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="btnEditNoteClient">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

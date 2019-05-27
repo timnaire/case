@@ -39,8 +39,8 @@ class Note(ndb.Model):
     @classmethod
     def list_of_notes(cls,*args,**kwargs):
         listNotes = []
-
-        notes = cls.query().fetch()
+        case = Case.get_by_id(int(kwargs.get("case")))
+        notes = cls.query(cls.case == case.key).fetch()
 
         if notes:
             for note in notes:

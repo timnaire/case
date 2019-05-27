@@ -1750,6 +1750,54 @@ def lawyer_add_note():
                     "message" : "Note was not added!"
                 })
 
+@app.route("/lawyer/editnote",methods=['GET','POST'])
+def lawyer_edit_note():
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if "note" in req_data:
+            note = req_data['note']
+        if "title" in req_data:
+            title = req_data['title']
+        if "note_id" in req_data:
+            note_id = req_data['note_id']
+        if note:
+            note = Note.save(id=note_id,note=note,title=title)
+
+            if note:
+                return json_response({
+                    "error" : False,
+                    "message" : "Note has been edited!"
+                })
+            else:
+                return json_response({
+                    "error" : False,
+                    "message" : "Note was not edited!"
+                })
+
+@app.route("/client/editnote",methods=['GET','POST'])
+def client_edit_note():
+    if request.method == "POST":
+        req_data = request.get_json(force=True)
+        if "note" in req_data:
+            note = req_data['note']
+        if "title" in req_data:
+            title = req_data['title']
+        if "note_id" in req_data:
+            note_id = req_data['note_id']
+        if note:
+            note = Note.save(id=note_id,note=note,title=title)
+
+            if note:
+                return json_response({
+                    "error" : False,
+                    "message" : "Note has been edited!"
+                })
+            else:
+                return json_response({
+                    "error" : False,
+                    "message" : "Note was not edited!"
+                })
+
 @app.route("/client/addnote",methods=['GET','POST'])
 def client_add_note():
     if request.method == "POST":
@@ -1789,7 +1837,7 @@ def lawyer_single_case(lawyer_id=None,case_id=None):
     files = UploadFile.get_all_files(case=case_id)
     list_of_courts = Court.list_of_courts()
     list_of_cts = ClientType.list_of_cts()
-    list_of_notes = Note.list_of_notes()
+    list_of_notes = Note.list_of_notes(case=case_id)
 
     lawyer = lawyer_id.to_dict()
     return render_template('lawyer-cases-single.html',notes=list_of_notes,courts=list_of_courts,client_type=list_of_cts,files=files,results=lawyer,lawyer=session['lawyer'],title="Case "+case.case_title,case=case_dict_one,clients=list_of_clients)
@@ -1836,7 +1884,7 @@ def client_case_single(client_id=None,case_id=None):
 
     case = Case.get_by_id(int(case_id))
     case_dict_one = case.to_dict()
-    list_of_notes = Note.list_of_notes()
+    list_of_notes = Note.list_of_notes(case=case_id)
 
     files = UploadFile.get_all_files(case=case_id)
 
